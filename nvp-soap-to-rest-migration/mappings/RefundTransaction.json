@@ -1,0 +1,49 @@
+{
+  "operation": "RefundTransaction",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "TRANSACTIONID": "capture_id",
+          "AMT": "amount.value",
+          "CURRENCYCODE": "amount.currency_code",
+          "REFUNDTYPE": "Mapped to amount presence",
+          "NOTE": "note_to_payer",
+          "INVOICEID": "invoice_id"
+        },
+        "not_supported": [
+          "MSGSUBID",
+          "REFUNDSOURCE",
+          "MERCHANTSTOREDETAILS",
+          "REFUNDADVICE",
+          "REFUNDITEMDETAILS",
+          "MSGSUBID"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "TransactionID": "capture_id",
+          "Amount": "amount.value",
+          "Amount.currencyID": "amount.currency_code",
+          "RefundType": "Mapped to amount presence",
+          "Note": "note_to_payer",
+          "InvoiceID": "invoice_id"
+        },
+        "not_supported": [
+          "RefundSource",
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for refunding captured payments",
+    "migration_tips": [
+      "TRANSACTIONID becomes capture_id path parameter",
+      "REFUNDTYPE (Full/Partial) is determined by presence of amount field",
+      "Full refund if amount not specified, partial if amount provided"
+    ]
+  }
+}

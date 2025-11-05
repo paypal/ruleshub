@@ -1,0 +1,207 @@
+{
+  "operation": "Presentation Modes",
+  "description": "PayPal v6 SDK presentation mode configuration for payment flows",
+  "v5_pattern": {
+    "presentation": "Fixed popup behavior with paypal.Buttons()",
+    "fallback": "Limited fallback options",
+    "configuration": "No explicit presentation mode control",
+    "popup_handling": "Basic popup blocker detection"
+  },
+  "v6_pattern": {
+    "presentation": "Configurable presentation modes with session.start()",
+    "fallback": "Automatic fallback strategies",
+    "configuration": "Explicit presentationMode parameter",
+    "popup_handling": "Advanced popup blocker handling with graceful degradation"
+  },
+  "presentation_modes": {
+    "auto": {
+      "value": "auto",
+      "description": "Automatically selects the best presentation mode",
+      "behavior": {
+        "desktop": "Tries popup first, falls back to modal if blocked",
+        "mobile": "Adapts to device capabilities and screen size",
+        "popup_blocked": "Automatically falls back to modal or redirect"
+      },
+      "recommended": true,
+      "use_cases": ["Most implementations", "Best user experience", "Handles popup blockers"],
+      "example": "{ presentationMode: 'auto' }"
+    },
+    "popup": {
+      "value": "popup",
+      "description": "Opens PayPal in a popup window",
+      "behavior": {
+        "desktop": "Opens 400x600px popup window",
+        "mobile": "May open in popup or redirect depending on browser",
+        "popup_blocked": "Throws error if popup is blocked"
+      },
+      "recommended": false,
+      "use_cases": ["Specific popup requirements", "Desktop-focused applications"],
+      "limitations": ["Popup blockers", "Mobile browser limitations"],
+      "example": "{ presentationMode: 'popup' }"
+    },
+    "modal": {
+      "value": "modal",
+      "description": "Opens PayPal in an overlay modal",
+      "behavior": {
+        "desktop": "Overlay modal on top of current page",
+        "mobile": "Full-screen modal experience",
+        "popup_blocked": "Not affected by popup blockers"
+      },
+      "recommended": "Limited use cases",
+      "use_cases": ["Webview scenarios", "When popups are blocked"],
+      "limitations": ["Cookie restrictions in some scenarios", "Desktop experience limitations"],
+      "example": "{ presentationMode: 'modal' }",
+      "warning": "Not recommended for desktop web due to cookie limitations"
+    },
+    "redirect": {
+      "value": "redirect",
+      "description": "Full-page redirect to PayPal",
+      "behavior": {
+        "desktop": "Redirects entire page to PayPal",
+        "mobile": "Native mobile browser experience",
+        "popup_blocked": "Not affected by popup blockers"
+      },
+      "recommended": "Mobile-first applications",
+      "use_cases": ["Mobile applications", "Progressive web apps", "When popup/modal not suitable"],
+      "requirements": ["return_url", "cancel_url"],
+      "example": "{ presentationMode: 'redirect' }"
+    },
+    "payment-handler": {
+      "value": "payment-handler",
+      "description": "Uses browser's Payment Handler API",
+      "behavior": {
+        "desktop": "Native browser payment interface",
+        "mobile": "Native payment app integration",
+        "popup_blocked": "Not affected by popup blockers"
+      },
+      "recommended": false,
+      "use_cases": ["Standard browser environments", "Native payment experience"],
+      "limitations": ["Experimental feature", "Limited browser support", "Chrome 69+ only"],
+      "example": "{ presentationMode: 'payment-handler' }",
+      "status": "Experimental"
+    }
+  },
+  "fallback_strategies": {
+    "auto_mode_fallback": {
+      "primary": "popup",
+      "secondary": "modal", 
+      "tertiary": "redirect",
+      "logic": "Auto mode tries popup → modal → redirect based on browser capabilities"
+    },
+    "popup_blocked_fallback": {
+      "detection": "Browser popup blocker detection",
+      "automatic": "Auto mode handles fallback automatically",
+      "manual": "Catch popup errors and retry with modal/redirect"
+    },
+    "browser_compatibility": {
+      "current_browsers": "All modes supported",
+      "older_browsers": "Redirect mode most compatible",
+      "mobile_browsers": "Auto and redirect modes recommended"
+    }
+  },
+  "configuration_examples": {
+    "basic_auto": {
+      "code": "await session.start({ presentationMode: 'auto' }, createOrder())",
+      "description": "Recommended for most use cases"
+    },
+    "mobile_optimized": {
+      "code": "const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);\nconst mode = isMobile ? 'redirect' : 'auto';\nawait session.start({ presentationMode: mode }, createOrder())",
+      "description": "Optimize for mobile vs desktop"
+    },
+    "popup_with_fallback": {
+      "code": "try {\n  await session.start({ presentationMode: 'popup' }, createOrder());\n} catch (error) {\n  if (error.code === 'ERR_DEV_UNABLE_TO_OPEN_POPUP') {\n    await session.start({ presentationMode: 'modal' }, createOrder());\n  }\n}",
+      "description": "Manual popup fallback handling"
+    },
+    "redirect_with_urls": {
+      "code": "// Configure return URLs in order creation\nconst orderPayload = {\n  // ... order details\n  payment_source: {\n    paypal: {\n      experience_context: {\n        return_url: 'https://yourdomain.com/success',\n        cancel_url: 'https://yourdomain.com/cancel'\n      }\n    }\n  }\n};\nawait session.start({ presentationMode: 'redirect' }, createOrder())",
+      "description": "Redirect mode with return URLs"
+    }
+  },
+  "migration_from_v5": {
+    "v5_behavior": {
+      "default": "Always popup (with limited fallback)",
+      "popup_blocked": "Show error or retry prompt",
+      "mobile": "Popup behavior on mobile (not optimal)"
+    },
+    "v6_migration": {
+      "replace_with": "{ presentationMode: 'auto' }",
+      "benefits": ["Optimized mobile experience", "Automatic popup blocker handling", "Graceful degradation"],
+      "code_change": "paypal.Buttons() → session.start({ presentationMode: 'auto' }, createOrder())"
+    }
+  },
+  "error_handling": {
+    "popup_blocked_error": {
+      "error_code": "ERR_DEV_UNABLE_TO_OPEN_POPUP",
+      "description": "Popup was blocked by browser",
+      "user_message": "Popup was blocked. Please allow popups for this site and try again.",
+      "automatic_handling": "Auto mode handles this automatically",
+      "manual_handling": "Catch error and retry with different mode"
+    },
+    "browser_incompatible": {
+      "error_code": "ERR_FLOW_PAYMENT_HANDLER_BROWSER_INCOMPATIBLE", 
+      "description": "Browser doesn't support requested presentation mode",
+      "user_message": "Your browser doesn't support this payment method. Trying alternative...",
+      "fallback": "Use auto mode or redirect mode"
+    },
+    "modal_restrictions": {
+      "error_code": "ERR_MODAL_COOKIE_RESTRICTIONS",
+      "description": "Modal mode affected by cookie restrictions",
+      "user_message": "Please try again or use a different payment method.",
+      "fallback": "Use popup or redirect mode"
+    }
+  },
+  "best_practices": [
+    "Use 'auto' mode for most implementations",
+    "Test across different browsers and devices",
+    "Handle popup blocker scenarios gracefully",
+    "Provide clear user messaging for presentation mode issues",
+    "Configure return URLs when using redirect mode",
+    "Consider mobile vs desktop user experience",
+    "Implement fallback strategies for older browsers",
+    "Test presentation modes with different screen sizes",
+    "Monitor analytics for presentation mode success rates",
+    "Avoid 'modal' mode for desktop web applications"
+  ],
+  "browser_support": {
+    "popup_mode": {
+      "chrome": "Supported (with popup blocker detection)",
+      "firefox": "Supported (with popup blocker detection)", 
+      "safari": "Supported (strict popup blocking)",
+      "edge": "Supported",
+      "mobile_browsers": "Limited support, may redirect"
+    },
+    "modal_mode": {
+      "chrome": "Supported (cookie limitations in some scenarios)",
+      "firefox": "Supported",
+      "safari": "Supported (cookie restrictions)",
+      "edge": "Supported",
+      "mobile_browsers": "Good support"
+    },
+    "redirect_mode": {
+      "chrome": "Full support",
+      "firefox": "Full support",
+      "safari": "Full support", 
+      "edge": "Full support",
+      "mobile_browsers": "Excellent support"
+    },
+    "payment_handler": {
+      "chrome": "Supported (Chrome 69+)",
+      "firefox": "Not supported",
+      "safari": "Not supported",
+      "edge": "Limited support",
+      "mobile_browsers": "Very limited"
+    }
+  },
+  "testing_recommendations": [
+    "Test auto mode across all target browsers",
+    "Verify popup blocker handling",
+    "Test mobile experience on actual devices",
+    "Validate redirect mode return/cancel URLs",
+    "Test with different screen sizes and orientations",
+    "Verify accessibility with screen readers",
+    "Test network failure scenarios",
+    "Validate error message display",
+    "Test with browser extensions that block popups",
+    "Verify presentation mode analytics tracking"
+  ]
+}

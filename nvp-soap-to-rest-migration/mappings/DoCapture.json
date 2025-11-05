@@ -1,0 +1,62 @@
+{
+  "operation": "DoCapture",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "AUTHORIZATIONID": "authorization_id",
+          "AMT": "amount.value",
+          "COMPLETETYPE": "final_capture",
+          "CURRENCYCODE": "amount.currency_code",
+          "INVNUM": "invoice_id",
+          "NOTE": "note_to_payer",
+          "SOFTDESCRIPTOR": "soft_descriptor"
+        },
+        "not_supported": [
+          "EXCHANGERATE",
+          "FEEAMT",
+          "INSTRUMENTCATEGORY",
+          "MSGSUBID",
+          "ORDERTIME",
+          "PARENTTRANSACTIONID",
+          "PAYMENTSTATUS",
+          "PAYMENTTYPE",
+          "PENDINGREASON",
+          "PROTECTIONELIGIBILITY",
+          "RECEIPTID",
+          "SETTLEAMT",
+          "STOREID",
+          "SUBJECT",
+          "TAXAMT",
+          "TRANSACTIONENTITY",
+          "TRANSACTIONTYPE"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "AuthorizationID": "authorization_id",
+          "Amount": "amount.value",
+          "Amount.currencyID": "amount.currency_code",
+          "CompleteType": "final_capture",
+          "InvoiceID": "invoice_id",
+          "Note": "note_to_payer",
+          "SoftDescriptor": "soft_descriptor"
+        },
+        "not_supported": [
+          "Subject",
+          "MsgSubID",
+          "StoreID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for capturing authorized payments",
+    "migration_tips": [
+      "COMPLETETYPE maps to final_capture boolean (true for Complete, false for NotComplete)",
+      "AUTHORIZATIONID becomes path parameter in REST endpoint"
+    ]
+  }
+}

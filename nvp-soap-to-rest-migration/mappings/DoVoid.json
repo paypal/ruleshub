@@ -1,0 +1,34 @@
+{
+  "operation": "DoVoid",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "AUTHORIZATIONID": "authorization_id",
+          "NOTE": "reason"
+        },
+        "not_supported": [
+          "MSGSUBID"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "AuthorizationID": "authorization_id",
+          "Note": "reason"
+        },
+        "not_supported": [
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for voiding authorized payments",
+    "migration_tips": [
+      "AUTHORIZATIONID becomes path parameter in REST endpoint",
+      "NOTE becomes reason field in request body"
+    ]
+  }
+}

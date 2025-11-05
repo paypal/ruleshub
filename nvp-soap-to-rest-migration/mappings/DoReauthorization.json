@@ -1,0 +1,36 @@
+{
+  "operation": "DoReauthorization",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "AUTHORIZATIONID": "authorization_id",
+          "AMT": "amount.value",
+          "CURRENCYCODE": "amount.currency_code"
+        },
+        "not_supported": [
+          "MSGSUBID"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "AuthorizationID": "authorization_id",
+          "Amount": "amount.value",
+          "Amount.currencyID": "amount.currency_code"
+        },
+        "not_supported": [
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for reauthorizing expired authorizations",
+    "migration_tips": [
+      "AUTHORIZATIONID becomes path parameter in REST endpoint",
+      "Amount is optional in REST API"
+    ]
+  }
+}

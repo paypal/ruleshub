@@ -1,0 +1,59 @@
+{
+  "operation": "DoExpressCheckoutPayment",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "TOKEN": "order_id",
+          "PAYERID": "payment_source.paypal.payer_id",
+          "PAYMENTREQUEST_n_AMT": "purchase_units[].amount.value",
+          "PAYMENTREQUEST_n_CURRENCYCODE": "purchase_units[].amount.currency_code",
+          "PAYMENTREQUEST_n_PAYMENTACTION": "intent",
+          "PAYMENTREQUEST_n_INVNUM": "purchase_units[].invoice_id",
+          "PAYMENTREQUEST_n_CUSTOM": "purchase_units[].custom_id",
+          "PAYMENTREQUEST_n_DESC": "purchase_units[].description",
+          "PAYMENTREQUEST_n_ITEMAMT": "purchase_units[].amount.breakdown.item_total.value",
+          "PAYMENTREQUEST_n_SHIPPINGAMT": "purchase_units[].amount.breakdown.shipping.value",
+          "PAYMENTREQUEST_n_TAXAMT": "purchase_units[].amount.breakdown.tax_total.value",
+          "MSGSUBID": "PayPal-Request-Id",
+          "BUTTONSOURCE": "PayPal-Partner-Attribution-Id"
+        },
+        "not_supported": [
+          "GIFTMESSAGE",
+          "GIFTRECEIPTENABLE",
+          "GIFTWRAPNAME",
+          "GIFTWRAPAMOUNT",
+          "BUYERMARKETINGEMAIL",
+          "SURVEYQUESTION",
+          "SURVEYCHOICESELECTED",
+          "ALLOWEDPAYMENTMETHOD"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "Token": "order_id",
+          "PayerID": "payment_source.paypal.payer_id",
+          "PaymentDetails.OrderTotal": "purchase_units[].amount.value",
+          "PaymentDetails.OrderTotal.currencyID": "purchase_units[].amount.currency_code",
+          "PaymentDetails.PaymentAction": "intent",
+          "PaymentDetails.InvoiceID": "purchase_units[].invoice_id",
+          "PaymentDetails.Custom": "purchase_units[].custom_id"
+        },
+        "not_supported": [
+          "PaymentDetails.AllowedPaymentMethod",
+          "PaymentDetails.PaymentDetailsItem.EbayItemPaymentDetailsItem"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for capturing or authorizing orders after buyer approval",
+    "migration_tips": [
+      "TOKEN becomes order_id path parameter",
+      "PAYMENTACTION maps to intent field (CAPTURE/AUTHORIZE)",
+      "This operation splits into capture or authorize endpoints in REST"
+    ]
+  }
+}

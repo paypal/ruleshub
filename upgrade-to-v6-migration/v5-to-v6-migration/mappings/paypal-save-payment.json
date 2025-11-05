@@ -1,0 +1,346 @@
+{
+  "operation": "PayPal Save Payment (Vault)",
+  "description": "Migration from v5 vault integration to v6 save payment session",
+  "v5_pattern": {
+    "initialization": "paypal.Buttons({ vault: true, intent: 'tokenize' })",
+    "token_storage": "localStorage.setItem('paypal_token', vaultId)",
+    "token_usage": "payment_source: { paypal: { vault_id: savedToken } }",
+    "security_model": "Client-side token storage and usage"
+  },
+  "v6_pattern": {
+    "initialization": "sdkInstance.createPayPalSavePaymentSession({ ... })",
+    "token_storage": "Server-side encrypted storage",
+    "token_usage": "Server-side order creation with vault token",
+    "security_model": "Server-side token management with user authentication"
+  },
+  "save_payment_flows": {
+    "without_purchase": {
+      "name": "Save payment method without initial purchase",
+      "v6_flow": [
+        "1. Create setup token (server): POST /v3/vault/setup-tokens",
+        "2. Initialize save payment session: createPayPalSavePaymentSession()",
+        "3. Customer approves payment method save",
+        "4. onApprove receives vaultSetupToken",
+        "5. Create payment token (server): POST /v3/vault/payment-tokens",
+        "6. Store payment token server-side (encrypted)",
+        "7. Associate token with authenticated user"
+      ],
+      "use_case": "Add payment method to account without immediate purchase",
+      "payment_source_config": {
+        "paymentFlow": "VAULT_WITHOUT_PAYMENT"
+      }
+    },
+    "with_purchase": {
+      "name": "Save payment method during checkout",
+      "v6_flow": [
+        "1. Create order with vault attributes",
+        "2. Customer completes payment",
+        "3. Receive VAULT.PAYMENT-TOKEN.CREATED webhook",
+        "4. Extract payment token from webhook",
+        "5. Store payment token server-side (encrypted)",
+        "6. Associate token with authenticated user"
+      ],
+      "use_case": "One-click checkout - save payment during first purchase",
+      "order_config": {
+        "payment_source": {
+          "paypal": {
+            "attributes": {
+              "vault": {
+                "store_in_vault": "ON_SUCCESS",
+                "usage_type": "MERCHANT",
+                "customer_type": "CONSUMER"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "callback_signatures": {
+    "v6_save_payment": {
+      "onApprove": {
+        "signature": "(data?: OnApproveDataSavePayments) => void",
+        "parameter": {
+          "vaultSetupToken": "string",
+          "payerId": "string (optional)"
+        },
+        "return": "void - NO Promise return (different from one-time payments)",
+        "example": "(data) => { if (data?.vaultSetupToken) createPaymentToken(data.vaultSetupToken); }"
+      },
+      "onCancel": {
+        "signature": "() => void",
+        "parameter": "NO parameters",
+        "return": "void"
+      },
+      "onError": {
+        "signature": "(error: Error) => void",
+        "parameter": "Error object",
+        "return": "void"
+      },
+      "onComplete": {
+        "signature": "(data: OnCompleteData) => void",
+        "parameter": {
+          "paymentSessionState": "\"approved\" | \"canceled\" | \"error\""
+        },
+        "return": "void"
+      }
+    }
+  },
+  "important_differences": {
+    "onApprove_return_type": {
+      "one_time_payment": "Promise<void> - MUST return Promise",
+      "save_payment": "void - NO Promise return",
+      "reason": "Save payment approval doesn't require immediate server action"
+    },
+    "orderId_parameter": {
+      "one_time_payment": "orderId is allowed and common",
+      "save_payment": "orderId is FORBIDDEN - will cause error",
+      "reason": "Save payment doesn't create orders initially"
+    },
+    "vaultSetupToken": {
+      "availability": "Only in save payment onApprove",
+      "usage": "Send to server to create payment token",
+      "expiration": "Time-limited - create payment token promptly"
+    }
+  },
+  "server_endpoints_required": {
+    "create_setup_token": {
+      "method": "POST",
+      "path": "/paypal-api/vault/setup-token/create",
+      "description": "Create vault setup token for payment method approval",
+      "request_body": {
+        "customer": {
+          "id": "string (your internal customer ID)"
+        }
+      },
+      "response": {
+        "id": "string (setup token)",
+        "customer": "object",
+        "status": "string",
+        "links": "array"
+      },
+      "paypal_api": "POST https://api-m.{environment}.paypal.com/v3/vault/setup-tokens",
+      "required_for": "Save payment without purchase flow"
+    },
+    "create_payment_token": {
+      "method": "POST",
+      "path": "/paypal-api/vault/payment-token/create",
+      "description": "Create permanent payment token from setup token",
+      "request_body": {
+        "vaultSetupToken": "string (from onApprove)"
+      },
+      "response": {
+        "id": "string (permanent payment token)",
+        "customer": "object",
+        "payment_source": "object",
+        "status": "string"
+      },
+      "paypal_api": "POST https://api-m.{environment}.paypal.com/v3/vault/payment-tokens",
+      "security": [
+        "Validate vaultSetupToken is from current authenticated user",
+        "Store payment token encrypted",
+        "Associate with user account only",
+        "Never expose token to unauthorized users"
+      ]
+    },
+    "create_order_with_vault": {
+      "method": "POST",
+      "path": "/paypal-api/checkout/orders/create-with-vault",
+      "description": "Create order using saved payment token",
+      "request_body": {
+        "vaultId": "string (stored payment token)",
+        "amount": "string",
+        "currency": "string (optional)"
+      },
+      "response": {
+        "id": "string (order ID)",
+        "status": "string",
+        "links": "array"
+      },
+      "paypal_api": "POST https://api-m.{environment}.paypal.com/v2/checkout/orders",
+      "order_payload": {
+        "intent": "CAPTURE",
+        "purchase_units": [],
+        "payment_source": {
+          "paypal": {
+            "vault_id": "{stored_payment_token}",
+            "experience_context": {
+              "return_url": "...",
+              "cancel_url": "..."
+            }
+          }
+        }
+      }
+    },
+    "list_payment_methods": {
+      "method": "GET",
+      "path": "/paypal-api/customer/payment-methods",
+      "description": "List customer's saved payment methods",
+      "authentication": "Require user authentication",
+      "response": {
+        "payment_tokens": [
+          {
+            "id": "string",
+            "payment_source": {
+              "paypal": {
+                "email_address": "string"
+              }
+            }
+          }
+        ]
+      },
+      "paypal_api": "GET https://api-m.{environment}.paypal.com/v3/vault/payment-tokens?customer_id={id}"
+    },
+    "delete_payment_token": {
+      "method": "DELETE",
+      "path": "/paypal-api/vault/payment-token/{paymentTokenId}",
+      "description": "Delete saved payment method",
+      "authentication": "Require user authentication and token ownership validation",
+      "paypal_api": "DELETE https://api-m.{environment}.paypal.com/v3/vault/payment-tokens/{id}"
+    }
+  },
+  "security_requirements": [
+    "NEVER store payment tokens in localStorage or sessionStorage",
+    "ALWAYS store tokens server-side with encryption",
+    "ALWAYS associate tokens with authenticated users only",
+    "ALWAYS validate token ownership before usage",
+    "ALWAYS implement proper user authentication for vault access",
+    "ALWAYS validate setup tokens before creating payment tokens",
+    "ALWAYS log vault operations for audit trails",
+    "ALWAYS implement customer consent for payment method saving",
+    "ALWAYS provide clear opt-in/opt-out mechanisms",
+    "ALWAYS validate vault permissions in PayPal Developer Dashboard"
+  ],
+  "migration_steps": [
+    {
+      "step": 1,
+      "action": "Enable vault permissions in PayPal Developer Dashboard",
+      "location": "Dashboard → My Apps & Credentials → App → Features"
+    },
+    {
+      "step": 2,
+      "action": "Setup encrypted payment token storage",
+      "requirements": ["Database encryption", "User authentication", "Token-user association"]
+    },
+    {
+      "step": 3,
+      "action": "Create vault setup token endpoint",
+      "endpoint": "POST /paypal-api/vault/setup-token/create"
+    },
+    {
+      "step": 4,
+      "action": "Create payment token creation endpoint",
+      "endpoint": "POST /paypal-api/vault/payment-token/create"
+    },
+    {
+      "step": 5,
+      "action": "Remove v5 client-side vault storage",
+      "example": "Remove: localStorage.setItem('paypal_token', vaultId)"
+    },
+    {
+      "step": 6,
+      "action": "Implement v6 save payment session",
+      "example": "createPayPalSavePaymentSession({ onApprove: (data) => {...} })"
+    },
+    {
+      "step": 7,
+      "action": "Implement customer payment methods management",
+      "features": ["List saved methods", "Delete methods", "Display to customer"]
+    },
+    {
+      "step": 8,
+      "action": "Setup webhook for vault token events",
+      "webhook": "VAULT.PAYMENT-TOKEN.CREATED"
+    },
+    {
+      "step": 9,
+      "action": "Implement customer consent UI",
+      "requirements": ["Clear opt-in checkbox", "Consent storage", "Revocation option"]
+    },
+    {
+      "step": 10,
+      "action": "Test complete vault flow",
+      "checklist": ["Save without purchase", "Save with purchase", "Use saved method", "Delete method"]
+    }
+  ],
+  "eligibility_check": {
+    "method": "findEligibleMethods()",
+    "config": {
+      "currencyCode": "USD",
+      "paymentFlow": "VAULT_WITHOUT_PAYMENT"
+    },
+    "usage": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD', paymentFlow: 'VAULT_WITHOUT_PAYMENT' });",
+    "check": "if (methods.isEligible('paypal')) { /* setup save payment */ }"
+  },
+  "webhook_integration": {
+    "event_type": "VAULT.PAYMENT-TOKEN.CREATED",
+    "description": "Triggered when payment token is created during checkout",
+    "use_case": "Save payment method with purchase flow",
+    "payload": {
+      "id": "webhook event ID",
+      "create_time": "timestamp",
+      "resource_type": "payment-token",
+      "event_type": "VAULT.PAYMENT-TOKEN.CREATED",
+      "resource": {
+        "id": "payment token ID",
+        "status": "APPROVED",
+        "customer": {
+          "id": "customer ID"
+        }
+      }
+    },
+    "actions": [
+      "Verify webhook signature",
+      "Extract payment token ID",
+      "Store token server-side encrypted",
+      "Associate with customer account"
+    ]
+  },
+  "error_handling": {
+    "common_errors": {
+      "VAULT_NOT_ENABLED": {
+        "description": "Vault permissions not enabled in PayPal Dashboard",
+        "user_message": "Payment saving is not available for your account.",
+        "resolution": "Enable vault in PayPal Developer Dashboard"
+      },
+      "SETUP_TOKEN_EXPIRED": {
+        "description": "Setup token expired before creating payment token",
+        "user_message": "Setup session expired. Please try again.",
+        "resolution": "Create payment token promptly after approval"
+      },
+      "CUSTOMER_NOT_ELIGIBLE": {
+        "description": "Customer not eligible for vault functionality",
+        "user_message": "Your account is not eligible for saving payment methods.",
+        "resolution": "Check customer eligibility requirements"
+      },
+      "TOKEN_ALREADY_EXISTS": {
+        "description": "Payment method already saved",
+        "user_message": "This payment method is already saved.",
+        "resolution": "Check for existing tokens before creating"
+      }
+    }
+  },
+  "best_practices": [
+    "Always validate vault permissions before showing save option",
+    "Implement customer consent clearly and transparently",
+    "Provide easy access to manage saved payment methods",
+    "Allow customers to delete saved methods anytime",
+    "Never expose payment token details to frontend",
+    "Encrypt all payment tokens at rest",
+    "Log all vault operations for compliance",
+    "Implement token expiration and cleanup processes",
+    "Validate token ownership on every usage",
+    "Test vault flows thoroughly in sandbox",
+    "Handle setup token expiration gracefully",
+    "Provide clear UI feedback during save process"
+  ],
+  "breaking_changes": [
+    "Payment tokens MUST be stored server-side (v5: client-side allowed)",
+    "onApprove does NOT return Promise (v5: could return Promise)",
+    "orderId parameter is FORBIDDEN (v5: could be used)",
+    "Requires user authentication for token access (v5: optional)",
+    "Setup tokens required for save without purchase (v5: direct tokenization)",
+    "Webhooks recommended for save with purchase (v5: optional)"
+  ]
+}
+

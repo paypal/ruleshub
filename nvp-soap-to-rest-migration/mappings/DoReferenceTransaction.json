@@ -1,0 +1,52 @@
+{
+  "operation": "DoReferenceTransaction",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "REFERENCEID": "payment_source.token.id",
+          "PAYMENTACTION": "intent",
+          "AMT": "purchase_units[].amount.value",
+          "CURRENCYCODE": "purchase_units[].amount.currency_code",
+          "INVNUM": "purchase_units[].invoice_id",
+          "CUSTOM": "purchase_units[].custom_id",
+          "DESC": "purchase_units[].description",
+          "ITEMAMT": "purchase_units[].amount.breakdown.item_total.value",
+          "TAXAMT": "purchase_units[].amount.breakdown.tax_total.value",
+          "SHIPPINGAMT": "purchase_units[].amount.breakdown.shipping.value"
+        },
+        "not_supported": [
+          "MSGSUBID",
+          "SOFTDESCRIPTOR",
+          "IPADDRESS",
+          "MERCHANTSESSIONID"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "ReferenceID": "payment_source.token.id",
+          "PaymentAction": "intent",
+          "PaymentDetails.OrderTotal": "purchase_units[].amount.value",
+          "PaymentDetails.OrderTotal.currencyID": "purchase_units[].amount.currency_code",
+          "PaymentDetails.InvoiceID": "purchase_units[].invoice_id",
+          "PaymentDetails.Custom": "purchase_units[].custom_id"
+        },
+        "not_supported": [
+          "MsgSubID",
+          "SoftDescriptor",
+          "IPAddress"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for charging saved payment methods via Orders API",
+    "migration_tips": [
+      "REFERENCEID becomes payment_source.token.id in Orders API",
+      "PAYMENTACTION maps to intent (CAPTURE for SALE, AUTHORIZE for AUTH)",
+      "Creates new order using saved payment method"
+    ]
+  }
+}
