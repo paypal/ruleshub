@@ -211,7 +211,7 @@
     "ALWAYS provide clear opt-in/opt-out mechanisms",
     "ALWAYS validate vault permissions in PayPal Developer Dashboard"
   ],
-  "migration_steps": [
+  "upgrade_steps": [
     {
       "step": 1,
       "action": "Enable vault permissions in PayPal Developer Dashboard",

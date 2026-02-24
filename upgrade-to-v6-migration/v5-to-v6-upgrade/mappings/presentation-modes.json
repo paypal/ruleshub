@@ -117,13 +117,13 @@
       "description": "Redirect mode with return URLs"
     }
   },
-  "migration_from_v5": {
+  "upgrade_from_v5": {
     "v5_behavior": {
       "default": "Always popup (with limited fallback)",
       "popup_blocked": "Show error or retry prompt",
       "mobile": "Popup behavior on mobile (not optimal)"
     },
-    "v6_migration": {
+    "v6_upgrade": {
       "replace_with": "{ presentationMode: 'auto' }",
       "benefits": ["Optimized mobile experience", "Automatic popup blocker handling", "Graceful degradation"],
       "code_change": "paypal.Buttons() → session.start({ presentationMode: 'auto' }, createOrder())"

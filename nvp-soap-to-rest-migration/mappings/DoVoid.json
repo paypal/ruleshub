@@ -26,7 +26,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for voiding authorized payments",
-    "migration_tips": [
+    "upgrade_tips": [
       "AUTHORIZATIONID becomes path parameter in REST endpoint",
       "NOTE becomes reason field in request body"
     ]

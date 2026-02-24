@@ -24,7 +24,7 @@
   },
   "special_notes": {
     "v3_usage": "Use for creating payment tokens from setup tokens",
-    "migration_tips": [
+    "upgrade_tips": [
       "TOKEN from SetExpressCheckout becomes setup_token_id",
       "Creates permanent payment token for future payments"
     ],

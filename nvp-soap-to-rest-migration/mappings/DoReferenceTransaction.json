@@ -43,7 +43,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for charging saved payment methods via Orders API",
-    "migration_tips": [
+    "upgrade_tips": [
       "REFERENCEID becomes payment_source.token.id in Orders API",
       "PAYMENTACTION maps to intent (CAPTURE for SALE, AUTHORIZE for AUTH)",
       "Creates new order using saved payment method"

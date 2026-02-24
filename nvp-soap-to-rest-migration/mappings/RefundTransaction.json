@@ -40,7 +40,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for refunding captured payments",
-    "migration_tips": [
+    "upgrade_tips": [
       "TRANSACTIONID becomes capture_id path parameter",
       "REFUNDTYPE (Full/Partial) is determined by presence of amount field",
       "Full refund if amount not specified, partial if amount provided"

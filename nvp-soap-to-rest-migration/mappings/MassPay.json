@@ -35,7 +35,7 @@
   },
   "special_notes": {
     "v1_usage": "Use for sending batch payments to multiple recipients",
-    "migration_tips": [
+    "upgrade_tips": [
       "Structure changes from flat NVP arrays to nested JSON objects",
       "RECEIVERTYPE maps to recipient_type in sender_batch_header",
       "Each L_EMAILn becomes an item in the items array"

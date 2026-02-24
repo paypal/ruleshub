@@ -19,18 +19,18 @@
       "fundingSource": {
         "v5": "paypal.FUNDING.VENMO",
         "v6": "createVenmoOneTimePaymentSession()",
-        "migration": "Replace funding source parameter with dedicated Venmo session",
+        "upgrade": "Replace funding source parameter with dedicated Venmo session",
         "breaking_change": "Must use separate session type for Venmo"
       },
       "style": {
         "v5": "{ fundingSource: paypal.FUNDING.VENMO, style: { color: 'blue' } }",
         "v6": "CSS styling on <venmo-button> element",
-        "migration": "Move from JavaScript config to CSS classes"
+        "upgrade": "Move from JavaScript config to CSS classes"
       },
       "eligibility": {
         "v5": "Automatic based on enable-funding parameter",
         "v6": "Explicit eligibility check with findEligibleMethods()",
-        "migration": "Always check eligibility before creating Venmo session"
+        "upgrade": "Always check eligibility before creating Venmo session"
       }
     }
   },
@@ -98,7 +98,7 @@
       "desktop_experience": "Less seamless than popup/modal"
     }
   },
-  "migration_steps": [
+  "upgrade_steps": [
     {
       "step": 1,
       "action": "Add Venmo eligibility check",

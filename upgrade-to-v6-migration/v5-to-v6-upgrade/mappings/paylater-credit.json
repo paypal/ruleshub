@@ -184,7 +184,7 @@
       ]
     }
   },
-  "migration_steps": [
+  "upgrade_steps": [
     {
       "step": 1,
       "action": "Remove v5 funding source configuration",

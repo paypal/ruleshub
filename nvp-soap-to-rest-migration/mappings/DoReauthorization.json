@@ -28,7 +28,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for reauthorizing expired authorizations",
-    "migration_tips": [
+    "upgrade_tips": [
       "AUTHORIZATIONID becomes path parameter in REST endpoint",
       "Amount is optional in REST API"
     ]

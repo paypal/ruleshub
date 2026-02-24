@@ -148,7 +148,7 @@
       }
     ]
   },
-  "migration_checklist": [
+  "upgrade_checklist": [
     "Create environment variables for PayPal credentials",
     "Implement OAuth 2.0 client credentials flow on server",
     "Create /paypal-api/auth/browser-safe-client-token endpoint",

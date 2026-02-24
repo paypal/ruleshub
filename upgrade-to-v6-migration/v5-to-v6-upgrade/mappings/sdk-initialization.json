@@ -62,7 +62,7 @@
       ]
     }
   },
-  "migration_steps": [
+  "upgrade_steps": [
     {
       "step": 1,
       "action": "Remove v5 script tag with client-id",
@@ -93,32 +93,32 @@
     "v5_to_v6": {
       "client-id (URL param)": {
         "v6_equivalent": "clientToken (from server)",
-        "migration": "Move to server-side token generation",
+        "upgrade": "Move to server-side token generation",
         "security_note": "Never expose client secret; use server-side OAuth"
       },
       "components (URL param)": {
         "v6_equivalent": "components (SDK config array)",
-        "migration": "Pass as array in createInstance() config"
+        "upgrade": "Pass as array in createInstance() config"
       },
       "currency (URL param)": {
         "v6_equivalent": "findEligibleMethods({ currencyCode })",
-        "migration": "Use eligibility API with currency parameter"
+        "upgrade": "Use eligibility API with currency parameter"
       },
       "locale (URL param)": {
         "v6_equivalent": "locale (SDK config string)",
-        "migration": "Pass as locale in createInstance() config"
+        "upgrade": "Pass as locale in createInstance() config"
       },
       "enable-funding (URL param)": {
         "v6_equivalent": "findEligibleMethods() + payment sessions",
-        "migration": "Check eligibility dynamically, create sessions for eligible methods"
+        "upgrade": "Check eligibility dynamically, create sessions for eligible methods"
       },
       "disable-funding (URL param)": {
         "v6_equivalent": "Conditional session creation",
-        "migration": "Simply don't create payment sessions for unwanted methods"
+        "upgrade": "Simply don't create payment sessions for unwanted methods"
       },
       "merchant-id (URL param)": {
         "v6_equivalent": "Implicit in client token",
-        "migration": "Merchant identity embedded in server-generated token"
+        "upgrade": "Merchant identity embedded in server-generated token"
       }
     }
   },

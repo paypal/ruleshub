@@ -50,7 +50,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for capturing or authorizing orders after buyer approval",
-    "migration_tips": [
+    "upgrade_tips": [
       "TOKEN becomes order_id path parameter",
       "PAYMENTACTION maps to intent field (CAPTURE/AUTHORIZE)",
       "This operation splits into capture or authorize endpoints in REST"

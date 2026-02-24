@@ -54,7 +54,7 @@
   },
   "special_notes": {
     "v2_usage": "Use for capturing authorized payments",
-    "migration_tips": [
+    "upgrade_tips": [
       "COMPLETETYPE maps to final_capture boolean (true for Complete, false for NotComplete)",
       "AUTHORIZATIONID becomes path parameter in REST endpoint"
     ]

@@ -24,7 +24,7 @@
   },
   "special_notes": {
     "v1_usage": "Use TransactionSearch API with specific transaction_id filter",
-    "migration_tips": [
+    "upgrade_tips": [
       "No direct equivalent - use Transaction Search API with transaction_id parameter",
       "TRANSACTIONID becomes query parameter in GET /v1/reporting/transactions"
     ]

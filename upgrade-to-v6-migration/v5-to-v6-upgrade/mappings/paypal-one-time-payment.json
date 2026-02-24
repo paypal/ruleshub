@@ -20,37 +20,37 @@
       "createOrder": {
         "v5": "function(data, actions) { return actions.order.create({...}); }",
         "v6": "async function createOrder() { const res = await fetch('/paypal-api/checkout/orders/create', {...}); return { orderId: res.id }; }",
-        "migration": "Move order creation logic to server endpoint",
+        "upgrade": "Move order creation logic to server endpoint",
         "security_note": "Server validates all order data before creating with PayPal"
       },
       "onApprove": {
         "v5": "function(data, actions) { return actions.order.capture(); }",
         "v6": "async function(data) { await captureOrder({ orderId: data.orderId }); }",
-        "migration": "Replace client-side capture with server endpoint call",
+        "upgrade": "Replace client-side capture with server endpoint call",
         "return_type": "MUST return Promise<void> in v6"
       },
       "onError": {
         "v5": "function(err) { console.error(err); }",
         "v6": "function(error) { console.error('Payment error:', error); }",
-        "migration": "Update error handling to use v6 error structure",
+        "upgrade": "Update error handling to use v6 error structure",
         "parameter": "Error object (not complex data structure)"
       },
       "onCancel": {
         "v5": "function(data) { console.log('Cancelled', data); }",
         "v6": "function() { console.log('Payment cancelled'); }",
-        "migration": "Remove data parameter - v6 onCancel takes no parameters",
+        "upgrade": "Remove data parameter - v6 onCancel takes no parameters",
         "parameter": "NO parameters in v6"
       },
       "style": {
         "v5": "{ layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' }",
         "v6": "Use CSS classes on <paypal-button> element",
-        "migration": "Replace JavaScript style config with CSS styling",
+        "upgrade": "Replace JavaScript style config with CSS styling",
         "note": "v6 uses web components with standard CSS"
       },
       "fundingSource": {
         "v5": "paypal.FUNDING.PAYPAL or paypal.FUNDING.PAYLATER",
         "v6": "Different payment session types (createPayPalOneTimePaymentSession, createPayLaterOneTimePaymentSession)",
-        "migration": "Create separate session for each payment method"
+        "upgrade": "Create separate session for each payment method"
       }
     }
   },
@@ -175,7 +175,7 @@
       "usage": "await session.start({ presentationMode: 'redirect' }, createOrder())"
     }
   },
-  "migration_steps": [
+  "upgrade_steps": [
     {
       "step": 1,
       "action": "Create server endpoint for order creation",

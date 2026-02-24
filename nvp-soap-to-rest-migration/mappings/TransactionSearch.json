@@ -49,7 +49,7 @@
   },
   "special_notes": {
     "v1_usage": "Use for searching transaction history and reporting",
-    "migration_tips": [
+    "upgrade_tips": [
       "Date format changes from YYYY-MM-DDTHH:MM:SSZ",
       "Pagination handled differently with page_size and page parameters",
       "Response structure completely different - returns JSON array"

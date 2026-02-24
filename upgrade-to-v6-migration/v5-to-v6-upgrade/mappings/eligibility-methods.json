@@ -154,23 +154,23 @@
       "Vault permissions (for save payment)"
     ]
   },
-  "migration_patterns": {
+  "upgrade_patterns": {
     "v5_funding_constants": {
       "paypal.FUNDING.PAYPAL": {
         "v6_equivalent": "methods.isEligible('paypal')",
-        "migration": "Replace constant check with API call"
+        "upgrade": "Replace constant check with API call"
       },
       "paypal.FUNDING.VENMO": {
         "v6_equivalent": "methods.isEligible('venmo')",
-        "migration": "Replace constant check with API call + geographic validation"
+        "upgrade": "Replace constant check with API call + geographic validation"
       },
       "paypal.FUNDING.PAYLATER": {
         "v6_equivalent": "methods.isEligible('paylater') && methods.getDetails('paylater')",
-        "migration": "Replace constant check with API call + detail extraction"
+        "upgrade": "Replace constant check with API call + detail extraction"
       },
       "paypal.FUNDING.CREDIT": {
         "v6_equivalent": "methods.isEligible('credit') && methods.getDetails('credit')",
-        "migration": "Replace constant check with API call + detail extraction"
+        "upgrade": "Replace constant check with API call + detail extraction"
       }
     }
   },

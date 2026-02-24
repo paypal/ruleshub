@@ -145,7 +145,7 @@
   "special_notes": {
     "v2_usage": "Use for one-time checkout flows with Orders API",
     "v3_usage": "Use for billing agreements with Vault API",
-    "migration_tips": [
+    "upgrade_tips": [
       "NOTIFYURL is replaced with Webhooks - no direct field mapping",
       "PAYMENTACTION maps to Orders API intent field (CAPTURE/AUTHORIZE)",
       "TOKEN parameter becomes PayPal-Request-Id header",
