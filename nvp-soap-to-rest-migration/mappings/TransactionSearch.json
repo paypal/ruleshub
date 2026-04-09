@@ -1,0 +1,58 @@
+{
+  "operation": "TransactionSearch",
+  "parameter_mappings": {
+    "nvp": {
+      "v1": {
+        "supported": {
+          "STARTDATE": "start_date",
+          "ENDDATE": "end_date",
+          "EMAIL": "payer_email",
+          "RECEIVER": "receiver_email",
+          "RECEIPTID": "transaction_id",
+          "TRANSACTIONID": "transaction_id",
+          "INVNUM": "invoice_number",
+          "ACCT": "account_number",
+          "AUCTIONITEMNUMBER": "auction_item_number",
+          "TRANSACTIONCLASS": "transaction_class",
+          "AMT": "transaction_amount",
+          "CURRENCYCODE": "transaction_currency",
+          "STATUS": "transaction_status"
+        },
+        "not_supported": [
+          "MSGSUBID",
+          "PROFILEID",
+          "SALUTATION"
+        ]
+      }
+    },
+    "soap": {
+      "v1": {
+        "supported": {
+          "StartDate": "start_date",
+          "EndDate": "end_date",
+          "Payer": "payer_email",
+          "Receiver": "receiver_email",
+          "ReceiptID": "transaction_id",
+          "TransactionID": "transaction_id",
+          "InvoiceID": "invoice_number",
+          "PayerName.Salutation": "payer_name",
+          "Amount": "transaction_amount",
+          "CurrencyCode": "transaction_currency",
+          "Status": "transaction_status"
+        },
+        "not_supported": [
+          "ProfileID",
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v1_usage": "Use for searching transaction history and reporting",
+    "upgrade_tips": [
+      "Date format changes from YYYY-MM-DDTHH:MM:SSZ",
+      "Pagination handled differently with page_size and page parameters",
+      "Response structure completely different - returns JSON array"
+    ]
+  }
+}

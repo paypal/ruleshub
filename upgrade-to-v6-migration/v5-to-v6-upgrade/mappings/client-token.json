@@ -1,0 +1,203 @@
+{
+  "operation": "Client Token Generation",
+  "description": "Server-side client token generation for v6 SDK initialization",
+  "v5_pattern": {
+    "authentication": "Client ID exposed in script URL",
+    "security_issue": "Client credentials visible in browser source",
+    "token_type": "Static client ID",
+    "expiration": "None - static credential"
+  },
+  "v6_pattern": {
+    "authentication": "Server-side OAuth 2.0 client credentials flow",
+    "security_improvement": "Client secret never exposed to browser",
+    "token_type": "Time-limited browser-safe client token",
+    "expiration": "As specified by PayPal API response",
+    "refresh_strategy": "Generate new token when expired or near expiration"
+  },
+  "required_server_endpoint": {
+    "method": "GET",
+    "path": "/paypal-api/auth/browser-safe-client-token",
+    "description": "Generate and return browser-safe client token",
+    "response_format": {
+      "accessToken": "string (browser-safe client token)",
+      "expiresIn": "number (seconds until expiration)"
+    },
+    "error_response": {
+      "error": "string (error code)",
+      "message": "string (error description)",
+      "debugId": "string (PayPal debug ID for support)"
+    }
+  },
+  "paypal_api_integration": {
+    "endpoint": "https://api-m.{environment}.paypal.com/v1/oauth2/token",
+    "environment_urls": {
+      "sandbox": "https://api-m.sandbox.paypal.com",
+      "production": "https://api-m.paypal.com"
+    },
+    "request": {
+      "method": "POST",
+      "headers": {
+        "Authorization": "Basic {base64(client_id:client_secret)}",
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      "body": {
+        "grant_type": "client_credentials",
+        "response_type": "client_token",
+        "intent": "sdk_init",
+        "domains[]": "your-domain.com"
+      }
+    },
+    "response": {
+      "access_token": "browser-safe client token",
+      "token_type": "Bearer",
+      "expires_in": 900,
+      "scope": "https://uri.paypal.com/services/payments/payment"
+    }
+  },
+  "client_side_usage": {
+    "fetch_token": {
+      "method": "GET",
+      "endpoint": "/paypal-api/auth/browser-safe-client-token",
+      "usage": "const { accessToken } = await response.json();"
+    },
+    "initialize_sdk": {
+      "usage": "await window.paypal.createInstance({ clientToken: accessToken, ... })"
+    }
+  },
+  "security_requirements": [
+    "NEVER expose PAYPAL_CLIENT_SECRET in frontend code",
+    "ALWAYS use environment variables for credentials",
+    "ALWAYS use HTTPS for all API communication",
+    "ALWAYS validate token expiration before use",
+    "ALWAYS implement proper error handling",
+    "ALWAYS check response content-type before parsing JSON",
+    "ALWAYS log PayPal debug IDs for troubleshooting"
+  ],
+  "caching_strategy": {
+    "server_side": {
+      "enabled": true,
+      "duration": "Cache with appropriate buffer time for safety",
+      "key": "paypal_client_token",
+      "implementation": "In-memory cache or Redis",
+      "benefit": "Reduce API calls to PayPal"
+    },
+    "client_side": {
+      "enabled": false,
+      "reason": "Tokens are short-lived and session-specific",
+      "alternative": "Request new token on each page load"
+    }
+  },
+  "error_handling": {
+    "authentication_failure": {
+      "status_code": 401,
+      "error_code": "AUTHENTICATION_FAILURE",
+      "causes": [
+        "Invalid client_id or client_secret",
+        "Incorrect environment (sandbox vs production)",
+        "Expired or revoked credentials"
+      ],
+      "resolution": "Verify credentials in PayPal Developer Dashboard"
+    },
+    "network_error": {
+      "status_code": 500,
+      "error_code": "NETWORK_ERROR",
+      "causes": [
+        "PayPal API temporarily unavailable",
+        "Network connectivity issues",
+        "DNS resolution failures"
+      ],
+      "resolution": "Implement retry logic with exponential backoff"
+    },
+    "invalid_request": {
+      "status_code": 400,
+      "error_code": "INVALID_REQUEST",
+      "causes": [
+        "Malformed request body",
+        "Missing required parameters",
+        "Invalid parameter values"
+      ],
+      "resolution": "Validate request parameters before sending"
+    }
+  },
+  "token_lifecycle": {
+    "generation": "Server generates token via PayPal OAuth API",
+    "delivery": "Server sends token to client via endpoint",
+    "usage": "Client initializes SDK with token",
+    "expiration": "As specified by PayPal API response",
+    "refresh": "Client requests new token after expiration",
+    "revocation": "Automatic after expiration (no manual revocation needed)"
+  },
+  "environment_variables": {
+    "required": [
+      {
+        "name": "PAYPAL_CLIENT_ID",
+        "description": "PayPal REST API client ID",
+        "source": "PayPal Developer Dashboard → My Apps & Credentials"
+      },
+      {
+        "name": "PAYPAL_CLIENT_SECRET",
+        "description": "PayPal REST API client secret",
+        "source": "PayPal Developer Dashboard → My Apps & Credentials",
+        "security": "NEVER commit to version control"
+      },
+      {
+        "name": "PAYPAL_ENVIRONMENT",
+        "description": "PayPal environment (sandbox or live)",
+        "values": ["sandbox", "live"],
+        "default": "sandbox"
+      }
+    ]
+  },
+  "upgrade_checklist": [
+    "Create environment variables for PayPal credentials",
+    "Implement OAuth 2.0 client credentials flow on server",
+    "Create /paypal-api/auth/browser-safe-client-token endpoint",
+    "Add proper error handling with PayPal debug IDs",
+    "Implement token caching (optional but recommended)",
+    "Test token generation in sandbox environment",
+    "Verify tokens work with SDK initialization",
+    "Update frontend to fetch token from server",
+    "Remove client-id from v5 script URLs",
+    "Test token expiration and refresh logic"
+  ],
+  "common_mistakes": [
+    {
+      "mistake": "Exposing client_secret in frontend code",
+      "impact": "CRITICAL security vulnerability",
+      "fix": "Keep client_secret on server only"
+    },
+    {
+      "mistake": "Not checking response content-type",
+      "impact": "JSON parsing errors when server returns HTML error page",
+      "fix": "Validate content-type header before parsing JSON"
+    },
+    {
+      "mistake": "Not implementing token caching",
+      "impact": "Excessive API calls to PayPal, potential rate limiting",
+      "fix": "Cache tokens for 13-14 minutes on server"
+    },
+    {
+      "mistake": "Using wrong environment credentials",
+      "impact": "Authentication failures in production",
+      "fix": "Use separate credentials for sandbox and production"
+    },
+    {
+      "mistake": "Not logging PayPal debug IDs",
+      "impact": "Difficult to troubleshoot errors with PayPal support",
+      "fix": "Always extract and log debug_id from error responses"
+    }
+  ],
+  "testing_checklist": [
+    "Test token generation with valid credentials",
+    "Test token generation with invalid credentials (should fail gracefully)",
+    "Test token expiration and refresh logic",
+    "Test token refresh logic",
+    "Test concurrent requests for tokens",
+    "Test error handling for network failures",
+    "Test SDK initialization with generated token",
+    "Verify no credentials exposed in browser network tab",
+    "Test in both sandbox and production environments",
+    "Verify proper error messages shown to users"
+  ]
+}
+

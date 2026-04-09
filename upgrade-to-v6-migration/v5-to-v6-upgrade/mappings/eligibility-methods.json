@@ -1,0 +1,225 @@
+{
+  "operation": "Payment Method Eligibility",
+  "description": "v6 SDK eligibility checking API for all payment methods",
+  "v5_pattern": {
+    "funding_detection": "paypal.FUNDING.* constants (static)",
+    "component_loading": "URL parameters (?enable-funding=venmo,paylater)",
+    "availability": "Implicit based on script configuration",
+    "method": "Global constants available immediately"
+  },
+  "v6_pattern": {
+    "funding_detection": "sdkInstance.findEligibleMethods() API",
+    "component_loading": "Dynamic component loading based on eligibility",
+    "availability": "Explicit API call with real-time results",
+    "method": "Async function call with context parameters"
+  },
+  "api_signature": {
+    "method_name": "findEligibleMethods",
+    "parameters": {
+      "currencyCode": {
+        "type": "string",
+        "required": true,
+        "description": "ISO 4217 currency code (e.g., 'USD', 'EUR')",
+        "examples": ["USD", "EUR", "GBP", "CAD", "AUD"]
+      },
+      "countryCode": {
+        "type": "string", 
+        "required": false,
+        "description": "ISO 3166-1 alpha-2 country code for customer location",
+        "examples": ["US", "GB", "DE", "FR", "CA"]
+      },
+      "paymentFlow": {
+        "type": "string",
+        "required": false,
+        "description": "Type of payment flow",
+        "values": ["VAULT_WITHOUT_PAYMENT", "VAULT_WITH_PAYMENT", "ONE_TIME_PAYMENT"],
+        "default": "ONE_TIME_PAYMENT"
+      }
+    },
+    "return_type": {
+      "type": "EligibleMethods",
+      "methods": {
+        "isEligible": "(methodName: string) => boolean",
+        "getDetails": "(methodName: string) => PaymentMethodDetails"
+      }
+    }
+  },
+  "payment_methods": {
+    "paypal": {
+      "method_name": "paypal",
+      "availability": "Available in most countries and currencies",
+      "requirements": [],
+      "always_check": false,
+      "description": "Standard PayPal payments"
+    },
+    "venmo": {
+      "method_name": "venmo", 
+      "availability": "US only, USD only",
+      "requirements": [
+        "US-based merchant account",
+        "US-based customer",
+        "USD currency",
+        "Venmo app (mobile) or account (web)"
+      ],
+      "always_check": true,
+      "description": "Venmo peer-to-peer payments"
+    },
+    "paylater": {
+      "method_name": "paylater",
+      "availability": "Country and currency dependent",
+      "requirements": [
+        "Supported country (US, UK, AU, etc.)",
+        "Minimum order amount",
+        "Customer eligibility"
+      ],
+      "always_check": true,
+      "description": "Buy now, pay later financing",
+      "details_required": ["productCode", "countryCode"]
+    },
+    "credit": {
+      "method_name": "credit",
+      "availability": "US, UK, and select countries",
+      "requirements": [
+        "PayPal Credit availability in region",
+        "Customer account eligibility",
+        "Minimum order amount"
+      ],
+      "always_check": true,
+      "description": "PayPal Credit financing",
+      "details_required": ["countryCode"]
+    }
+  },
+  "usage_patterns": {
+    "basic_eligibility": {
+      "example": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD' });",
+      "description": "Check eligibility for USD transactions"
+    },
+    "country_specific": {
+      "example": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD', countryCode: 'US' });",
+      "description": "Check eligibility for specific country"
+    },
+    "vault_eligibility": {
+      "example": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD', paymentFlow: 'VAULT_WITHOUT_PAYMENT' });",
+      "description": "Check eligibility for save payment functionality"
+    },
+    "check_specific_method": {
+      "example": "if (methods.isEligible('venmo')) { setupVenmoButton(); }",
+      "description": "Check if specific payment method is available"
+    },
+    "get_method_details": {
+      "example": "const paylaterDetails = methods.getDetails('paylater');",
+      "description": "Get configuration details for payment method"
+    }
+  },
+  "method_details": {
+    "paylater_details": {
+      "productCode": {
+        "description": "PayLater product identifier",
+        "examples": ["PAY_IN_4", "PAY_IN_1", "PAY_MONTHLY"],
+        "usage": "Configure PayLater button and session"
+      },
+      "countryCode": {
+        "description": "Country code for PayLater availability",
+        "examples": ["US", "GB", "AU", "DE"],
+        "usage": "Required for PayLater button configuration"
+      }
+    },
+    "credit_details": {
+      "countryCode": {
+        "description": "Country code for PayPal Credit availability", 
+        "examples": ["US", "GB"],
+        "usage": "Required for PayPal Credit button configuration"
+      }
+    }
+  },
+  "eligibility_factors": {
+    "geographic": [
+      "Customer location (IP-based detection)",
+      "Merchant account country",
+      "Payment method regional availability"
+    ],
+    "financial": [
+      "Currency support by payment method",
+      "Minimum/maximum order amounts",
+      "Customer credit eligibility (for financing options)"
+    ],
+    "technical": [
+      "Device type (mobile/desktop)",
+      "Browser compatibility",
+      "App installation (for Venmo mobile)"
+    ],
+    "account_based": [
+      "Customer PayPal account status",
+      "Merchant account features enabled",
+      "Vault permissions (for save payment)"
+    ]
+  },
+  "upgrade_patterns": {
+    "v5_funding_constants": {
+      "paypal.FUNDING.PAYPAL": {
+        "v6_equivalent": "methods.isEligible('paypal')",
+        "upgrade": "Replace constant check with API call"
+      },
+      "paypal.FUNDING.VENMO": {
+        "v6_equivalent": "methods.isEligible('venmo')",
+        "upgrade": "Replace constant check with API call + geographic validation"
+      },
+      "paypal.FUNDING.PAYLATER": {
+        "v6_equivalent": "methods.isEligible('paylater') && methods.getDetails('paylater')",
+        "upgrade": "Replace constant check with API call + detail extraction"
+      },
+      "paypal.FUNDING.CREDIT": {
+        "v6_equivalent": "methods.isEligible('credit') && methods.getDetails('credit')",
+        "upgrade": "Replace constant check with API call + detail extraction"
+      }
+    }
+  },
+  "error_handling": {
+    "eligibility_api_errors": {
+      "NETWORK_ERROR": {
+        "description": "Failed to check eligibility due to network issues",
+        "fallback": "Show PayPal button as default",
+        "retry": "Implement retry logic with exponential backoff"
+      },
+      "INVALID_CURRENCY": {
+        "description": "Currency code not supported",
+        "fallback": "Default to USD and show PayPal",
+        "validation": "Validate currency codes before API call"
+      },
+      "TIMEOUT": {
+        "description": "Eligibility check timed out",
+        "fallback": "Show PayPal button as safe default",
+        "timeout": "Set reasonable timeout (5-10 seconds)"
+      }
+    }
+  },
+  "best_practices": [
+    "Always call findEligibleMethods() before showing payment buttons",
+    "Cache eligibility results for session duration to avoid repeated calls",
+    "Provide PayPal as fallback when other methods unavailable",
+    "Handle eligibility API errors gracefully with defaults",
+    "Check method details for configuration requirements",
+    "Validate currency and country codes before API calls",
+    "Show loading states while checking eligibility",
+    "Test eligibility with different geographic locations",
+    "Update UI dynamically based on eligibility results",
+    "Log eligibility results for debugging and analytics"
+  ],
+  "performance_considerations": {
+    "caching": {
+      "session_cache": "Cache results for current session",
+      "duration": "Valid until page reload or SDK re-initialization",
+      "invalidation": "Re-check if currency or country changes"
+    },
+    "parallel_loading": {
+      "sdk_init": "Check eligibility immediately after SDK initialization",
+      "button_setup": "Setup buttons in parallel based on eligibility results",
+      "lazy_loading": "Only load components for eligible methods"
+    },
+    "timeout_handling": {
+      "default_timeout": "5-10 seconds for eligibility check",
+      "fallback_display": "Show default PayPal button if timeout occurs",
+      "user_feedback": "Provide loading indicators during check"
+    }
+  }
+}

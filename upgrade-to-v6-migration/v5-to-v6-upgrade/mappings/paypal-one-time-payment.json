@@ -1,0 +1,292 @@
+{
+  "operation": "PayPal One-Time Payment",
+  "description": "Migration from v5 paypal.Buttons() to v6 PayPal one-time payment session",
+  "v5_pattern": {
+    "initialization": "paypal.Buttons({ ... }).render('#container')",
+    "order_creation": "actions.order.create({ purchase_units: [...] })",
+    "order_capture": "actions.order.capture()",
+    "api_communication": "Direct browser-to-PayPal API calls",
+    "security_model": "Client-side order creation and capture"
+  },
+  "v6_pattern": {
+    "initialization": "sdkInstance.createPayPalOneTimePaymentSession({ ... })",
+    "order_creation": "Server endpoint: POST /paypal-api/checkout/orders/create",
+    "order_capture": "Server endpoint: POST /paypal-api/checkout/orders/{orderId}/capture",
+    "api_communication": "Browser → Server → PayPal (server-mediated)",
+    "security_model": "Server-side order creation and capture with validation"
+  },
+  "pattern_mapping": {
+    "v5_buttons_config": {
+      "createOrder": {
+        "v5": "function(data, actions) { return actions.order.create({...}); }",
+        "v6": "async function createOrder() { const res = await fetch('/paypal-api/checkout/orders/create', {...}); return { orderId: res.id }; }",
+        "upgrade": "Move order creation logic to server endpoint",
+        "security_note": "Server validates all order data before creating with PayPal"
+      },
+      "onApprove": {
+        "v5": "function(data, actions) { return actions.order.capture(); }",
+        "v6": "async function(data) { await captureOrder({ orderId: data.orderId }); }",
+        "upgrade": "Replace client-side capture with server endpoint call",
+        "return_type": "MUST return Promise<void> in v6"
+      },
+      "onError": {
+        "v5": "function(err) { console.error(err); }",
+        "v6": "function(error) { console.error('Payment error:', error); }",
+        "upgrade": "Update error handling to use v6 error structure",
+        "parameter": "Error object (not complex data structure)"
+      },
+      "onCancel": {
+        "v5": "function(data) { console.log('Cancelled', data); }",
+        "v6": "function() { console.log('Payment cancelled'); }",
+        "upgrade": "Remove data parameter - v6 onCancel takes no parameters",
+        "parameter": "NO parameters in v6"
+      },
+      "style": {
+        "v5": "{ layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' }",
+        "v6": "Use CSS classes on <paypal-button> element",
+        "upgrade": "Replace JavaScript style config with CSS styling",
+        "note": "v6 uses web components with standard CSS"
+      },
+      "fundingSource": {
+        "v5": "paypal.FUNDING.PAYPAL or paypal.FUNDING.PAYLATER",
+        "v6": "Different payment session types (createPayPalOneTimePaymentSession, createPayLaterOneTimePaymentSession)",
+        "upgrade": "Create separate session for each payment method"
+      }
+    }
+  },
+  "callback_signatures": {
+    "v6_one_time_payment": {
+      "onApprove": {
+        "signature": "(data: OnApproveDataOneTimePayments) => Promise<void>",
+        "parameter": {
+          "orderId": "string",
+          "payerId": "string (optional)",
+          "billingToken": "string (optional)"
+        },
+        "return": "Promise<void> - MUST return Promise",
+        "example": "async (data) => { await captureOrder({ orderId: data.orderId }); }"
+      },
+      "onCancel": {
+        "signature": "() => void",
+        "parameter": "NO parameters",
+        "return": "void",
+        "example": "() => { console.log('Payment cancelled'); }"
+      },
+      "onError": {
+        "signature": "(error: Error) => void",
+        "parameter": "Error object",
+        "return": "void",
+        "example": "(error) => { console.error('Payment error:', error); }"
+      },
+      "onComplete": {
+        "signature": "(data: OnCompleteData) => void",
+        "parameter": {
+          "paymentSessionState": "\"approved\" | \"canceled\" | \"error\""
+        },
+        "return": "void",
+        "example": "(data) => { console.log('State:', data.paymentSessionState); }"
+      }
+    }
+  },
+  "server_endpoints_required": {
+    "create_order": {
+      "method": "POST",
+      "path": "/paypal-api/checkout/orders/create",
+      "description": "Create PayPal order on server",
+      "request_body": {
+        "amount": "string",
+        "currency": "string (optional, default: USD)",
+        "items": "array (optional)",
+        "custom_id": "string (optional)",
+        "invoice_id": "string (optional)"
+      },
+      "response": {
+        "id": "string (PayPal order ID)",
+        "status": "string",
+        "links": "array (HATEOAS links)"
+      },
+      "paypal_api": "POST https://api-m.{environment}.paypal.com/v2/checkout/orders"
+    },
+    "capture_order": {
+      "method": "POST",
+      "path": "/paypal-api/checkout/orders/{orderId}/capture",
+      "description": "Capture approved PayPal order",
+      "request_params": {
+        "orderId": "string (from onApprove callback)"
+      },
+      "response": {
+        "id": "string (order ID)",
+        "status": "string (COMPLETED)",
+        "purchase_units": "array",
+        "payer": "object"
+      },
+      "paypal_api": "POST https://api-m.{environment}.paypal.com/v2/checkout/orders/{orderId}/capture"
+    },
+    "get_order": {
+      "method": "GET",
+      "path": "/paypal-api/checkout/orders/{orderId}",
+      "description": "Get order details (optional)",
+      "paypal_api": "GET https://api-m.{environment}.paypal.com/v2/checkout/orders/{orderId}"
+    }
+  },
+  "payment_flow": {
+    "v5_flow": [
+      "1. Load v5 SDK with client-id",
+      "2. Call paypal.Buttons().render()",
+      "3. User clicks button",
+      "4. Client-side: actions.order.create()",
+      "5. User approves in PayPal popup",
+      "6. Client-side: actions.order.capture()",
+      "7. Payment complete"
+    ],
+    "v6_flow": [
+      "1. Load v6 SDK (no credentials)",
+      "2. Fetch client token from server",
+      "3. Initialize SDK: window.paypal.createInstance()",
+      "4. Create payment session: createPayPalOneTimePaymentSession()",
+      "5. Setup button click handler",
+      "6. User clicks button",
+      "7. Call createOrder() - fetches from server",
+      "8. Server creates order with PayPal API",
+      "9. SDK presents PayPal approval UI",
+      "10. User approves payment",
+      "11. onApprove callback triggered",
+      "12. Call captureOrder() - server endpoint",
+      "13. Server captures payment with PayPal API",
+      "14. Payment complete"
+    ]
+  },
+  "presentation_modes": {
+    "auto": {
+      "description": "Automatically choose best presentation (recommended)",
+      "usage": "await session.start({ presentationMode: 'auto' }, createOrder())"
+    },
+    "popup": {
+      "description": "Open PayPal in popup window",
+      "usage": "await session.start({ presentationMode: 'popup' }, createOrder())",
+      "note": "May be blocked by popup blockers"
+    },
+    "modal": {
+      "description": "Open PayPal in modal overlay",
+      "usage": "await session.start({ presentationMode: 'modal' }, createOrder())"
+    },
+    "redirect": {
+      "description": "Redirect to PayPal (mobile-friendly)",
+      "usage": "await session.start({ presentationMode: 'redirect' }, createOrder())"
+    }
+  },
+  "upgrade_steps": [
+    {
+      "step": 1,
+      "action": "Create server endpoint for order creation",
+      "file": "server.js (or equivalent)",
+      "endpoint": "POST /paypal-api/checkout/orders/create"
+    },
+    {
+      "step": 2,
+      "action": "Create server endpoint for order capture",
+      "file": "server.js (or equivalent)",
+      "endpoint": "POST /paypal-api/checkout/orders/{orderId}/capture"
+    },
+    {
+      "step": 3,
+      "action": "Remove v5 paypal.Buttons() code",
+      "example": "Remove: paypal.Buttons({...}).render('#paypal-button')"
+    },
+    {
+      "step": 4,
+      "action": "Add v6 SDK initialization",
+      "example": "const sdkInstance = await window.paypal.createInstance({...})"
+    },
+    {
+      "step": 5,
+      "action": "Create payment session with v6 API",
+      "example": "const session = sdkInstance.createPayPalOneTimePaymentSession({...})"
+    },
+    {
+      "step": 6,
+      "action": "Setup button click handler",
+      "example": "button.addEventListener('click', () => session.start({...}, createOrder()))"
+    },
+    {
+      "step": 7,
+      "action": "Update callback functions for v6 signatures",
+      "note": "onApprove must return Promise, onCancel takes no params"
+    },
+    {
+      "step": 8,
+      "action": "Replace button rendering with web component",
+      "example": "<paypal-button id=\"paypal-button\" type=\"pay\" class=\"paypal-gold\" hidden></paypal-button>"
+    },
+    {
+      "step": 9,
+      "action": "Test complete payment flow in sandbox",
+      "checklist": ["Order creation", "Payment approval", "Order capture", "Error handling"]
+    }
+  ],
+  "web_components": {
+    "paypal_button": {
+      "element": "<paypal-button>",
+      "attributes": {
+        "id": "Unique identifier",
+        "type": "\"pay\" | \"checkout\" | \"buynow\"",
+        "class": "CSS classes for styling",
+        "hidden": "Hide initially until SDK ready"
+      },
+      "styling": "Use standard CSS classes",
+      "visibility": "Show after SDK initialization (removeAttribute('hidden'))"
+    }
+  },
+  "error_handling": {
+    "common_errors": {
+      "ORDER_CREATION_FAILED": {
+        "description": "Server failed to create order",
+        "user_message": "Unable to initialize payment. Please try again.",
+        "debug_actions": ["Check server logs", "Verify PayPal API credentials", "Check order payload format"]
+      },
+      "PAYMENT_CANCELLED": {
+        "description": "User cancelled payment in PayPal UI",
+        "user_message": "Payment was cancelled. Your items are still in your cart.",
+        "debug_actions": ["Log cancellation", "Allow user to retry"]
+      },
+      "CAPTURE_FAILED": {
+        "description": "Order capture failed after approval",
+        "user_message": "Payment processing failed. Please contact support.",
+        "debug_actions": ["Extract PayPal debug_id", "Check capture endpoint logs", "Verify order status"]
+      },
+      "NETWORK_ERROR": {
+        "description": "Network communication failed",
+        "user_message": "Network error. Please check your connection and try again.",
+        "debug_actions": ["Implement retry logic", "Check server connectivity"]
+      }
+    }
+  },
+  "security_improvements": [
+    "Order amounts validated server-side (never trust client)",
+    "No client-side order manipulation possible",
+    "Server validates buyer approval before capture",
+    "All sensitive data processed server-side only",
+    "Client cannot bypass server validation"
+  ],
+  "breaking_changes": [
+    "onApprove MUST return Promise<void> (v5: optional)",
+    "onCancel takes NO parameters (v5: takes data parameter)",
+    "onError receives Error object (v5: receives complex data)",
+    "Button rendering uses web components (v5: JavaScript render())",
+    "Order creation/capture must be server-side (v5: client-side options)",
+    "No direct actions.order.* methods (v5: actions object available)"
+  ],
+  "best_practices": [
+    "Always validate order data server-side before creating",
+    "Implement comprehensive error handling with user-friendly messages",
+    "Log PayPal debug IDs for troubleshooting",
+    "Use presentation mode 'auto' for best UX",
+    "Show loading states during payment processing",
+    "Handle token expiration gracefully",
+    "Implement retry logic for network failures",
+    "Test across different browsers and devices",
+    "Verify order status server-side before fulfillment",
+    "Never trust client-side order amounts"
+  ]
+}
+

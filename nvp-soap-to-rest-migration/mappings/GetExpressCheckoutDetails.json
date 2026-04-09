@@ -1,0 +1,33 @@
+{
+  "operation": "GetExpressCheckoutDetails",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "TOKEN": "order_id"
+        },
+        "not_supported": [
+          "VERSION",
+          "SUBJECT"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "Token": "order_id"
+        },
+        "not_supported": [
+          "Subject"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for retrieving order details before capture/authorize",
+    "upgrade_tips": [
+      "TOKEN becomes order_id path parameter in GET /v2/checkout/orders/{order_id}",
+      "Response structure completely different - returns JSON instead of NVP"
+    ]
+  }
+}

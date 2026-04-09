@@ -1,0 +1,163 @@
+{
+  "operation": "SDK Initialization",
+  "description": "Migration from PayPal v5 SDK script loading to v6 SDK initialization",
+  "pattern_mappings": {
+    "v5_patterns": {
+      "script_loading": {
+        "pattern": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID\">",
+        "issues": [
+          "Client credentials exposed in frontend",
+          "All components loaded upfront",
+          "No token expiration",
+          "Direct browser-to-PayPal communication"
+        ]
+      },
+      "component_parameters": {
+        "?components=buttons,messages": "Load specific components in v5",
+        "?enable-funding=venmo,paylater": "Enable specific funding sources",
+        "?currency=USD": "Set currency",
+        "?locale=en_US": "Set locale",
+        "?merchant-id=XXX": "Set merchant identifier",
+        "?debug=true": "Enable debug mode"
+      },
+      "global_object": {
+        "pattern": "window.paypal",
+        "usage": "Global object available immediately after script load"
+      }
+    },
+    "v6_patterns": {
+      "script_loading": {
+        "sandbox": "https://www.sandbox.paypal.com/web-sdk/v6/core",
+        "production": "https://www.paypal.com/web-sdk/v6/core",
+        "attributes": {
+          "async": true,
+          "onload": "onPayPalWebSdkLoaded()"
+        },
+        "security": [
+          "No credentials in URL",
+          "Requires server-side token generation",
+          "Time-limited client tokens",
+          "Server-mediated API calls"
+        ]
+      },
+      "sdk_initialization": {
+        "method": "window.paypal.createInstance()",
+        "required_parameters": {
+          "clientToken": "Server-generated client token with expiration",
+          "components": "Array of component names to load dynamically"
+        },
+        "optional_parameters": {
+          "pageType": "\"cart\" | \"checkout\" | \"home\" | \"mini-cart\" | \"product-details\" | \"product-listing\" | \"search-results\"",
+          "locale": "BCP-47 language code (e.g., \"en-US\", \"fr-FR\")",
+          "testBuyerCountry": "Two-letter ISO country code for testing",
+          "partnerAttributionId": "PayPal partner attribution ID",
+          "shopperSessionId": "Unique session identifier",
+          "clientMetadataId": "Client metadata identifier"
+        }
+      },
+      "available_components": [
+        "paypal-payments",
+        "venmo-payments",
+        "paypal-billing-agreements"
+      ]
+    }
+  },
+  "upgrade_steps": [
+    {
+      "step": 1,
+      "action": "Remove v5 script tag with client-id",
+      "example": "Remove: <script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID\">"
+    },
+    {
+      "step": 2,
+      "action": "Add v6 core SDK script tag without credentials",
+      "example": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    {
+      "step": 3,
+      "action": "Create server endpoint for client token generation",
+      "endpoint": "GET /paypal-api/auth/browser-safe-client-token"
+    },
+    {
+      "step": 4,
+      "action": "Implement SDK initialization with server-generated token",
+      "code": "const sdkInstance = await window.paypal.createInstance({ clientToken, components })"
+    },
+    {
+      "step": 5,
+      "action": "Replace global paypal object usage with SDK instance methods",
+      "note": "Use sdkInstance.createPayPalOneTimePaymentSession() instead of paypal.Buttons()"
+    }
+  ],
+  "parameter_mapping": {
+    "v5_to_v6": {
+      "client-id (URL param)": {
+        "v6_equivalent": "clientToken (from server)",
+        "upgrade": "Move to server-side token generation",
+        "security_note": "Never expose client secret; use server-side OAuth"
+      },
+      "components (URL param)": {
+        "v6_equivalent": "components (SDK config array)",
+        "upgrade": "Pass as array in createInstance() config"
+      },
+      "currency (URL param)": {
+        "v6_equivalent": "findEligibleMethods({ currencyCode })",
+        "upgrade": "Use eligibility API with currency parameter"
+      },
+      "locale (URL param)": {
+        "v6_equivalent": "locale (SDK config string)",
+        "upgrade": "Pass as locale in createInstance() config"
+      },
+      "enable-funding (URL param)": {
+        "v6_equivalent": "findEligibleMethods() + payment sessions",
+        "upgrade": "Check eligibility dynamically, create sessions for eligible methods"
+      },
+      "disable-funding (URL param)": {
+        "v6_equivalent": "Conditional session creation",
+        "upgrade": "Simply don't create payment sessions for unwanted methods"
+      },
+      "merchant-id (URL param)": {
+        "v6_equivalent": "Implicit in client token",
+        "upgrade": "Merchant identity embedded in server-generated token"
+      }
+    }
+  },
+  "configuration_comparison": {
+    "v5_script_examples": [
+      "?client-id=YOUR_CLIENT_ID",
+      "?client-id=XXX&currency=USD",
+      "?client-id=XXX&components=buttons,messages",
+      "?client-id=XXX&enable-funding=venmo,paylater",
+      "?client-id=XXX&locale=en_US&currency=USD&components=buttons"
+    ],
+    "v6_config_example": {
+      "clientToken": "server_generated_token_here",
+      "components": ["paypal-payments", "venmo-payments"],
+      "pageType": "checkout",
+      "locale": "en-US"
+    }
+  },
+  "security_improvements": [
+    "Client credentials never exposed to browser",
+    "Time-limited tokens reduce security window",
+    "Domain-bound tokens prevent unauthorized reuse",
+    "Server-side validation required for all operations",
+    "No direct browser-to-PayPal API calls"
+  ],
+  "breaking_changes": [
+    "Global paypal object is no longer available immediately",
+    "Must wait for SDK initialization to complete",
+    "Cannot use paypal.Buttons() directly",
+    "Must create SDK instance first with createInstance()",
+    "Token expiration requires refresh logic"
+  ],
+  "best_practices": [
+    "Cache client tokens on server (within 15-min window)",
+    "Implement token refresh logic for long sessions",
+    "Load SDK asynchronously to avoid blocking page load",
+    "Initialize SDK only after client token is retrieved",
+    "Handle SDK initialization errors gracefully",
+    "Provide loading states during initialization"
+  ]
+}
+

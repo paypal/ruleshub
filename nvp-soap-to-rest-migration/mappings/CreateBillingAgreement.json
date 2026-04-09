@@ -1,0 +1,44 @@
+{
+  "operation": "CreateBillingAgreement",
+  "parameter_mappings": {
+    "nvp": {
+      "v3": {
+        "supported": {
+          "TOKEN": "setup_token_id"
+        },
+        "not_supported": [
+          "MSGSUBID"
+        ]
+      }
+    },
+    "soap": {
+      "v3": {
+        "supported": {
+          "Token": "setup_token_id"
+        },
+        "not_supported": [
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v3_usage": "Use for creating payment tokens from setup tokens",
+    "upgrade_tips": [
+      "TOKEN from SetExpressCheckout becomes setup_token_id",
+      "Creates permanent payment token for future payments"
+    ],
+    "rest_augmentations": {
+      "token_type_specification": {
+        "description": "Set token type in REST payload for CreateBillingAgreement",
+        "payload": {
+          "payment_source": {
+            "token": {
+              "type": "SETUP_TOKEN"
+            }
+          }
+        }
+      }
+    }
+  }
+}

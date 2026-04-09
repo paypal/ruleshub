@@ -1,0 +1,44 @@
+{
+  "operation": "MassPay",
+  "parameter_mappings": {
+    "nvp": {
+      "v1": {
+        "supported": {
+          "RECEIVERTYPE": "recipient_type",
+          "CURRENCYCODE": "sender_batch_header.sender_batch_id",
+          "L_EMAILn": "items[].recipient_wallet",
+          "L_AMTn": "items[].amount.value",
+          "L_UNIQUEIDn": "items[].sender_item_id",
+          "L_NOTEn": "items[].note"
+        },
+        "not_supported": [
+          "MSGSUBID",
+          "L_RECEIVERTYPEn"
+        ]
+      }
+    },
+    "soap": {
+      "v1": {
+        "supported": {
+          "ReceiverType": "recipient_type",
+          "CurrencyCode": "sender_batch_header.sender_batch_id",
+          "MassPayItem.ReceiverEmail": "items[].recipient_wallet",
+          "MassPayItem.Amount": "items[].amount.value",
+          "MassPayItem.UniqueId": "items[].sender_item_id",
+          "MassPayItem.Note": "items[].note"
+        },
+        "not_supported": [
+          "MsgSubID"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v1_usage": "Use for sending batch payments to multiple recipients",
+    "upgrade_tips": [
+      "Structure changes from flat NVP arrays to nested JSON objects",
+      "RECEIVERTYPE maps to recipient_type in sender_batch_header",
+      "Each L_EMAILn becomes an item in the items array"
+    ]
+  }
+}

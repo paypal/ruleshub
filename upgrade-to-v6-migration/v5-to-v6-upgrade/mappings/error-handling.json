@@ -1,0 +1,282 @@
+{
+  "operation": "Error Handling",
+  "description": "Comprehensive error handling patterns for v6 SDK",
+  "error_categories": {
+    "authentication_errors": {
+      "INVALID_CLIENT_TOKEN": {
+        "description": "Client token is invalid or malformed",
+        "user_message": "Payment session expired. Please refresh the page and try again.",
+        "debug_actions": ["Check token generation endpoint", "Verify token format", "Check PayPal API response"]
+      },
+      "CLIENT_TOKEN_EXPIRED": {
+        "description": "Client token has expired",
+        "user_message": "Payment session expired. Please refresh and try again.",
+        "debug_actions": ["Implement token refresh logic", "Check token generation timestamp", "Reduce session duration"]
+      },
+      "AUTHORIZATION_FAILED": {
+        "description": "PayPal authorization failed",
+        "user_message": "Payment authorization failed. Please verify your PayPal account and try again.",
+        "debug_actions": ["Check PayPal credentials", "Verify API permissions", "Check account status"]
+      }
+    },
+    "network_errors": {
+      "NETWORK_ERROR": {
+        "description": "Network connectivity issue",
+        "user_message": "Network connection issue. Please check your internet connection and try again.",
+        "debug_actions": ["Check internet connectivity", "Verify PayPal API accessibility", "Implement retry logic"],
+        "recoverable": true
+      },
+      "TIMEOUT_ERROR": {
+        "description": "Request timed out",
+        "user_message": "Request timed out. Please try again.",
+        "debug_actions": ["Increase timeout duration", "Check network latency", "Implement retry with backoff"],
+        "recoverable": true
+      },
+      "SERVER_ERROR": {
+        "description": "PayPal server error (5xx)",
+        "user_message": "Our payment service is temporarily unavailable. Please try again in a few moments.",
+        "debug_actions": ["Extract debug_id", "Contact PayPal support", "Implement retry logic"],
+        "recoverable": true
+      }
+    },
+    "browser_errors": {
+      "ERR_DEV_UNABLE_TO_OPEN_POPUP": {
+        "description": "Popup was blocked by browser",
+        "user_message": "Popup was blocked. Please allow popups for this site and try again.",
+        "debug_actions": ["Use presentationMode: 'auto'", "Fallback to modal or redirect", "Show popup blocker message"],
+        "recoverable": true
+      },
+      "ERR_FLOW_PAYMENT_HANDLER_BROWSER_INCOMPATIBLE": {
+        "description": "Browser doesn't support payment method",
+        "user_message": "Your browser doesn't support this payment method. Please try a different payment option.",
+        "debug_actions": ["Check browser compatibility", "Offer alternative payment methods", "Update browser detection"]
+      },
+      "UNSUPPORTED_BROWSER": {
+        "description": "Browser version not supported",
+        "user_message": "Please use a supported browser (Chrome 69+, Safari 12+, Firefox 63+) for payments.",
+        "debug_actions": ["Show browser upgrade message", "Provide fallback options", "Update compatibility list"]
+      }
+    },
+    "payment_flow_errors": {
+      "PAYMENT_CANCELLED": {
+        "description": "User cancelled payment in PayPal UI",
+        "user_message": "Payment was cancelled. Your items are still in your cart.",
+        "debug_actions": ["Log cancellation event", "Allow retry", "Track cancellation reasons"]
+      },
+      "PAYMENT_DECLINED": {
+        "description": "Payment was declined by PayPal",
+        "user_message": "Payment was declined. Please try a different payment method.",
+        "debug_actions": ["Log decline reason", "Offer alternative methods", "Extract debug_id"]
+      },
+      "INSUFFICIENT_FUNDS": {
+        "description": "Insufficient funds in PayPal account",
+        "user_message": "Insufficient funds. Please choose a different payment method.",
+        "debug_actions": ["Suggest adding funds", "Offer alternative payment methods"]
+      }
+    },
+    "order_errors": {
+      "ORDER_NOT_FOUND": {
+        "description": "Order ID not found",
+        "user_message": "Order not found. Please start checkout again.",
+        "debug_actions": ["Verify order creation", "Check order ID", "Log order creation process"]
+      },
+      "ORDER_ALREADY_CAPTURED": {
+        "description": "Order has already been captured",
+        "user_message": "This order has already been processed. Please check your account.",
+        "debug_actions": ["Check order status before capture", "Prevent duplicate captures", "Show order history"]
+      },
+      "INVALID_AMOUNT": {
+        "description": "Order amount is invalid",
+        "user_message": "Invalid payment amount. Please refresh and try again.",
+        "debug_actions": ["Validate amounts server-side", "Check decimal precision", "Verify currency format"]
+      },
+      "CURRENCY_NOT_SUPPORTED": {
+        "description": "Currency not supported",
+        "user_message": "Payment currency is not supported. Please contact support.",
+        "debug_actions": ["Validate currency in findEligibleMethods", "Check supported currencies", "Use correct currency codes"]
+      }
+    },
+    "vault_errors": {
+      "VAULT_NOT_ENABLED": {
+        "description": "Vault functionality not enabled",
+        "user_message": "Saving payment methods is not available for your account.",
+        "debug_actions": ["Enable vault in PayPal Dashboard", "Verify vault permissions", "Check account features"]
+      },
+      "SETUP_TOKEN_EXPIRED": {
+        "description": "Vault setup token expired",
+        "user_message": "Setup session expired. Please try saving your payment method again.",
+        "debug_actions": ["Create payment token promptly", "Implement token expiration handling", "Show expiration warnings"]
+      },
+      "PAYMENT_TOKEN_NOT_FOUND": {
+        "description": "Saved payment token not found",
+        "user_message": "Saved payment method not found. Please select a different payment method.",
+        "debug_actions": ["Verify token exists in database", "Check token ID", "Validate token ownership"]
+      },
+      "CUSTOMER_NOT_ELIGIBLE": {
+        "description": "Customer not eligible for vault",
+        "user_message": "You are not eligible for saving payment methods.",
+        "debug_actions": ["Check customer eligibility", "Verify account status", "Review vault requirements"]
+      }
+    },
+    "venmo_errors": {
+      "VENMO_NOT_AVAILABLE": {
+        "description": "Venmo not available (non-US)",
+        "user_message": "Venmo is not available in your region. Please use PayPal.",
+        "debug_actions": ["Check eligibility before showing", "Verify US location", "Hide Venmo if not eligible"]
+      },
+      "VENMO_APP_NOT_INSTALLED": {
+        "description": "Venmo app not installed (mobile)",
+        "user_message": "Please install the Venmo app or use a different payment method.",
+        "debug_actions": ["Provide Venmo app link", "Offer PayPal fallback", "Detect app installation"]
+      }
+    }
+  },
+  "error_extraction": {
+    "debug_id": {
+      "locations": [
+        "error.details?.debug_id",
+        "error.debug_id",
+        "error.response?.data?.debug_id",
+        "error.headers?.['paypal-debug-id']"
+      ],
+      "usage": "Always log debug_id for PayPal support",
+      "example": "const debugId = error.details?.debug_id || error.debug_id || 'N/A';"
+    },
+    "error_code": {
+      "locations": [
+        "error.code",
+        "error.response?.data?.name",
+        "error.name"
+      ],
+      "usage": "Map to user-friendly messages",
+      "example": "const errorCode = error.code || error.response?.data?.name || 'UNKNOWN_ERROR';"
+    },
+    "error_message": {
+      "locations": [
+        "error.message",
+        "error.response?.data?.message",
+        "error.response?.data?.details?.[0]?.issue"
+      ],
+      "usage": "Internal logging only (don't show to users)",
+      "example": "console.error('PayPal Error:', error.message);"
+    }
+  },
+  "error_handler_implementation": {
+    "comprehensive_handler": {
+      "description": "Universal error handler for all PayPal operations",
+      "parameters": {
+        "error": "Error object from PayPal SDK or API",
+        "context": "Additional context (operation, user_id, etc.)"
+      },
+      "returns": "User-friendly error message",
+      "actions": [
+        "Extract debug_id and error_code",
+        "Log comprehensive error details",
+        "Map to user-friendly message",
+        "Track error for monitoring",
+        "Determine if error is recoverable",
+        "Show retry option if recoverable",
+        "Suggest alternative payment methods if needed"
+      ]
+    }
+  },
+  "retry_logic": {
+    "recoverable_errors": [
+      "NETWORK_ERROR",
+      "TIMEOUT_ERROR",
+      "SERVER_ERROR",
+      "ERR_DEV_UNABLE_TO_OPEN_POPUP",
+      "CLIENT_TOKEN_EXPIRED"
+    ],
+    "strategy": "Exponential backoff",
+    "max_retries": 3,
+    "base_delay": "1000ms",
+    "implementation": {
+      "retry_1": "Wait 1 second",
+      "retry_2": "Wait 2 seconds",
+      "retry_3": "Wait 4 seconds"
+    },
+    "actions": [
+      "Refresh client token if expired",
+      "Retry with exponential backoff",
+      "Show progress to user",
+      "Cancel if max retries exceeded"
+    ]
+  },
+  "user_messaging": {
+    "principles": [
+      "Be clear and concise",
+      "Avoid technical jargon",
+      "Provide actionable next steps",
+      "Never expose system details",
+      "Include debug_id for support cases",
+      "Show empathy and reassurance"
+    ],
+    "message_structure": {
+      "simple_error": "Brief description + action",
+      "simple_example": "Payment failed. Please try again.",
+      "complex_error": "Description + reason + action + support reference",
+      "complex_example": "Payment failed due to network error. Please check your connection and try again. Reference ID: [debug_id]"
+    }
+  },
+  "logging_requirements": [
+    "Always log PayPal debug_id",
+    "Log error code and message",
+    "Log context (operation, user, timestamp)",
+    "Log user agent and browser info",
+    "Log current URL and page state",
+    "NEVER log sensitive payment data",
+    "NEVER log full card numbers or CVV",
+    "NEVER log PayPal client credentials"
+  ],
+  "monitoring_metrics": {
+    "error_rate": "Track percentage of failed payments",
+    "error_types": "Track distribution of error codes",
+    "debug_ids": "Collect for PayPal support correlation",
+    "user_impact": "Track affected user count",
+    "recovery_rate": "Track successful retries",
+    "alternative_method_usage": "Track fallback payment method adoption"
+  },
+  "fallback_strategies": {
+    "presentation_mode": {
+      "primary": "auto",
+      "popup_blocked": "fallback to modal",
+      "modal_failed": "fallback to redirect",
+      "all_failed": "show manual PayPal link"
+    },
+    "payment_method": {
+      "paypal_failed": "offer card payment",
+      "venmo_unavailable": "show PayPal",
+      "paylater_ineligible": "show regular PayPal"
+    },
+    "network": {
+      "first_failure": "retry immediately",
+      "second_failure": "retry with delay",
+      "third_failure": "show offline message and save for later"
+    }
+  },
+  "content_type_validation": {
+    "issue": "Server returns HTML error page instead of JSON",
+    "symptom": "SyntaxError: Unexpected token '<' in JSON",
+    "solution": {
+      "check_before_parse": "Validate Content-Type header",
+      "example": "if (!contentType?.includes('application/json')) throw new Error('Expected JSON response');",
+      "fallback": "Read as text and log for debugging"
+    }
+  },
+  "best_practices": [
+    "Always extract and log PayPal debug_id",
+    "Validate response content-type before parsing JSON",
+    "Implement comprehensive error handlers for all callbacks",
+    "Map error codes to user-friendly messages",
+    "Implement retry logic for recoverable errors",
+    "Track error metrics for monitoring",
+    "Provide fallback payment options",
+    "Never expose system details to users",
+    "Test error scenarios thoroughly",
+    "Document all error codes and messages",
+    "Implement graceful degradation",
+    "Show appropriate loading and error states"
+  ]
+}
+

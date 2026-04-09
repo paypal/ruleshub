@@ -1,0 +1,229 @@
+{
+  "operation": "SetExpressCheckout",
+  "parameter_mappings": {
+    "nvp": {
+      "v2": {
+        "supported": {
+          "L_AMTn": "purchase_units[].items[].unit_amount.value",
+          "L_DESCn": "purchase_units[].items[].description",
+          "L_ITEMURLn": "purchase_units[].items[].url",
+          "L_NAMEn": "purchase_units[].items[].name",
+          "L_NUMBERn": "purchase_units[].items[].sku",
+          "L_QTYn": "purchase_units[].items[].quantity",
+          "L_TAXAMTn": "purchase_units[].items[].tax.value",
+          "PAYMENTREQUEST_n_AMT": "purchase_units[].amount.value",
+          "PAYMENTREQUEST_n_CURRENCYCODE": "purchase_units[].amount.currency_code",
+          "PAYMENTREQUEST_n_CUSTOM": "purchase_units[].custom_id",
+          "PAYMENTREQUEST_n_DESC": "purchase_units[].description",
+          "PAYMENTREQUEST_n_HANDLINGAMT": "purchase_units[].amount.breakdown.handling.value",
+          "PAYMENTREQUEST_n_INSURANCEAMT": "purchase_units[].amount.breakdown.insurance.value",
+          "PAYMENTREQUEST_n_INVNUM": "purchase_units[].invoice_id",
+          "PAYMENTREQUEST_n_ITEMAMT": "purchase_units[].amount.breakdown.item_total.value",
+          "PAYMENTREQUEST_n_PAYMENTACTION": "Mapped to Orders V2 Intent",
+          "PAYMENTREQUEST_n_PAYMENTREQUESTID": "purchase_units[].reference_id",
+          "PAYMENTREQUEST_n_SHIPPINGAMT": "purchase_units[].amount.breakdown.shipping.value",
+          "PAYMENTREQUEST_n_TAXAMT": "purchase_units[].amount.breakdown.tax_total.value",
+          "ADDROVERRIDE": "payment_source.paypal.experience_context.shipping_preference",
+          "AMT": "purchase_units[].amount.value",
+          "BRANDNAME": "payment_source.paypal.experience_context.brand_name",
+          "BUTTONSOURCE": "PayPal-Partner-Attribution-Id",
+          "CANCELURL": "payment_source.paypal.experience_context.cancel_url",
+          "CUSTOM": "purchase_units[].custom_id",
+          "CURRENCYCODE": "purchase_units[].amount.currency_code",
+          "DESC": "purchase_units[].description",
+          "EMAIL": "payment_source.paypal.email_address",
+          "INVNUM": "purchase_units[].invoice_id",
+          "LANDINGPAGE": "payment_source.paypal.experience_context.landing_page",
+          "LOCALECODE": "payment_source.paypal.experience_context.locale",
+          "MSGSUBID": "PayPal-Request-Id",
+          "NOSHIPPING": "payment_source.paypal.experience_context.shipping_preference",
+          "PAYMENTACTION": "Mapped to Orders V2 Intent",
+          "RETURNURL": "payment_source.paypal.experience_context.return_url",
+          "TOKEN": "PayPal-Request-Id"
+        },
+        "not_supported": [
+          "L_BILLINGAGREEMENTCUSTOMn",
+          "L_BILLINGAGREEMENTDESCRIPTIONn",
+          "L_BILLINGTYPEn",
+          "L_EBAYAUCTIONTXNIDn",
+          "L_ITEMCATEGORYn",
+          "L_ITEMHEIGHTUNITn",
+          "L_ITEMHEIGHTVALUEn",
+          "L_ITEMWEIGHTUNITn",
+          "L_ITEMWEIGHTVALUEn",
+          "L_ITEMWIDTHUNITn",
+          "L_ITEMWIDTHVALUEn",
+          "PAYMENTREQUEST_n_BRANCHLEVEL",
+          "PAYMENTREQUEST_n_BUCKETCATEGORYTYPE",
+          "PAYMENTREQUEST_n_SELLERPAYPALACCOUNTID",
+          "ALLOWNOTE",
+          "ALLOWPUSHFUNDING",
+          "BUYEREMAILOPTINENABLE",
+          "CALLBACK",
+          "CARTBORDERCOLOR",
+          "CHANNELTYPE",
+          "GIFTMESSAGEENABLE",
+          "GIFTRECEIPTENABLE",
+          "GIFTWRAPAMOUNT",
+          "GIFTWRAPENABLE",
+          "HDRBACKCOLOR",
+          "HDRBORDERCOLOR",
+          "HDRIMG",
+          "LOGOIMG",
+          "MAXAMT",
+          "NOTETOBUYER",
+          "PAGESTYLE",
+          "PAYFLOWCOLOR",
+          "REQBILLINGADDRESS",
+          "REQCONFIRMSHIPPING",
+          "SOLUTIONTYPE",
+          "SURVEYENABLE",
+          "TOTALTYPE",
+          "USERSELECTEDFUNDINGSOURCE"
+        ]
+      },
+      "v3": {
+        "supported": {
+          "ADDROVERRIDE": "payment_source.paypal.experience_context.shipping_preference",
+          "BILLING_AGREEMENT_ID": "payment_source.paypal.billing_agreement_id",
+          "BRANDNAME": "payment_source.paypal.experience_context.brand_name",
+          "BUTTONSOURCE": "Header: PayPal-Partner-Attribution-Id",
+          "CANCELURL": "payment_source.paypal.experience_context.cancel_url",
+          "RETURNURL": "payment_source.paypal.experience_context.return_url",
+          "LOCALECODE": "payment_source.paypal.experience_context.locale",
+          "METHOD": "API.Endpoint",
+          "MSGSUBID": "Header: PayPal-Request-Id",
+          "NOSHIPPING": "payment_source.paypal.experience_context.shipping_preference"
+        },
+        "not_supported": [
+          "NOTIFYURL"
+        ]
+      }
+    },
+    "soap": {
+      "v2": {
+        "supported": {
+          "AddressOverride": "payment_source.paypal.experience_context.shipping_preference",
+          "BrandName": "payment_source.paypal.experience_context.brand_name",
+          "BuyerDetails.BuyerUserName": "payment_source.paypal.name.given_name",
+          "BuyerDetails.TaxIdDetails.TaxId": "payment_source.paypal.tax_info.tax_id",
+          "BuyerDetails.TaxIdDetails.TaxIdType": "payment_source.paypal.tax_info.tax_id_type",
+          "CancelURL": "payment_source.paypal.experience_context.cancel_url",
+          "LandingPage": "payment_source.paypal.experience_context.landing_page",
+          "LocaleCode": "payment_source.paypal.experience_context.locale",
+          "NoShipping": "payment_source.paypal.experience_context.shipping_preference",
+          "ReturnURL": "payment_source.paypal.experience_context.return_url",
+          "PaymentDetails.Custom": "purchase_units[].custom_id",
+          "PaymentDetails.OrderDescription": "purchase_units[].description",
+          "PaymentDetails.OrderTotal": "purchase_units[].amount.value",
+          "PaymentDetails.OrderTotal.currencyID": "purchase_units[].amount.currency_code",
+          "PaymentDetails.PaymentAction": "Mapped to Orders V2 Intent"
+        },
+        "not_supported": [
+          "PaymentDetails.ProfileAddressChangeDate",
+          "PaymentDetails.AllowNote",
+          "MaxAmount",
+          "SolutionType",
+          "ReqBillingAddress"
+        ]
+      },
+      "v3": {
+        "supported": {
+          "SetExpressCheckoutRequestDetails.ReturnURL": "payment_source.paypal.experience_context.return_url",
+          "SetExpressCheckoutRequestDetails.CancelURL": "payment_source.paypal.experience_context.cancel_url",
+          "SetExpressCheckoutRequestDetails.BrandName": "payment_source.paypal.experience_context.brand_name",
+          "SetExpressCheckoutRequestDetails.LocaleCode": "payment_source.paypal.experience_context.locale"
+        },
+        "not_supported": [
+          "SetExpressCheckoutRequestDetails.NotifyURL",
+          "SetExpressCheckoutRequestDetails.MaxAmount",
+          "SetExpressCheckoutRequestDetails.SolutionType"
+        ]
+      }
+    }
+  },
+  "special_notes": {
+    "v2_usage": "Use for one-time checkout flows with Orders API",
+    "v3_usage": "Use for billing agreements with Vault API",
+    "upgrade_tips": [
+      "NOTIFYURL is replaced with Webhooks - no direct field mapping",
+      "PAYMENTACTION maps to Orders API intent field (CAPTURE/AUTHORIZE)",
+      "TOKEN parameter becomes PayPal-Request-Id header",
+      "BUTTONSOURCE becomes PayPal-Partner-Attribution-Id header"
+    ],
+    "value_based_mappings": {
+      "shipping_preference": {
+        "NOSHIPPING=1": "payment_source.paypal.experience_context.shipping_preference='NO_SHIPPING'",
+        "NOSHIPPING=0 AND ADDROVERRIDE=1": "payment_source.paypal.experience_context.shipping_preference='SET_PROVIDED_ADDRESS'",
+        "NOSHIPPING=0 AND ADDROVERRIDE=0": "payment_source.paypal.experience_context.shipping_preference='GET_FROM_FILE'"
+      },
+      "payment_intent": {
+        "PAYMENTACTION=SALE": "intent='CAPTURE'",
+        "PAYMENTACTION=AUTHORIZATION": "intent='AUTHORIZE'",
+        "PAYMENTREQUEST_n_PAYMENTACTION=SALE": "intent='CAPTURE'",
+        "PAYMENTREQUEST_n_PAYMENTACTION=AUTHORIZATION": "intent='AUTHORIZE'"
+      },
+      "soap_equivalents": {
+        "NoShipping=1": "payment_source.paypal.experience_context.shipping_preference='NO_SHIPPING'",
+        "NoShipping=0 AND AddressOverride=1": "payment_source.paypal.experience_context.shipping_preference='SET_PROVIDED_ADDRESS'",
+        "NoShipping=0 AND AddressOverride=0": "payment_source.paypal.experience_context.shipping_preference='GET_FROM_FILE'",
+        "PaymentDetails.PaymentAction=SALE": "intent='CAPTURE'",
+        "PaymentDetails.PaymentAction=AUTHORIZATION": "intent='AUTHORIZE'"
+      }
+    },
+    "rest_augmentations": {
+      "billing_agreement_with_purchase": {
+        "description": "Add to Orders v2 payload for billing agreements with initial purchase",
+        "payload": {
+          "payment_source": {
+            "paypal": {
+              "attributes": {
+                "vault": {
+                  "store_in_vault": "ON_SUCCESS",
+                  "usage_type": "MERCHANT"
+                }
+              }
+            }
+          }
+        }
+      },
+      "billing_agreement_without_purchase": {
+        "description": "Add to Vault v3 payload for billing agreements without initial purchase",
+        "payload": {
+          "payment_source": {
+            "paypal": {
+              "usage_pattern": "IMMEDIATE",
+              "usage_type": "MERCHANT"
+            }
+          }
+        }
+      }
+    },
+    "deprecated_fields": {
+      "application_context": {
+        "reason": "Replaced by payment_source.paypal.experience_context in REST APIs",
+        "replacement": "payment_source.paypal.experience_context",
+        "examples": {
+          "never_use": {
+            "application_context": {
+              "return_url": "...",
+              "cancel_url": "...",
+              "brand_name": "..."
+            }
+          },
+          "always_use": {
+            "payment_source": {
+              "paypal": {
+                "experience_context": {
+                  "return_url": "...",
+                  "cancel_url": "...",
+                  "brand_name": "..."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
