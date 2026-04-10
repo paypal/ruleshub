@@ -11,6 +11,9 @@
   "bin": {
     "ruleshub": "./bin/cli.js"
   },
+  "scripts": {
+    "postinstall": "node bin/postinstall.js"
+  },
   "files": [
     "bin/",
     "paypal-checkout/",
