@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const os = require('os');
 
 const PACKS = [
   {
@@ -191,12 +192,111 @@ function copyDir(src, dest) {
   fs.cpSync(src, dest, { recursive: true });
 }
 
+function resolvePack(value) {
+  if (!value) return null;
+
+  // Try as number first
+  const num = parseInt(value, 10);
+  if (!isNaN(num) && num >= 1 && num <= PACKS.length) {
+    return PACKS[num - 1];
+  }
+
+  // Try as slug or partial name match
+  const lower = value.toLowerCase();
+  return PACKS.find(
+    (p) =>
+      p.slug === lower ||
+      p.slug.includes(lower) ||
+      p.name.toLowerCase().includes(lower)
+  ) || null;
+}
+
+function resolveTarget(value) {
+  if (!value) return null;
+
+  const num = parseInt(value, 10);
+  if (!isNaN(num) && num >= 1 && num <= TARGETS.length) {
+    return TARGETS[num - 1];
+  }
+
+  const lower = value.toLowerCase();
+  return TARGETS.find(
+    (t) => t.id === lower || t.name.toLowerCase().includes(lower)
+  ) || null;
+}
+
+function printList() {
+  console.log('\n  RulesHub - Available Rule Packs');
+  console.log('  ===============================\n');
+  console.log('  Rule Packs:');
+  PACKS.forEach((p, i) => {
+    console.log(`    ${i + 1}. ${p.name} (--pack ${p.slug})`);
+  });
+  console.log('\n  Targets:');
+  TARGETS.forEach((t, i) => {
+    console.log(`    ${i + 1}. ${t.name} (--target ${t.id})`);
+  });
+  console.log('\n  Usage:');
+  console.log('    ruleshub --pack standard-checkout --target claude');
+  console.log('    ruleshub --pack 1 --target 2');
+  console.log('    ruleshub --list\n');
+}
+
+function setupClaudeCode() {
+  const CLAUDE_DIR = path.join(os.homedir(), '.claude');
+  const CLAUDE_MD = path.join(CLAUDE_DIR, 'CLAUDE.md');
+  const MARKER = '## RulesHub - PayPal Rule Packs';
+
+  const RULESHUB_SECTION = `
+## RulesHub - PayPal Rule Packs
+When the user asks to add rules or mentions any of these rule packs, run the corresponding command:
+- "bnpl" / "pay later" → \`ruleshub --pack paypal-bnpl-us --target claude\`
+- "standard checkout" → \`ruleshub --pack paypal-standard-checkout --target claude\`
+- "expanded checkout" → \`ruleshub --pack paypal-expanded-checkout --target claude\`
+- "enterprise checkout" → \`ruleshub --pack paypal-enterprise-checkout --target claude\`
+- "soap to rest" / "nvp" → \`ruleshub --pack nvp-soap-to-rest-migration --target claude\`
+- "v5 to v6" → \`ruleshub --pack v5-to-v6-upgrade --target claude\`
+- "v4 to v6" → \`ruleshub --pack v4-to-v6-upgrade --target claude\`
+
+To see all available packs: \`ruleshub --list\`
+`;
+
+  try {
+    if (!fs.existsSync(CLAUDE_DIR)) {
+      fs.mkdirSync(CLAUDE_DIR, { recursive: true });
+    }
+
+    let existing = '';
+    if (fs.existsSync(CLAUDE_MD)) {
+      existing = fs.readFileSync(CLAUDE_MD, 'utf8');
+    }
+
+    if (existing.includes(MARKER)) {
+      return;
+    }
+
+    fs.writeFileSync(CLAUDE_MD, existing + RULESHUB_SECTION, 'utf8');
+    console.log('  RulesHub: Added rule pack instructions to ~/.claude/CLAUDE.md');
+  } catch (err) {
+    // Don't fail if this doesn't work
+  }
+}
+
 async function main() {
   const repoRoot = path.resolve(__dirname, '..');
   const cwd = process.cwd();
 
-  // Non-interactive mode: ruleshub --pack 4 --target 1
   const args = process.argv.slice(2);
+
+  // Set up Claude Code instructions on every run (idempotent)
+  setupClaudeCode();
+
+  // --list flag: print available packs and exit
+  if (args.includes('--list')) {
+    printList();
+    process.exit(0);
+  }
+
   const packArg = args.indexOf('--pack') !== -1 ? args[args.indexOf('--pack') + 1] : null;
   const targetArg = args.indexOf('--target') !== -1 ? args[args.indexOf('--target') + 1] : null;
 
@@ -206,14 +306,23 @@ async function main() {
   let pack, target;
 
   if (packArg && targetArg) {
-    pack = PACKS[parseInt(packArg, 10) - 1];
-    target = TARGETS[parseInt(targetArg, 10) - 1];
-    if (!pack || !target) {
-      console.error('\n  Invalid --pack or --target value');
+    pack = resolvePack(packArg);
+    target = resolveTarget(targetArg);
+    if (!pack) {
+      console.error(`\n  Unknown pack: "${packArg}". Run 'ruleshub --list' to see available packs.`);
+      process.exit(1);
+    }
+    if (!target) {
+      console.error(`\n  Unknown target: "${targetArg}". Use 'cursor' or 'claude'.`);
       process.exit(1);
     }
     console.log(`\n  Rule pack: ${pack.name}`);
     console.log(`  Target: ${target.name}`);
+  } else if (!process.stdin.isTTY && (!packArg || !targetArg)) {
+    // Non-interactive environment without flags — print help
+    console.log('\n  Non-interactive environment detected. Use flags:\n');
+    printList();
+    process.exit(0);
   } else {
     pack = await selectFromList('Select a rule pack to add:', PACKS);
     target = await selectFromList('Select target:', TARGETS);
