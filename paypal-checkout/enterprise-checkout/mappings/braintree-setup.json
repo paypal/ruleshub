@@ -1,0 +1,55 @@
+{
+  "operation": "Braintree Setup",
+  "description": "Braintree account setup, credentials, SDK initialization, and client token generation",
+  "documentation": {
+    "braintree_docs": "https://developer.paypal.com/braintree/docs/",
+    "graphql_api": "https://graphql.braintreepayments.com/"
+  },
+  "credentials": {
+    "merchant_id": "Braintree Merchant ID from Control Panel → Settings → API Keys",
+    "public_key": "Braintree Public Key — used in server SDK initialization",
+    "private_key": "Braintree Private Key — NEVER expose client-side",
+    "environment_variable_names": [
+      "BRAINTREE_MERCHANT_ID",
+      "BRAINTREE_PUBLIC_KEY",
+      "BRAINTREE_PRIVATE_KEY",
+      "BRAINTREE_ENVIRONMENT"
+    ]
+  },
+  "environments": {
+    "sandbox": {
+      "name": "Sandbox",
+      "sdk_constant": "Environment.Sandbox",
+      "control_panel": "https://sandbox.braintreegateway.com/"
+    },
+    "production": {
+      "name": "Production",
+      "sdk_constant": "Environment.Production",
+      "control_panel": "https://www.braintreegateway.com/"
+    }
+  },
+  "server_sdk_packages": {
+    "javascript": { "package": "braintree", "install": "npm install braintree" },
+    "python": { "package": "braintree", "install": "pip install braintree" },
+    "java": { "group": "com.braintreepayments.gateway", "artifact": "braintree-java" },
+    "csharp": { "package": "Braintree", "install": "dotnet add package Braintree" },
+    "php": { "package": "braintree/braintree_php", "install": "composer require braintree/braintree_php" },
+    "ruby": { "gem": "braintree", "install": "gem install braintree" }
+  },
+  "gateway_initialization": {
+    "description": "Create a BraintreeGateway instance with credentials — reuse across requests",
+    "pattern": "gateway = new BraintreeGateway({ environment, merchantId, publicKey, privateKey })"
+  },
+  "client_token": {
+    "description": "Server generates a client token for the client-side SDK (Drop-in or Hosted Fields)",
+    "method": "gateway.clientToken.generate()",
+    "options": {
+      "customerId": "Optional — pass for returning customers to show vaulted payment methods"
+    },
+    "notes": [
+      "Client tokens expire after 24 hours",
+      "Generate a new token for each checkout session",
+      "Do NOT cache client tokens across users"
+    ]
+  }
+}

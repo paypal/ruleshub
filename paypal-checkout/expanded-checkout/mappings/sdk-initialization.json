@@ -1,0 +1,56 @@
+{
+  "operation": "SDK Initialization — Expanded Checkout",
+  "description": "PayPal Expanded Checkout SDK setup with card-fields component for v5 and v6",
+  "v6_pattern": {
+    "script_tag": {
+      "sandbox": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>",
+      "production": "<script async src=\"https://www.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    "initialization": {
+      "method": "window.paypal.createInstance()",
+      "required_parameters": {
+        "clientToken": "Server-generated browser-safe client token",
+        "components": "Array — must include 'card-fields' for Expanded Checkout"
+      },
+      "optional_parameters": {
+        "pageType": "\"checkout\" recommended for card payment pages",
+        "locale": "BCP-47 language code"
+      }
+    },
+    "component_combinations": {
+      "card_only": ["card-fields"],
+      "card_and_paypal": ["paypal-payments", "card-fields"],
+      "full_checkout": ["paypal-payments", "card-fields", "venmo-payments"],
+      "with_fastlane": ["paypal-payments", "card-fields", "fastlane"],
+      "with_digital_wallets": ["paypal-payments", "card-fields", "googlepay-payments", "applepay-payments"]
+    },
+    "available_components": [
+      "paypal-payments",
+      "card-fields",
+      "venmo-payments",
+      "googlepay-payments",
+      "applepay-payments",
+      "fastlane",
+      "paypal-messages",
+      "paypal-billing-agreements"
+    ],
+    "eligibility_check": {
+      "method": "sdkInstance.findEligibleMethods({ currencyCode: \"USD\" })",
+      "card_check": "eligibleMethods.isEligible(\"card\")",
+      "paypal_check": "eligibleMethods.isEligible(\"paypal\")"
+    }
+  },
+  "v5_pattern": {
+    "script_tag": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons,card-fields\"></script>",
+    "components_parameter": "components=buttons,card-fields",
+    "initialization": {
+      "buttons": "paypal.Buttons({ createOrder, onApprove }).render('#paypal-button-container')",
+      "card_fields": "paypal.CardFields({ createOrder, onApprove, style })"
+    }
+  },
+  "client_token_endpoint": {
+    "method": "GET",
+    "path": "/paypal-api/auth/browser-safe-client-token",
+    "paypal_api": "POST /v1/oauth2/token with grant_type=client_credentials&response_type=client_token&intent=sdk_init"
+  }
+}

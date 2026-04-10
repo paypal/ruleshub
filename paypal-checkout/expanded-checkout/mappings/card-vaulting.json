@@ -1,0 +1,82 @@
+{
+  "operation": "Card Vaulting (Save Cards)",
+  "description": "Save cards for future payments using Vault API v3 — with or without an initial purchase",
+  "documentation": {
+    "with_purchase": "https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault",
+    "without_purchase": "https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault-no-purchase",
+    "vault_api": "https://docs.paypal.ai/payments/save/api/vault-api-integration"
+  },
+  "with_purchase": {
+    "description": "Save a card while processing a payment — buyer pays and card is vaulted simultaneously",
+    "order_payload": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": { "currency_code": "USD", "value": "50.00" }
+      }],
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "vault": {
+              "store_in_vault": "ON_SUCCESS"
+            },
+            "verification": {
+              "method": "SCA_WHEN_REQUIRED"
+            }
+          }
+        }
+      }
+    },
+    "flow": [
+      "1. Create order with card.attributes.vault.store_in_vault = ON_SUCCESS",
+      "2. Buyer enters card via Card Fields",
+      "3. Payment processes (with 3D Secure if needed)",
+      "4. On success: card is vaulted automatically",
+      "5. Receive VAULT.PAYMENT-TOKEN.CREATED webhook with payment token",
+      "6. Store payment token server-side for future use"
+    ]
+  },
+  "without_purchase": {
+    "description": "Save a card without an initial payment — setup token flow",
+    "api_endpoints": {
+      "create_setup_token": "POST /v3/vault/setup-tokens",
+      "create_payment_token": "POST /v3/vault/payment-tokens"
+    },
+    "flow": [
+      "1. Server: POST /v3/vault/setup-tokens with card payment source",
+      "2. Client: Render Card Fields for buyer to enter card details",
+      "3. Buyer submits card (3D Secure if required)",
+      "4. Server: POST /v3/vault/payment-tokens with setup token ID",
+      "5. Store payment token server-side for future charges"
+    ],
+    "setup_token_payload": {
+      "payment_source": {
+        "card": {}
+      },
+      "customer": {
+        "id": "your_customer_id"
+      }
+    }
+  },
+  "use_saved_card": {
+    "description": "Charge a previously saved card using the vault payment token",
+    "order_payload": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": { "currency_code": "USD", "value": "25.00" }
+      }],
+      "payment_source": {
+        "card": {
+          "vault_id": "{payment_token_id}"
+        }
+      }
+    }
+  },
+  "security": [
+    "ALWAYS store payment tokens server-side with encryption",
+    "ALWAYS associate tokens with authenticated users",
+    "ALWAYS validate vault permissions in PayPal Developer Dashboard",
+    "ALWAYS implement customer consent for saving cards",
+    "ALWAYS provide card deletion functionality",
+    "NEVER store payment tokens in client-side storage"
+  ]
+}

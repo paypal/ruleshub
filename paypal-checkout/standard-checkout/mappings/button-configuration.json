@@ -1,0 +1,115 @@
+{
+  "operation": "Button Configuration",
+  "description": "PayPal Standard Checkout button styling, layout, and customization options",
+  "v5_button_options": {
+    "style": {
+      "layout": {
+        "values": ["vertical", "horizontal"],
+        "default": "vertical",
+        "description": "Button stack direction"
+      },
+      "color": {
+        "values": ["gold", "blue", "silver", "white", "black"],
+        "default": "gold",
+        "description": "Button background color"
+      },
+      "shape": {
+        "values": ["rect", "pill"],
+        "default": "rect",
+        "description": "Button shape"
+      },
+      "label": {
+        "values": ["paypal", "checkout", "buynow", "pay", "installment"],
+        "default": "paypal",
+        "description": "Button label text"
+      },
+      "height": {
+        "range": "25-55",
+        "default": 40,
+        "description": "Button height in pixels"
+      },
+      "tagline": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show tagline below button (only for horizontal layout)"
+      }
+    },
+    "fundingSource": {
+      "description": "Render a specific funding source button",
+      "values": {
+        "paypal.FUNDING.PAYPAL": "PayPal button",
+        "paypal.FUNDING.PAYLATER": "Pay Later button",
+        "paypal.FUNDING.CREDIT": "PayPal Credit button",
+        "paypal.FUNDING.VENMO": "Venmo button (US only)",
+        "paypal.FUNDING.CARD": "Debit/Credit card button"
+      }
+    },
+    "example": {
+      "code": "paypal.Buttons({ style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' }, fundingSource: paypal.FUNDING.PAYPAL }).render('#paypal-button-container')"
+    }
+  },
+  "v6_button_options": {
+    "web_components": {
+      "paypal-button": {
+        "element": "<paypal-button>",
+        "attributes": {
+          "id": "Unique identifier for event binding",
+          "type": "\"pay\" | \"checkout\" | \"buynow\"",
+          "class": "CSS styling classes",
+          "hidden": "Hide until SDK is initialized"
+        },
+        "css_classes": {
+          "paypal-gold": "Gold background",
+          "paypal-blue": "Blue background",
+          "paypal-silver": "Silver background",
+          "paypal-white": "White background",
+          "paypal-black": "Black background"
+        }
+      },
+      "paypal-pay-later-button": {
+        "element": "<paypal-pay-later-button>",
+        "description": "Pay Later standalone button"
+      },
+      "paypal-credit-button": {
+        "element": "<paypal-credit-button>",
+        "description": "PayPal Credit standalone button"
+      }
+    },
+    "example": {
+      "html": "<paypal-button id=\"paypal-button\" type=\"pay\" class=\"paypal-gold\" hidden></paypal-button>",
+      "show_after_init": "document.querySelector('#paypal-button').removeAttribute('hidden')"
+    }
+  },
+  "button_container_requirements": {
+    "v5": {
+      "container": "Any DOM element with an ID",
+      "example": "<div id=\"paypal-button-container\"></div>",
+      "render": "paypal.Buttons({...}).render('#paypal-button-container')"
+    },
+    "v6": {
+      "container": "Web component elements placed directly in HTML",
+      "example": "<paypal-button id=\"paypal-button\" type=\"pay\" class=\"paypal-gold\" hidden></paypal-button>",
+      "show": "button.removeAttribute('hidden') after SDK initialization"
+    }
+  },
+  "multiple_buttons": {
+    "v5": {
+      "description": "Use funding sources or render multiple Buttons instances",
+      "example": "paypal.Buttons({ fundingSource: paypal.FUNDING.PAYPAL }).render('#paypal-btn');\npaypal.Buttons({ fundingSource: paypal.FUNDING.PAYLATER }).render('#paylater-btn');"
+    },
+    "v6": {
+      "description": "Place multiple web component buttons, each with their own session",
+      "example": "<paypal-button id=\"paypal-btn\" type=\"pay\" class=\"paypal-gold\" hidden></paypal-button>\n<paypal-pay-later-button id=\"paylater-btn\" hidden></paypal-pay-later-button>"
+    }
+  },
+  "responsive_behavior": {
+    "description": "Buttons automatically resize to fit container width",
+    "min_width": "150px",
+    "max_width": "750px",
+    "recommendation": "Set container width using CSS, buttons adapt automatically"
+  },
+  "customization_docs": {
+    "v5": "https://developer.paypal.com/docs/checkout/standard/customize/",
+    "v6": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  }
+}

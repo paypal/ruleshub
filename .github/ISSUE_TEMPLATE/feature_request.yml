@@ -1,0 +1,52 @@
+name: Feature Request
+description: Don't see a feature you have in mind? Tell us
+labels: ["feature", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please describe what you'd like to see.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the use case or pain point
+      placeholder: "Example: As a developer using Claude Code, I need better guidance for handling async migration patterns..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe your ideal solution
+      description: How would you like this to work?
+      placeholder: "Example: Add a new ruleshub markdown file with examples for async/await conversions"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ai_ide
+    attributes:
+      label: Which AI IDE is this for?
+      description: Which tool would this feature enhance? (optional)
+      options:
+        - Claude Code
+        - Cursor
+        - Gemini CLI
+        - Windsurf
+        - All AI IDEs
+        - Other (please specify in additional context)
+        - Not specific to an IDE
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+      description: What workarounds are you using today? (optional)
+      placeholder: "Example: Currently I manually reference the docs while coding"
+    validations:
+      required: false
+

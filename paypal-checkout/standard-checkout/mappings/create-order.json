@@ -1,0 +1,169 @@
+{
+  "operation": "Create Order",
+  "description": "Create a PayPal order via Orders API v2 for Standard Checkout",
+  "api_endpoint": {
+    "method": "POST",
+    "path": "/v2/checkout/orders",
+    "sandbox": "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+    "production": "https://api-m.paypal.com/v2/checkout/orders"
+  },
+  "required_headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {access_token}",
+    "PayPal-Request-Id": "Unique idempotency key (recommended)"
+  },
+  "request_payload": {
+    "intent": {
+      "type": "string",
+      "required": true,
+      "values": ["CAPTURE", "AUTHORIZE"],
+      "description": "CAPTURE for immediate settlement, AUTHORIZE for delayed capture"
+    },
+    "purchase_units": {
+      "type": "array",
+      "required": true,
+      "min_items": 1,
+      "item_fields": {
+        "amount": {
+          "required": true,
+          "fields": {
+            "currency_code": "ISO 4217 currency code (e.g., USD)",
+            "value": "Total amount as string with 2 decimal places (e.g., \"10.00\")"
+          }
+        },
+        "amount.breakdown": {
+          "required": false,
+          "fields": {
+            "item_total": "Sum of (unit_amount * quantity) for all items",
+            "shipping": "Shipping amount",
+            "handling": "Handling fee",
+            "tax_total": "Tax amount",
+            "insurance": "Insurance amount",
+            "shipping_discount": "Shipping discount",
+            "discount": "Discount amount"
+          },
+          "note": "Required when items array is provided. item_total + shipping + handling + tax_total + insurance - shipping_discount - discount = value"
+        },
+        "items": {
+          "required": false,
+          "fields": {
+            "name": "Item name (required)",
+            "quantity": "Quantity as string (required)",
+            "unit_amount": "Price per unit with currency_code and value (required)",
+            "sku": "Stock keeping unit (optional)",
+            "description": "Item description (optional)",
+            "category": "DIGITAL_GOODS | PHYSICAL_GOODS | DONATION (optional)"
+          }
+        },
+        "description": "Purchase description (optional)",
+        "custom_id": "Custom identifier for reconciliation (optional, max 127 chars)",
+        "invoice_id": "Invoice number (optional, must be unique)",
+        "soft_descriptor": "Payment descriptor on buyer statement (optional)",
+        "shipping": {
+          "required": false,
+          "fields": {
+            "name.full_name": "Recipient full name",
+            "address.address_line_1": "Street address line 1",
+            "address.address_line_2": "Street address line 2",
+            "address.admin_area_2": "City",
+            "address.admin_area_1": "State/Province",
+            "address.postal_code": "Postal code",
+            "address.country_code": "ISO 3166-1 alpha-2 country code"
+          }
+        }
+      }
+    },
+    "payment_source": {
+      "required": false,
+      "description": "Optional but recommended for configuring the checkout experience",
+      "paypal": {
+        "experience_context": {
+          "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED | UNRESTRICTED",
+          "brand_name": "Your store name (max 127 chars)",
+          "locale": "BCP-47 language code",
+          "landing_page": "LOGIN | BILLING | NO_PREFERENCE",
+          "shipping_preference": "GET_FROM_FILE | NO_SHIPPING | SET_PROVIDED_ADDRESS",
+          "user_action": "PAY_NOW | CONTINUE",
+          "return_url": "URL for redirect after approval (required for redirect flow)",
+          "cancel_url": "URL for redirect after cancellation (required for redirect flow)"
+        }
+      }
+    }
+  },
+  "response_payload": {
+    "id": "Order ID (e.g., 5O190127TN364715T)",
+    "status": "CREATED | SAVED | APPROVED | VOIDED | COMPLETED | PAYER_ACTION_REQUIRED",
+    "links": [
+      {
+        "href": "API URL",
+        "rel": "self | approve | update | capture | authorize",
+        "method": "GET | PATCH | POST"
+      }
+    ]
+  },
+  "v5_client_side_pattern": {
+    "code": "actions.order.create({ purchase_units: [{ amount: { value: '10.00' } }] })",
+    "note": "In v5, order creation can happen client-side via actions.order.create()"
+  },
+  "v6_server_side_pattern": {
+    "client_endpoint": "POST /paypal-api/checkout/orders/create",
+    "note": "In v6, order creation MUST happen server-side. Client calls your server, server calls PayPal API"
+  },
+  "common_payloads": {
+    "basic_order": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "USD",
+          "value": "10.00"
+        }
+      }]
+    },
+    "order_with_items": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "USD",
+          "value": "35.00",
+          "breakdown": {
+            "item_total": { "currency_code": "USD", "value": "30.00" },
+            "shipping": { "currency_code": "USD", "value": "5.00" }
+          }
+        },
+        "items": [
+          {
+            "name": "Product Name",
+            "quantity": "2",
+            "unit_amount": { "currency_code": "USD", "value": "15.00" }
+          }
+        ]
+      }]
+    },
+    "authorize_order": {
+      "intent": "AUTHORIZE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "USD",
+          "value": "50.00"
+        }
+      }]
+    }
+  },
+  "validation_rules": [
+    "Amount must be > 0",
+    "Amount must have exactly 2 decimal places",
+    "Currency code must be valid ISO 4217",
+    "If items provided, item_total breakdown must equal sum of (unit_amount * quantity)",
+    "Total amount must equal sum of all breakdown components",
+    "custom_id max 127 characters",
+    "invoice_id must be unique per merchant"
+  ],
+  "error_codes": {
+    "INVALID_PARAMETER_VALUE": "A request parameter value is invalid",
+    "MISSING_REQUIRED_PARAMETER": "A required parameter is missing",
+    "AMOUNT_MISMATCH": "Breakdown amounts do not sum to total",
+    "DUPLICATE_INVOICE_ID": "Invoice ID already used",
+    "PERMISSION_DENIED": "App lacks required permissions",
+    "CURRENCY_NOT_SUPPORTED": "Currency not supported for this merchant"
+  }
+}

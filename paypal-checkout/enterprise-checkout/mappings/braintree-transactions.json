@@ -1,0 +1,60 @@
+{
+  "operation": "Braintree Transactions",
+  "description": "Create, void, and refund transactions using Braintree server SDK",
+  "documentation": "https://developer.paypal.com/braintree/docs/",
+  "transaction_sale": {
+    "method": "gateway.transaction.sale()",
+    "required_fields": {
+      "amount": "Decimal string (e.g. '10.00')",
+      "paymentMethodNonce": "Single-use nonce from Drop-in UI or Hosted Fields"
+    },
+    "optional_fields": {
+      "paymentMethodToken": "Vault token — use instead of nonce for returning customers",
+      "customerId": "Braintree customer ID for vaulted payments",
+      "orderId": "Your internal order ID",
+      "options.submitForSettlement": "true to capture immediately, false to authorize only",
+      "options.storeInVaultOnSuccess": "true to vault the payment method",
+      "deviceData": "Fraud device data from client SDK",
+      "merchantAccountId": "Specific merchant account (for multi-currency)",
+      "billingAddress": { "streetAddress": "", "locality": "", "region": "", "postalCode": "", "countryCodeAlpha2": "" },
+      "shipping": { "streetAddress": "", "locality": "", "region": "", "postalCode": "", "countryCodeAlpha2": "" }
+    }
+  },
+  "transaction_statuses": {
+    "authorized": "Payment authorized — not yet captured",
+    "submitted_for_settlement": "Capture requested — funds will settle",
+    "settling": "Settlement in progress",
+    "settled": "Funds transferred to merchant",
+    "voided": "Authorization voided before settlement",
+    "gateway_rejected": "Rejected by Braintree fraud tools or AVS/CVV rules",
+    "processor_declined": "Declined by card processor/issuer",
+    "settlement_declined": "Settlement rejected by processor"
+  },
+  "void": {
+    "method": "gateway.transaction.void(transactionId)",
+    "allowed_statuses": ["authorized", "submitted_for_settlement"],
+    "note": "Cannot void after settling — use refund instead"
+  },
+  "refund": {
+    "method": "gateway.transaction.refund(transactionId, amount?)",
+    "allowed_statuses": ["settled", "settling"],
+    "partial_refund": "Pass amount for partial refund; omit for full refund",
+    "note": "Multiple partial refunds allowed up to original amount"
+  },
+  "submit_for_settlement": {
+    "method": "gateway.transaction.submitForSettlement(transactionId, amount?)",
+    "use_case": "Capture an authorized transaction",
+    "partial_capture": "Pass amount less than authorized for partial capture"
+  },
+  "search": {
+    "method": "gateway.transaction.search()",
+    "fields": ["id", "amount", "status", "createdAt", "customerId", "orderId", "paymentMethodType"]
+  },
+  "best_practices": [
+    "Always set options.submitForSettlement = true for immediate capture",
+    "Use options.storeInVaultOnSuccess for one-click future payments",
+    "Include deviceData from client for fraud detection",
+    "Log transaction.id for all operations (disputes, refunds)",
+    "Handle processor_declined and gateway_rejected separately"
+  ]
+}

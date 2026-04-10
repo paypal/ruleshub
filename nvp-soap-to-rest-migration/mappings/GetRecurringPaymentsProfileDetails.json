@@ -1,0 +1,81 @@
+{
+  "operation": "GetRecurringPaymentsProfileDetails",
+  "_endpoint": "GET /v1/billing/subscriptions/{subscription_id}",
+  "_note": "Replaces GetRecurringPaymentsProfileDetails. Returns subscription status, billing_info, subscriber details.",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "PROFILEID": {
+          "rest_field": "Path parameter {subscription_id}",
+          "typically_found_in": "GetRecurringPaymentsProfileDetails request or Create Subscription response",
+          "notes": "REST subscription IDs start with I- (e.g., I-BW452GLLEP1G)",
+          "required": true
+        }
+      },
+      "not_supported": []
+    },
+    "soap": {
+      "supported": {
+        "ProfileID": {
+          "rest_field": "Path parameter {subscription_id}",
+          "typically_found_in": "GetRecurringPaymentsProfileDetailsRequest or CreateSubscription response",
+          "notes": "REST subscription IDs start with I- (e.g., I-BW452GLLEP1G)",
+          "required": true
+        }
+      },
+      "not_supported": []
+    }
+  },
+  "response_mappings": {
+    "nvp": {
+      "PROFILEID": "id",
+      "STATUS": "status",
+      "PROFILESTARTDATE": "start_time",
+      "NEXTBILLINGDATE": "billing_info.next_billing_time",
+      "NUMCYCLESCOMPLETED": "billing_info.cycle_executions[].cycles_completed",
+      "NUMCYCLESREMAINING": "billing_info.cycle_executions[].cycles_remaining",
+      "OUTSTANDINGBALANCE": "billing_info.outstanding_balance.value",
+      "LASTPAYMENTDATE": "billing_info.last_payment.time",
+      "LASTPAYMENTAMT": "billing_info.last_payment.amount.value",
+      "EMAIL": "subscriber.email_address",
+      "SUBSCRIBERNAME": "subscriber.name.full_name"
+    },
+    "soap": {
+      "ProfileID": "id",
+      "ProfileStatus": "status",
+      "ProfileStartDate": "start_time",
+      "NextBillingDate": "billing_info.next_billing_time",
+      "NumberCyclesCompleted": "billing_info.cycle_executions[].cycles_completed",
+      "NumberCyclesRemaining": "billing_info.cycle_executions[].cycles_remaining",
+      "OutstandingBalance": "billing_info.outstanding_balance.value",
+      "LastPaymentDate": "billing_info.last_payment.time",
+      "LastPaymentAmount": "billing_info.last_payment.amount.value",
+      "PayerEmail": "subscriber.email_address",
+      "SubscriberName": "subscriber.name.full_name"
+    }
+  },
+  "status_mappings": {
+    "nvp_to_rest": {
+      "ActiveProfile": "ACTIVE",
+      "PendingProfile": "APPROVAL_PENDING",
+      "SuspendedProfile": "SUSPENDED",
+      "CancelledProfile": "CANCELLED",
+      "ExpiredProfile": "EXPIRED"
+    },
+    "soap_to_rest": {
+      "ActiveProfile": "ACTIVE",
+      "PendingProfile": "APPROVAL_PENDING",
+      "SuspendedProfile": "SUSPENDED",
+      "CancelledProfile": "CANCELLED",
+      "ExpiredProfile": "EXPIRED"
+    }
+  },
+  "special_notes": {
+    "usage": "Retrieve subscription details and status",
+    "upgrade_tips": [
+      "REST response includes more detailed billing_info",
+      "Use billing_info.cycle_executions for cycle tracking",
+      "Status values differ - see status_mappings"
+    ]
+  }
+}

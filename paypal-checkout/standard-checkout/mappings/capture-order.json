@@ -1,0 +1,85 @@
+{
+  "operation": "Capture Order",
+  "description": "Capture an approved PayPal order to complete payment",
+  "api_endpoint": {
+    "method": "POST",
+    "path": "/v2/checkout/orders/{order_id}/capture",
+    "sandbox": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+    "production": "https://api-m.paypal.com/v2/checkout/orders/{order_id}/capture"
+  },
+  "required_headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {access_token}",
+    "PayPal-Request-Id": "Unique idempotency key (recommended)"
+  },
+  "request_payload": {
+    "note": "Request body is typically empty for full capture. Include payment_source for partial capture scenarios.",
+    "payment_source": {
+      "required": false,
+      "description": "Optional payment source override"
+    }
+  },
+  "response_payload": {
+    "id": "Order ID",
+    "status": "COMPLETED",
+    "purchase_units": [{
+      "reference_id": "Reference identifier",
+      "payments": {
+        "captures": [{
+          "id": "Capture ID (use for refunds)",
+          "status": "COMPLETED | DECLINED | PARTIALLY_REFUNDED | PENDING | REFUNDED",
+          "amount": {
+            "currency_code": "USD",
+            "value": "10.00"
+          },
+          "final_capture": true,
+          "create_time": "ISO 8601 timestamp",
+          "update_time": "ISO 8601 timestamp"
+        }]
+      }
+    }],
+    "payer": {
+      "name": { "given_name": "Buyer first name", "surname": "Buyer last name" },
+      "email_address": "buyer@example.com",
+      "payer_id": "PayPal payer ID"
+    },
+    "links": "HATEOAS links array"
+  },
+  "v5_client_side_pattern": {
+    "code": "actions.order.capture()",
+    "note": "In v5, capture can happen client-side in onApprove callback"
+  },
+  "v6_server_side_pattern": {
+    "client_endpoint": "POST /paypal-api/checkout/orders/{orderId}/capture",
+    "note": "In v6, capture MUST happen server-side. Client calls your server from onApprove, server calls PayPal API"
+  },
+  "capture_flow": {
+    "v5": [
+      "1. onApprove(data, actions) fires",
+      "2. Call actions.order.capture()",
+      "3. Handle capture result"
+    ],
+    "v6": [
+      "1. onApprove(data) fires with data.orderId",
+      "2. Client calls server: POST /paypal-api/checkout/orders/{orderId}/capture",
+      "3. Server calls PayPal: POST /v2/checkout/orders/{orderId}/capture",
+      "4. Server returns result to client",
+      "5. Client handles result (redirect to success page)"
+    ]
+  },
+  "important_notes": [
+    "Order must be in APPROVED status before capture",
+    "Capture is final — cannot be undone (use refund instead)",
+    "Capture ID from response is needed for future refunds",
+    "Use PayPal-Request-Id for idempotent retry safety",
+    "Always verify capture status server-side before fulfillment"
+  ],
+  "error_codes": {
+    "ORDER_NOT_APPROVED": "Buyer has not yet approved the order",
+    "ORDER_ALREADY_CAPTURED": "Order has already been captured",
+    "INSTRUMENT_DECLINED": "Buyer's payment instrument was declined",
+    "PAYER_ACTION_REQUIRED": "Buyer must take additional action (e.g., 3DS)",
+    "INTERNAL_SERVER_ERROR": "PayPal internal error — retry with idempotency key",
+    "UNPROCESSABLE_ENTITY": "Order cannot be captured in its current state"
+  }
+}

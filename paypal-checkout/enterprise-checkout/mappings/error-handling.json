@@ -1,0 +1,83 @@
+{
+  "operation": "Error Handling — Enterprise Checkout",
+  "description": "Error handling for Braintree transactions, multiparty orders, and agentic commerce",
+  "braintree_errors": {
+    "processor_declined": {
+      "description": "Card processor/issuer declined the transaction",
+      "common_codes": {
+        "2000": "Do Not Honor",
+        "2001": "Insufficient Funds",
+        "2002": "Limit Exceeded",
+        "2003": "Cardholder's Activity Limit Exceeded",
+        "2004": "Expired Card",
+        "2005": "Invalid Credit Card Number",
+        "2006": "Invalid Expiration Date",
+        "2010": "Card Issuer Declined CVV",
+        "2015": "Transaction Not Allowed",
+        "2038": "Processor Declined",
+        "2046": "Declined",
+        "2057": "Issuer/Cardholder Has Restricted Card",
+        "2074": "Authorization Expired",
+        "3000": "Processor Network Unavailable — Try Again"
+      },
+      "action": "Show user-friendly message, suggest alternative payment method"
+    },
+    "gateway_rejected": {
+      "description": "Rejected by Braintree fraud tools or AVS/CVV rules",
+      "reasons": {
+        "fraud": "Flagged as fraudulent by fraud tools",
+        "avs": "Address Verification check failed",
+        "cvv": "CVV check failed",
+        "avs_and_cvv": "Both AVS and CVV failed",
+        "three_d_secure": "3D Secure authentication failed",
+        "risk_threshold": "Exceeded risk threshold"
+      }
+    },
+    "validation_errors": {
+      "description": "Invalid parameters in API request",
+      "common": {
+        "81501": "Amount is required",
+        "81502": "Amount is too large",
+        "81503": "Amount cannot be negative",
+        "81706": "CVV is required",
+        "81707": "CVV must be 3 or 4 digits",
+        "81710": "Expiration date is required",
+        "91565": "Payment method nonce is invalid"
+      }
+    }
+  },
+  "multiparty_errors": {
+    "api_errors": {
+      "AUTHENTICATION_FAILURE": { "http_status": 401, "action": "Check OAuth credentials" },
+      "NOT_AUTHORIZED": { "http_status": 403, "action": "Check partner permissions and Auth Assertion" },
+      "RESOURCE_NOT_FOUND": { "http_status": 404, "action": "Verify order/capture ID" },
+      "UNPROCESSABLE_ENTITY": { "http_status": 422, "action": "Check payload structure and seller status" }
+    },
+    "platform_fee_errors": {
+      "CURRENCY_MISMATCH": "Fee currency doesn't match transaction currency",
+      "PAYEE_ACCOUNT_RESTRICTED": "Platform fee payee has account restrictions",
+      "PLATFORM_FEE_EXCEEDS_AMOUNT": "Platform fee greater than purchase amount"
+    },
+    "seller_errors": {
+      "PAYEE_NOT_CONSENTED": "Seller has not completed onboarding",
+      "PAYEE_ACCOUNT_NOT_VERIFIED": "Seller PayPal account not verified"
+    }
+  },
+  "troubleshooting": {
+    "braintree": {
+      "transaction_id": "Always log result.transaction.id for Braintree support",
+      "control_panel": "Review transactions in Braintree Control Panel → Transactions"
+    },
+    "multiparty": {
+      "debug_id": "Always log paypal-debug-id response header",
+      "seller_status": "Check /v1/customer/partners/{partner_id}/merchant-integrations/{merchant_id}"
+    }
+  },
+  "best_practices": [
+    "Map processor decline codes to user-friendly messages",
+    "Log all transaction IDs and debug IDs",
+    "Implement exponential backoff for retryable errors (3000 series)",
+    "Do NOT retry non-retryable declines (2000 series)",
+    "Monitor gateway_rejected rates for fraud rule tuning"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "operation": "Create Order — Expanded Checkout",
+  "description": "Create a PayPal order via Orders API v2 with card payment_source for Expanded Checkout",
+  "api_endpoint": {
+    "method": "POST",
+    "path": "/v2/checkout/orders",
+    "sandbox": "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+    "production": "https://api-m.paypal.com/v2/checkout/orders"
+  },
+  "required_headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer {access_token}",
+    "PayPal-Request-Id": "Unique idempotency key (recommended)"
+  },
+  "card_payment_source": {
+    "description": "For card payments, include payment_source.card in the order payload",
+    "note": "Card Fields handles the card data — your server only needs to include experience_context and optional 3DS preferences",
+    "payload_example": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "USD",
+          "value": "50.00"
+        }
+      }],
+      "payment_source": {
+        "card": {
+          "experience_context": {
+            "return_url": "https://yoursite.com/success",
+            "cancel_url": "https://yoursite.com/cancel"
+          },
+          "attributes": {
+            "verification": {
+              "method": "SCA_WHEN_REQUIRED"
+            }
+          }
+        }
+      }
+    }
+  },
+  "3ds_verification_methods": {
+    "SCA_WHEN_REQUIRED": "3D Secure only when required by card issuer or regulation (recommended)",
+    "SCA_ALWAYS": "Always trigger 3D Secure authentication"
+  },
+  "paypal_payment_source": {
+    "description": "For PayPal button payments (same as Standard Checkout)",
+    "payload_example": {
+      "payment_source": {
+        "paypal": {
+          "experience_context": {
+            "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+            "shipping_preference": "NO_SHIPPING",
+            "user_action": "PAY_NOW"
+          }
+        }
+      }
+    }
+  },
+  "common_payloads": {
+    "card_immediate_capture": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": { "currency_code": "USD", "value": "50.00" }
+      }],
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "verification": { "method": "SCA_WHEN_REQUIRED" }
+          }
+        }
+      }
+    },
+    "card_authorize_then_capture": {
+      "intent": "AUTHORIZE",
+      "purchase_units": [{
+        "amount": { "currency_code": "USD", "value": "50.00" }
+      }],
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "verification": { "method": "SCA_WHEN_REQUIRED" }
+          }
+        }
+      }
+    }
+  },
+  "validation_rules": [
+    "Amount must be > 0 with exactly 2 decimal places",
+    "Currency code must be valid ISO 4217",
+    "Card payment_source is optional for server-side — Card Fields SDK handles card data",
+    "3D Secure method should be SCA_WHEN_REQUIRED unless you need SCA_ALWAYS"
+  ]
+}

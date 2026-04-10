@@ -1,0 +1,204 @@
+{
+  "operation": "CreateRecurringPaymentsProfile",
+  "_endpoint": "POST /v1/billing/plans",
+  "_note": "One-time setup: Create a billing plan (requires product_id from product creation)",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "DESC": {
+          "rest_field": "name, description",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "required": true
+        },
+        "L_BILLINGAGREEMENTDESCRIPTION0": {
+          "rest_field": "name, description",
+          "typically_found_in": "SetExpressCheckout call",
+          "notes": "Fallback if DESC not found"
+        },
+        "BILLINGPERIOD": {
+          "rest_field": "billing_cycles[REGULAR].frequency.interval_unit",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "transform": "Day→DAY, Week→WEEK, Month→MONTH, Year→YEAR",
+          "required": true
+        },
+        "BILLINGFREQUENCY": {
+          "rest_field": "billing_cycles[REGULAR].frequency.interval_count",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "required": true
+        },
+        "AMT": {
+          "rest_field": "billing_cycles[REGULAR].pricing_scheme.fixed_price.value",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "required": true
+        },
+        "CURRENCYCODE": {
+          "rest_field": "billing_cycles[].pricing_scheme.fixed_price.currency_code",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "required": true
+        },
+        "TOTALBILLINGCYCLES": {
+          "rest_field": "billing_cycles[REGULAR].total_cycles",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "0 means indefinite billing (forever)"
+        },
+        "TRIALBILLINGPERIOD": {
+          "rest_field": "billing_cycles[TRIAL].frequency.interval_unit",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "Only if legacy code has trial period"
+        },
+        "TRIALBILLINGFREQUENCY": {
+          "rest_field": "billing_cycles[TRIAL].frequency.interval_count",
+          "typically_found_in": "CreateRecurringPaymentsProfile call"
+        },
+        "TRIALAMT": {
+          "rest_field": "billing_cycles[TRIAL].pricing_scheme.fixed_price.value",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "If 0 (free trial), omit entire pricing_scheme object"
+        },
+        "TRIALTOTALBILLINGCYCLES": {
+          "rest_field": "billing_cycles[TRIAL].total_cycles",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "Trial must have finite cycles"
+        },
+        "AUTOBILLOUTAMT": {
+          "rest_field": "payment_preferences.auto_bill_outstanding",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "transform": "AddToNextBilling→true, NoAutoBill→false"
+        },
+        "MAXFAILEDPAYMENTS": {
+          "rest_field": "payment_preferences.payment_failure_threshold",
+          "typically_found_in": "CreateRecurringPaymentsProfile call"
+        },
+        "INITAMT": {
+          "rest_field": "payment_preferences.setup_fee.value",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "Initial amount for recurring-only flow"
+        },
+        "PAYMENTREQUEST_0_AMT": {
+          "rest_field": "payment_preferences.setup_fee.value",
+          "typically_found_in": "SetExpressCheckout or DoExpressCheckoutPayment call",
+          "notes": "One-time purchase amount for with-purchase flow"
+        },
+        "FAILEDINITAMTACTION": {
+          "rest_field": "payment_preferences.setup_fee_failure_action",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "transform": "ContinueOnFailure→CONTINUE, CancelOnFailure→CANCEL"
+        },
+        "TAXAMT": {
+          "rest_field": "taxes.percentage",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "transform": "CALCULATE: (TAXAMT / AMT) × 100",
+          "notes": "NVP uses amount, REST uses percentage"
+        }
+      },
+      "not_supported": {
+        "SemiMonth_BILLINGPERIOD": {
+          "issue": "No REST equivalent for SemiMonth billing period",
+          "solution": "Redesign to twice-monthly billing"
+        }
+      }
+    },
+    "soap": {
+      "supported": {
+        "ScheduleDetails.Description": {
+          "rest_field": "name, description",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "required": true
+        },
+        "BillingAgreementDetails.BillingAgreementDescription": {
+          "rest_field": "name, description",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "notes": "Fallback if ScheduleDetails.Description not found"
+        },
+        "ScheduleDetails.PaymentPeriod.BillingPeriod": {
+          "rest_field": "billing_cycles[REGULAR].frequency.interval_unit",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "transform": "Day→DAY, Week→WEEK, Month→MONTH, Year→YEAR",
+          "required": true
+        },
+        "ScheduleDetails.PaymentPeriod.BillingFrequency": {
+          "rest_field": "billing_cycles[REGULAR].frequency.interval_count",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "required": true
+        },
+        "ScheduleDetails.PaymentPeriod.Amount": {
+          "rest_field": "billing_cycles[REGULAR].pricing_scheme.fixed_price.value",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "required": true
+        },
+        "ScheduleDetails.PaymentPeriod.Amount.currencyID": {
+          "rest_field": "billing_cycles[].pricing_scheme.fixed_price.currency_code",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "required": true
+        },
+        "ScheduleDetails.PaymentPeriod.TotalBillingCycles": {
+          "rest_field": "billing_cycles[REGULAR].total_cycles",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "notes": "0 means indefinite billing"
+        },
+        "ScheduleDetails.TrialPeriod.BillingPeriod": {
+          "rest_field": "billing_cycles[TRIAL].frequency.interval_unit",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "notes": "Only if legacy code has trial period"
+        },
+        "ScheduleDetails.TrialPeriod.BillingFrequency": {
+          "rest_field": "billing_cycles[TRIAL].frequency.interval_count",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest"
+        },
+        "ScheduleDetails.TrialPeriod.Amount": {
+          "rest_field": "billing_cycles[TRIAL].pricing_scheme.fixed_price.value",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "notes": "If 0 (free trial), omit pricing_scheme"
+        },
+        "ScheduleDetails.TrialPeriod.TotalBillingCycles": {
+          "rest_field": "billing_cycles[TRIAL].total_cycles",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest"
+        },
+        "ScheduleDetails.AutoBillOutstandingAmount": {
+          "rest_field": "payment_preferences.auto_bill_outstanding",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "transform": "AddToNextBilling→true, NoAutoBill→false"
+        },
+        "ScheduleDetails.MaxFailedPayments": {
+          "rest_field": "payment_preferences.payment_failure_threshold",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest"
+        },
+        "ActivationDetails.InitialAmount": {
+          "rest_field": "payment_preferences.setup_fee.value",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "notes": "Initial amount for recurring-only flow"
+        },
+        "PaymentDetails.OrderTotal": {
+          "rest_field": "payment_preferences.setup_fee.value",
+          "typically_found_in": "SetExpressCheckoutRequest or DoExpressCheckoutPaymentRequest",
+          "notes": "One-time purchase amount for with-purchase flow"
+        },
+        "ActivationDetails.FailedInitialAmountAction": {
+          "rest_field": "payment_preferences.setup_fee_failure_action",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "transform": "ContinueOnFailure→CONTINUE, CancelOnFailure→CANCEL"
+        },
+        "ScheduleDetails.TaxAmount": {
+          "rest_field": "taxes.percentage",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "transform": "CALCULATE: (TaxAmount / Amount) × 100"
+        }
+      },
+      "not_supported": {
+        "SemiMonth_BillingPeriod": {
+          "issue": "No REST equivalent for SemiMonth billing period",
+          "solution": "Redesign to twice-monthly billing"
+        }
+      }
+    }
+  },
+  "special_notes": {
+    "usage": "Run ONCE during upgrade to create the billing plan",
+    "upgrade_tips": [
+      "Plan ID is returned in response - save to config/paypal-subscriptions.json",
+      "billing_cycles requires: sequence, total_cycles, tenure_type, frequency",
+      "TRIAL cycle sequence=1, REGULAR cycle sequence=2 (if trial exists)"
+    ]
+  }
+}
+

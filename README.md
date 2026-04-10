@@ -1,17 +1,22 @@
-# RulesHub
+# RulesHub (Beta)
 
 A comprehensive collection of AI-optimized upgrade rules and guidelines for popular APIs and platforms. These rules are designed to work seamlessly with AI code assistants like Cursor IDE and Claude Code to provide intelligent, context-aware code suggestions and upgrades.
 
 ## Table of Contents
 
-
 - [Available Upgrade Rules](#available-upgrade-rules)
-  - [PayPal NVP/SOAP to REST API Upgrade](#paypal-nvpsoap-to-rest-api-upgrade)
+  - [PayPal Standard Checkout](#paypal-standard-checkout)
+  - [PayPal Expanded Checkout](#paypal-expanded-checkout)
+  - [PayPal Enterprise Checkout](#paypal-enterprise-checkout)
+  - [PayPal BNPL US (Pay Later)](#paypal-bnpl-us-pay-later)
+  - [PayPal NVP/SOAP to REST API Migration](#paypal-nvpsoap-to-rest-api-migration)
   - [PayPal v5 to v6 Web SDK Upgrade](#paypal-v5-to-v6-web-sdk-upgrade)
+  - [PayPal v4 to v6 Web SDK Upgrade](#paypal-v4-to-v6-web-sdk-upgrade)
 - [How to Use](#how-to-use)
-  - [Method 1: Direct Copy (Recommended)](#method-1-direct-copy-recommended)
-  - [Method 2: Git Submodule](#method-2-git-submodule)
-  - [Method 3: Reference in Existing Files](#method-3-reference-in-existing-files)
+  - [Method 1: RulesHub CLI](#method-1-ruleshub-cli)
+  - [Method 2: Direct Copy](#method-2-direct-copy)
+  - [Method 3: Git Submodule](#method-3-git-submodule)
+  - [Method 4: Reference in Existing Files](#method-4-reference-in-existing-files)
 - [Key Benefits](#key-benefits)
   - [Intelligent Code Detection](#intelligent-code-detection)
   - [Comprehensive Coverage](#comprehensive-coverage)
@@ -24,6 +29,7 @@ A comprehensive collection of AI-optimized upgrade rules and guidelines for popu
   - [Adding Your Own Rules](#adding-your-own-rules)
   - [Environment-Specific Adaptations](#environment-specific-adaptations)
 - [Security First](#security-first)
+- [Feedback](#feedback)
 - [Contributing](#contributing)
   - [Contribution Guidelines](#contribution-guidelines)
 - [Resources](#resources)
@@ -31,7 +37,62 @@ A comprehensive collection of AI-optimized upgrade rules and guidelines for popu
 
 ## Available Upgrade Rules
 
-### PayPal NVP/SOAP to REST API Upgrade
+### PayPal Standard Checkout
+
+**Location**: `paypal-checkout/standard-checkout/`
+
+Standard PayPal checkout integration with Smart Payment Buttons.
+
+**Features:**
+
+- PayPal branded checkout button integration
+- Server-side order creation and capture
+- Multi-language support (Node.js, Python, PHP, Java, .NET, Ruby)
+- Security best practices and PCI compliance
+- Sandbox testing and debugging patterns
+
+### PayPal Expanded Checkout
+
+**Location**: `paypal-checkout/expanded-checkout/`
+
+Expanded checkout with advanced card fields and additional payment methods.
+
+**Features:**
+
+- Advanced card field integration (hosted fields)
+- 3D Secure authentication support
+- Custom card form styling and validation
+- Multi-payment method support
+- PCI-compliant card processing patterns
+
+### PayPal Enterprise Checkout
+
+**Location**: `paypal-checkout/enterprise-checkout/`
+
+Enterprise-level checkout integration for platforms and marketplaces.
+
+**Features:**
+
+- Braintree Direct and Multiparty integration
+- Platform and marketplace payment flows
+- Vault and recurring payment patterns
+- Advanced fraud protection and risk management
+- PCI Level 1 compliance guidance
+
+### PayPal BNPL US (Pay Later)
+
+**Location**: `paypal-bnpl-us/`
+
+Buy Now Pay Later integration for US merchants.
+
+**Features:**
+
+- Pay Later messaging and button integration
+- Pay in 4 and Pay Monthly options
+- Upstream messaging placement guidance
+- Eligibility and merchant configuration
+
+### PayPal NVP/SOAP to REST API Migration
 
 **Location**: `nvp-soap-to-rest-migration/`
 
@@ -64,9 +125,55 @@ Upgrade guide for transitioning from PayPal v5 Web SDK to PayPal v6 Web SDK with
 - **Error Handling**: Debug IDs and operational patterns
 - **Upgrade Strategies**: Parallel testing and phased rollout approaches
 
+### PayPal v4 to v6 Web SDK Upgrade
+
+**Location**: `upgrade-to-v6-migration/v4-to-v6-upgrade/`
+
+Upgrade guide for transitioning from PayPal checkout.js v4 to PayPal v6 Web SDK.
+
+**Features:**
+
+- **Terminology Mapping**: Complete v4 to v6 button label and funding source mapping
+- **Pattern-Based Conversion**: Detection and transformation of v4 patterns to v6
+- **Component Migration**: Checkout.js to web components migration
+- **Payment Methods**: Venmo, Pay Later, and additional funding sources
+- **Server Integration**: Updated server-side order and capture flows
+- **Error Handling**: Debug IDs and v6 error patterns
+
 ## How to Use
 
-### Method 1: Direct Copy (Recommended)
+### Method 1: RulesHub CLI
+
+Interactive CLI that copies only the rule pack you need into your project.
+
+**Setup (one-time):**
+
+```bash
+# Clone the repo
+git clone https://github.com/paypal/ruleshub.git
+
+# Link it globally
+cd ruleshub
+npm link
+
+# Then from any project folder:
+cd your-project
+ruleshub
+```
+
+The CLI will prompt you to:
+1. Select a rule pack
+2. Select a target (Cursor IDE or Claude Code)
+
+Files are copied to the appropriate location automatically.
+
+You can also use flags for non-interactive mode:
+
+```bash
+ruleshub --pack 4 --target 1
+```
+
+### Method 2: Direct Copy
 Copy the relevant rules file to your project:
 
 ```bash
@@ -75,15 +182,15 @@ cp [upgrade-folder]/rules.md your-project/.cursor/rules/CURSOR.mdc  # For Cursor
 cp [upgrade-folder]/rules.md your-project/CLAUDE.md     # For Claude Code
 ```
 
-### Method 2: Git Submodule
+### Method 3: Git Submodule
 Add RulesHub as a submodule to your project:
 
 ```bash
 cd your-project
-git submodule add https://github.com/your-repo/RulesHub.git rules
+git submodule add https://github.com/paypal/ruleshub.git rules
 ```
 
-### Method 3: Reference in Existing Files
+### Method 4: Reference in Existing Files
 Add references in your existing `CURSOR.mdc` or `CLAUDE.md`:
 
 ```markdown
@@ -191,6 +298,12 @@ All upgrade rules prioritize security:
 - **Server-Side Token Generation**: Client token patterns
 - **Webhook Signature Verification**: Webhook security implementation
 
+## Feedback
+
+We'd love to hear about your experience with RulesHub.
+
+- **PayPal Documentation** - Official guides and API references: https://developer.paypal.com/
+
 ## Contributing
 
 Help improve RulesHub by:
@@ -217,10 +330,12 @@ Help improve RulesHub by:
 - **Best Practices**: Industry-standard implementation patterns
 - **TypeScript Definitions**: Official type definitions for v6 SDK
 
+## License
+
+See [LICENSE](LICENSE) for details.
 
 ---
 
 > **Note**: Start with sandbox/test environments when using upgrade rules. Validate all implementations against your specific business requirements before deploying to production.
 > 
 > **v5 to v6 Upgrade**: If you're currently using PayPal v5 Web SDK, consider upgrading to v6 for updated features and TypeScript support. The v6 SDK provides TypeScript definitions, save payment capabilities, and support for payment methods like Venmo and Pay Later.
-

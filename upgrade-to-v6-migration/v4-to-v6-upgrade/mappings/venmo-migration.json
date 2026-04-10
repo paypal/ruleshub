@@ -1,0 +1,220 @@
+{
+  "operation": "Venmo Integration - v4 to v6",
+  "description": "Migration from PayPal checkout.js v4 Venmo to v6 Venmo payment session",
+  "official_docs": {
+    "v4_archive": "https://developer.paypal.com/docs/archive/",
+    "v6_venmo": "https://docs.paypal.ai/payments/methods/venmo/",
+    "v6_checkout": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  },
+  "v4_pattern": {
+    "script_loading": {
+      "pattern": "<script src=\"https://www.paypalobjects.com/api/checkout.js\"></script>",
+      "note": "Same script as regular PayPal, no separate Venmo SDK"
+    },
+    "button_configuration": {
+      "method": "paypal.Button.render()",
+      "funding_configuration": {
+        "allowed": "[paypal.FUNDING.VENMO]",
+        "disallowed": "[]"
+      },
+      "style": {
+        "label": "pay",
+        "color": "blue",
+        "layout": "horizontal",
+        "note": "Venmo used generic 'pay' label in v4"
+      },
+      "example": {
+        "env": "sandbox",
+        "client": { "sandbox": "CLIENT_ID" },
+        "funding": {
+          "allowed": ["paypal.FUNDING.VENMO"],
+          "disallowed": []
+        },
+        "style": {
+          "label": "pay",
+          "size": "medium",
+          "color": "blue"
+        },
+        "payment": "function(data, actions) { return actions.payment.create({...}); }",
+        "onAuthorize": "function(data, actions) { return actions.payment.execute(); }"
+      }
+    },
+    "limitations": [
+      "US merchants only",
+      "USD currency only",
+      "Limited configuration options",
+      "No eligibility checking",
+      "Always rendered if in allowed funding"
+    ]
+  },
+  "v6_pattern": {
+    "script_loading": {
+      "sandbox": "https://www.sandbox.paypal.com/web-sdk/v6/core",
+      "production": "https://www.paypal.com/web-sdk/v6/core",
+      "note": "Same v6 core SDK, no separate Venmo script"
+    },
+    "sdk_initialization": {
+      "components": ["venmo-payments"],
+      "note": "Must include 'venmo-payments' component",
+      "example": {
+        "clientToken": "server_generated_token",
+        "components": ["venmo-payments"],
+        "pageType": "checkout"
+      }
+    },
+    "eligibility_check": {
+      "method": "sdkInstance.findEligibleMethods()",
+      "required": true,
+      "config": {
+        "currencyCode": "USD",
+        "countryCode": "US"
+      },
+      "check": "eligibleMethods.isEligible('venmo')",
+      "note": "MUST check eligibility before showing Venmo button"
+    },
+    "payment_session": {
+      "method": "sdkInstance.createVenmoOneTimePaymentSession()",
+      "web_component": "<venmo-button>",
+      "callbacks": {
+        "onApprove": "async (data) => Promise<void> - MUST return Promise",
+        "onCancel": "() => void - NO parameters",
+        "onError": "(error: Error) => void",
+        "onComplete": "(data) => void - Optional"
+      }
+    },
+    "requirements": [
+      "US merchant account required",
+      "USD currency only",
+      "US-based customers only",
+      "Mobile-first experience recommended",
+      "Eligibility check mandatory"
+    ]
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "action": "Update SDK components to include Venmo",
+      "v4": "No component specification",
+      "v6": "components: ['paypal-payments', 'venmo-payments']"
+    },
+    {
+      "step": 2,
+      "action": "Remove v4 funding configuration",
+      "v4": "funding: { allowed: [paypal.FUNDING.VENMO] }",
+      "v6": "Use eligibility check instead"
+    },
+    {
+      "step": 3,
+      "action": "Check Venmo eligibility before rendering",
+      "v6": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD', countryCode: 'US' });"
+    },
+    {
+      "step": 4,
+      "action": "Create Venmo payment session",
+      "v4": "paypal.Button.render({ funding: { allowed: [VENMO] } })",
+      "v6": "sdkInstance.createVenmoOneTimePaymentSession({ onApprove, onCancel, onError })"
+    },
+    {
+      "step": 5,
+      "action": "Setup web component for Venmo button",
+      "v6": "<venmo-button id=\"venmo-button\" hidden></venmo-button>"
+    },
+    {
+      "step": 6,
+      "action": "Always provide PayPal as fallback",
+      "note": "Venmo may not always be available, ensure PayPal button is also present"
+    }
+  ],
+  "breaking_changes": [
+    {
+      "change": "Eligibility check now required",
+      "v4": "Automatically showed if in allowed funding",
+      "v6": "Must check eligibility with findEligibleMethods()",
+      "impact": "Cannot assume Venmo is available"
+    },
+    {
+      "change": "Separate payment session required",
+      "v4": "Same button with funding config",
+      "v6": "createVenmoOneTimePaymentSession()",
+      "impact": "Different session creation method"
+    },
+    {
+      "change": "Web component instead of styled button",
+      "v4": "style: { label: 'pay', color: 'blue' }",
+      "v6": "<venmo-button> element with CSS",
+      "impact": "Different styling approach"
+    },
+    {
+      "change": "Presentation mode recommended",
+      "v4": "No presentation mode concept",
+      "v6": "Use presentationMode: 'auto' for mobile optimization",
+      "impact": "Better mobile experience in v6"
+    }
+  ],
+  "eligibility_factors": {
+    "merchant": [
+      "Must have US PayPal business account",
+      "Must be approved for Venmo payments",
+      "Account must be in good standing"
+    ],
+    "buyer": [
+      "Must be located in US",
+      "Must have Venmo account",
+      "Must be on supported device (mobile preferred)"
+    ],
+    "transaction": [
+      "Currency must be USD",
+      "Amount must be within Venmo limits",
+      "Transaction type must be supported"
+    ]
+  },
+  "web_component": {
+    "element": "<venmo-button>",
+    "attributes": {
+      "id": "Unique identifier",
+      "hidden": "Hide until eligibility confirmed",
+      "class": "CSS classes for styling"
+    },
+    "styling": "Use standard CSS classes",
+    "visibility": "Show after eligibility check passes"
+  },
+  "best_practices": [
+    "ALWAYS check Venmo eligibility before showing button",
+    "ALWAYS provide PayPal as fallback option",
+    "Validate merchant is US-based before attempting Venmo integration",
+    "Validate currency is USD",
+    "Use presentationMode: 'auto' for best mobile experience",
+    "Test Venmo flow on mobile devices",
+    "Handle cases where Venmo is not available gracefully",
+    "Show both PayPal and Venmo buttons when both are eligible",
+    "Log eligibility check results for debugging"
+  ],
+  "common_issues": [
+    {
+      "issue": "Venmo button not appearing",
+      "cause": "Not checking eligibility or failing eligibility check",
+      "solution": "Ensure findEligibleMethods() is called and Venmo is eligible"
+    },
+    {
+      "issue": "Venmo not eligible in sandbox",
+      "cause": "Buyer not in US or currency not USD",
+      "solution": "Set testBuyerCountry: 'US' and currencyCode: 'USD'"
+    },
+    {
+      "issue": "Venmo payment fails on desktop",
+      "cause": "Venmo is mobile-first, desktop experience varies",
+      "solution": "Use presentationMode: 'auto' and always provide PayPal fallback"
+    }
+  ],
+  "testing_requirements": [
+    "Test eligibility check with US buyer",
+    "Test eligibility check with non-US buyer (should fail)",
+    "Test with USD currency (should pass)",
+    "Test with non-USD currency (should fail)",
+    "Test on mobile devices (iOS and Android)",
+    "Test on desktop browsers",
+    "Test fallback to PayPal when Venmo not available",
+    "Verify Venmo button hidden when not eligible"
+  ]
+}
+

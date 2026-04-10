@@ -1,0 +1,88 @@
+{
+  "operation": "Error Handling — Expanded Checkout",
+  "description": "Card-specific error codes, decline handling, and troubleshooting for Expanded Checkout",
+  "card_decline_errors": {
+    "documentation": "https://developer.paypal.com/docs/checkout/advanced/card-decline-errors/",
+    "common_declines": {
+      "INSTRUMENT_DECLINED": {
+        "description": "Card was declined by the issuer",
+        "user_message": "Your card was declined. Please try a different card or payment method.",
+        "actions": ["Ask buyer to try another card", "Suggest PayPal as alternative"]
+      },
+      "CARD_EXPIRED": {
+        "description": "Card has expired",
+        "user_message": "This card has expired. Please use a different card."
+      },
+      "INSUFFICIENT_FUNDS": {
+        "description": "Not enough balance on the card",
+        "user_message": "Insufficient funds. Please try a different card."
+      },
+      "CVV_FAILURE": {
+        "description": "CVV/CVC validation failed",
+        "user_message": "The security code (CVV) is incorrect. Please check and try again."
+      },
+      "INVALID_CARD_NUMBER": {
+        "description": "Card number is invalid",
+        "user_message": "Invalid card number. Please check and re-enter."
+      },
+      "TRANSACTION_REFUSED": {
+        "description": "Transaction refused by issuer for unspecified reason",
+        "user_message": "Transaction could not be processed. Please try a different payment method."
+      },
+      "PAYER_ACTION_REQUIRED": {
+        "description": "Buyer must complete 3D Secure or additional verification",
+        "user_message": "Additional verification required. Please complete the authentication."
+      }
+    }
+  },
+  "3ds_errors": {
+    "AUTHENTICATION_FAILURE": {
+      "description": "3D Secure authentication failed",
+      "action": "Do NOT proceed with capture. Ask buyer to retry or use different card."
+    },
+    "AUTHENTICATION_REJECTED": {
+      "description": "3D Secure authentication was rejected by issuer",
+      "action": "Do NOT proceed with capture."
+    },
+    "CHALLENGE_TIMEOUT": {
+      "description": "Buyer did not complete 3D Secure challenge in time",
+      "action": "Allow retry of the payment"
+    }
+  },
+  "api_errors": {
+    "INVALID_PARAMETER_VALUE": { "http_status": 400 },
+    "MISSING_REQUIRED_PARAMETER": { "http_status": 400 },
+    "PERMISSION_DENIED": { "http_status": 403 },
+    "RESOURCE_NOT_FOUND": { "http_status": 404 },
+    "UNPROCESSABLE_ENTITY": { "http_status": 422 },
+    "INTERNAL_SERVER_ERROR": { "http_status": 500 }
+  },
+  "card_field_validation_errors": {
+    "INVALID_NUMBER": "Card number does not pass Luhn check",
+    "INVALID_EXPIRY": "Expiration date is invalid or in the past",
+    "INVALID_CVV": "CVV is wrong length for card brand",
+    "MISSING_NUMBER": "Card number field is empty",
+    "MISSING_EXPIRY": "Expiration date field is empty",
+    "MISSING_CVV": "CVV field is empty"
+  },
+  "error_handling_patterns": {
+    "server_side": {
+      "extract_debug_id": "error.response.headers['paypal-debug-id']",
+      "retry_strategy": {
+        "retryable_codes": [429, 500, 503],
+        "non_retryable_codes": [400, 401, 403, 404, 422],
+        "backoff": "Exponential backoff starting at 1s, max 3 retries"
+      }
+    },
+    "client_side": {
+      "card_field_errors": "Handle onChange events for real-time validation",
+      "submission_errors": "Handle errors from card fields submit() call",
+      "3ds_errors": "Handle 3D Secure failure in onError callback"
+    }
+  },
+  "troubleshooting_docs": {
+    "card_decline_errors": "https://developer.paypal.com/docs/checkout/advanced/card-decline-errors/",
+    "common_errors": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/overview",
+    "payment_failures": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/handling-payment-failures-with-paypal"
+  }
+}

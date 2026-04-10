@@ -1,0 +1,119 @@
+{
+  "operation": "Webhooks",
+  "description": "Webhook events and verification for Standard Checkout",
+  "webhook_setup": {
+    "dashboard": "https://developer.paypal.com/dashboard/applications → Your App → Webhooks",
+    "api": "POST /v1/notifications/webhooks",
+    "sandbox_note": "Webhooks work in both sandbox and production environments"
+  },
+  "relevant_events": {
+    "order_events": {
+      "CHECKOUT.ORDER.APPROVED": {
+        "description": "Buyer approved the order in PayPal",
+        "trigger": "After buyer clicks Pay/Approve in PayPal UI",
+        "action": "Capture or authorize the order"
+      },
+      "CHECKOUT.ORDER.COMPLETED": {
+        "description": "Order has been fully captured",
+        "trigger": "After successful capture",
+        "action": "Fulfill the order"
+      },
+      "CHECKOUT.ORDER.SAVED": {
+        "description": "Order has been saved/created",
+        "trigger": "After order creation",
+        "action": "Informational"
+      }
+    },
+    "payment_events": {
+      "PAYMENT.CAPTURE.COMPLETED": {
+        "description": "Payment capture completed successfully",
+        "trigger": "After successful capture",
+        "action": "Confirm payment received, fulfill order",
+        "key_fields": {
+          "resource.id": "Capture ID",
+          "resource.amount": "Captured amount",
+          "resource.status": "COMPLETED"
+        }
+      },
+      "PAYMENT.CAPTURE.DENIED": {
+        "description": "Payment capture was denied",
+        "trigger": "When capture fails",
+        "action": "Notify buyer, suggest alternative payment"
+      },
+      "PAYMENT.CAPTURE.PENDING": {
+        "description": "Payment capture is pending",
+        "trigger": "When payment requires additional processing",
+        "action": "Wait for completion webhook, do not fulfill yet"
+      },
+      "PAYMENT.CAPTURE.REFUNDED": {
+        "description": "Captured payment was refunded",
+        "trigger": "After successful refund",
+        "action": "Update order status, process refund in your system"
+      },
+      "PAYMENT.CAPTURE.REVERSED": {
+        "description": "Captured payment was reversed (chargeback)",
+        "trigger": "When a dispute is decided against merchant",
+        "action": "Update records, handle chargeback process"
+      }
+    },
+    "authorization_events": {
+      "PAYMENT.AUTHORIZATION.CREATED": {
+        "description": "Authorization created",
+        "trigger": "After successful authorization",
+        "action": "Record authorization ID for later capture"
+      },
+      "PAYMENT.AUTHORIZATION.VOIDED": {
+        "description": "Authorization voided",
+        "trigger": "After voiding an authorization",
+        "action": "Update order status"
+      }
+    },
+    "refund_events": {
+      "PAYMENT.REFUND.COMPLETED": {
+        "description": "Refund completed",
+        "trigger": "After successful refund",
+        "action": "Confirm refund processed"
+      }
+    }
+  },
+  "webhook_verification": {
+    "endpoint": "POST /v1/notifications/verify-webhook-signature",
+    "required_headers": {
+      "PAYPAL-TRANSMISSION-ID": "Transmission ID from webhook headers",
+      "PAYPAL-TRANSMISSION-TIME": "Transmission timestamp",
+      "PAYPAL-TRANSMISSION-SIG": "Webhook signature",
+      "PAYPAL-CERT-URL": "Certificate URL for verification",
+      "PAYPAL-AUTH-ALGO": "Signature algorithm"
+    },
+    "verification_payload": {
+      "auth_algo": "From PAYPAL-AUTH-ALGO header",
+      "cert_url": "From PAYPAL-CERT-URL header",
+      "transmission_id": "From PAYPAL-TRANSMISSION-ID header",
+      "transmission_sig": "From PAYPAL-TRANSMISSION-SIG header",
+      "transmission_time": "From PAYPAL-TRANSMISSION-TIME header",
+      "webhook_id": "Your webhook ID from PayPal dashboard",
+      "webhook_event": "The full webhook event body"
+    },
+    "verification_response": {
+      "verification_status": "SUCCESS or FAILURE"
+    }
+  },
+  "best_practices": [
+    "ALWAYS verify webhook signatures before processing",
+    "Respond with 200 status within 30 seconds to acknowledge receipt",
+    "Implement idempotent webhook handlers (webhooks may be delivered more than once)",
+    "Use webhook_id from your PayPal dashboard for verification",
+    "Store webhook event IDs to detect and handle duplicates",
+    "Process webhooks asynchronously — do not block the response",
+    "Log all webhook events with event_type and resource.id for debugging",
+    "Handle missing webhooks — poll order status as backup",
+    "Do not rely solely on webhooks for critical business logic — verify order status via API"
+  ],
+  "security": [
+    "ALWAYS verify webhook signatures — never trust unverified webhooks",
+    "Validate the webhook event type matches expected events",
+    "Verify the resource ID matches an order in your system",
+    "Use HTTPS for your webhook listener endpoint",
+    "Implement rate limiting on your webhook endpoint"
+  ]
+}

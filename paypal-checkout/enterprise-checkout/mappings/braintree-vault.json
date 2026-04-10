@@ -1,0 +1,73 @@
+{
+  "operation": "Braintree Vault / Tokenization",
+  "description": "Store payment methods for future charges using Braintree Vault",
+  "documentation": "https://developer.paypal.com/braintree/docs/guides/vaulting/",
+  "customer_management": {
+    "create": {
+      "method": "gateway.customer.create()",
+      "fields": ["firstName", "lastName", "email", "phone", "company"]
+    },
+    "find": "gateway.customer.find(customerId)",
+    "update": "gateway.customer.update(customerId, attributes)",
+    "delete": "gateway.customer.delete(customerId)"
+  },
+  "vault_with_transaction": {
+    "description": "Save payment method during a transaction",
+    "payload": {
+      "amount": "10.00",
+      "paymentMethodNonce": "nonce-from-client",
+      "customerId": "existing-customer-id",
+      "options": {
+        "submitForSettlement": true,
+        "storeInVaultOnSuccess": true
+      }
+    },
+    "result": "Transaction succeeds → payment method token stored on customer"
+  },
+  "vault_without_transaction": {
+    "description": "Save payment method without charging",
+    "method": "gateway.paymentMethod.create()",
+    "payload": {
+      "customerId": "existing-customer-id",
+      "paymentMethodNonce": "nonce-from-client",
+      "options": {
+        "verifyCard": true,
+        "makeDefault": true
+      }
+    },
+    "result": "Payment method verified and stored — returns token"
+  },
+  "use_vaulted_method": {
+    "description": "Charge a saved payment method using its token",
+    "method": "gateway.transaction.sale()",
+    "payload": {
+      "amount": "15.00",
+      "paymentMethodToken": "stored-token",
+      "options": { "submitForSettlement": true }
+    }
+  },
+  "payment_method_operations": {
+    "find": "gateway.paymentMethod.find(token)",
+    "update": "gateway.paymentMethod.update(token, attributes)",
+    "delete": "gateway.paymentMethod.delete(token)",
+    "list": "Access via customer.paymentMethods after gateway.customer.find()"
+  },
+  "client_token_with_customer": {
+    "description": "Generate client token with customerId to show saved methods in Drop-in UI",
+    "method": "gateway.clientToken.generate({ customerId: 'existing-customer-id' })"
+  },
+  "supported_vault_types": [
+    "Credit/debit cards",
+    "PayPal accounts",
+    "Venmo accounts",
+    "Apple Pay (device token)",
+    "Google Pay"
+  ],
+  "security": [
+    "Payment method tokens are NOT sensitive — safe to store in your database",
+    "Nonces are single-use — always create a new nonce for each payment",
+    "Use verifyCard: true when vaulting to confirm card is valid",
+    "Associate vaulted methods with authenticated users only",
+    "Provide a UI for customers to manage/delete saved methods"
+  ]
+}

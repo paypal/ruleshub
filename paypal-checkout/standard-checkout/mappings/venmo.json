@@ -1,0 +1,79 @@
+{
+  "operation": "Venmo",
+  "description": "Venmo payment integration for Standard Checkout — US merchants and buyers only",
+  "availability": {
+    "merchant_country": "US",
+    "buyer_country": "US",
+    "currency": "USD",
+    "note": "Venmo is US-only. Both merchant and buyer must be US-based. Only USD is supported."
+  },
+  "v5_pattern": {
+    "enable_funding": {
+      "script_tag": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_ID&enable-funding=venmo\"></script>",
+      "description": "Enable Venmo via script tag parameter"
+    },
+    "standalone_button": {
+      "code": "paypal.Buttons({ fundingSource: paypal.FUNDING.VENMO }).render('#venmo-container')",
+      "description": "Render standalone Venmo button"
+    },
+    "eligibility_check": {
+      "code": "if (paypal.isFundingEligible(paypal.FUNDING.VENMO)) { /* render Venmo */ }",
+      "description": "Check Venmo eligibility before rendering"
+    }
+  },
+  "v6_pattern": {
+    "initialization": {
+      "components": ["venmo-payments"],
+      "code": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: [\"venmo-payments\"] })"
+    },
+    "eligibility_check": {
+      "code": "const eligible = await sdkInstance.findEligibleMethods({ currencyCode: \"USD\", countryCode: \"US\" })",
+      "check": "eligible.isEligible(\"venmo\")",
+      "note": "Must pass countryCode: 'US' for Venmo eligibility"
+    },
+    "payment_session": {
+      "method": "sdkInstance.createVenmoOneTimePaymentSession()",
+      "callbacks": {
+        "onApprove": "async (data) => { await captureOrder({ orderId: data.orderId }); }",
+        "onCancel": "() => { console.log('Venmo cancelled'); }",
+        "onError": "(error) => { console.error('Venmo error:', error); }"
+      }
+    },
+    "button": {
+      "element": "Custom button with Venmo branding or standard button",
+      "example": "<button id=\"venmo-button\" hidden>Pay with Venmo</button>",
+      "show": "document.querySelector('#venmo-button').removeAttribute('hidden')"
+    },
+    "start_payment": {
+      "code": "await venmoSession.start({ presentationMode: 'auto' }, createOrder())",
+      "note": "presentationMode 'auto' provides best mobile experience"
+    }
+  },
+  "order_creation": {
+    "note": "No special order payload needed. Standard create order with USD currency.",
+    "requirement": "Currency must be USD"
+  },
+  "multi_method_setup": {
+    "description": "Combine PayPal and Venmo buttons with eligibility checking",
+    "components": ["paypal-payments", "venmo-payments"],
+    "flow": [
+      "1. Initialize SDK with both components",
+      "2. Check eligibility for each method",
+      "3. Render eligible buttons",
+      "4. Create separate payment sessions for each",
+      "5. Always provide PayPal as fallback"
+    ]
+  },
+  "best_practices": [
+    "Always check Venmo eligibility before rendering the button",
+    "Always provide PayPal as fallback payment method",
+    "Use presentationMode 'auto' for optimal mobile experience",
+    "Venmo is mobile-first — expect most usage on mobile devices",
+    "Only offer Venmo when currency is USD",
+    "Test in sandbox with US buyer accounts"
+  ],
+  "documentation": {
+    "overview": "https://developer.paypal.com/docs/checkout/pay-with-venmo/",
+    "ai_docs": "https://docs.paypal.ai/payments/methods/venmo/integrate"
+  }
+}

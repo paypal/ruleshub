@@ -1,0 +1,92 @@
+{
+  "operation": "SetCustomerBillingAgreement",
+  "deprecated": true,
+  "deprecated_since": "API version 54.0",
+  "rest_endpoint": "POST /v3/vault/setup-tokens",
+  "parameter_mappings": {
+    "nvp": {
+      "v3": {
+        "supported": {
+          "RETURNURL": "payment_source.paypal.experience_context.return_url",
+          "CANCELURL": "payment_source.paypal.experience_context.cancel_url",
+          "LOCALECODE": "payment_source.paypal.experience_context.locale",
+          "L_BILLINGAGREEMENTDESCRIPTIONn": "payment_source.paypal.description",
+          "VERSION": "API.EndPoint",
+          "METHOD": "API.Endpoint"
+        },
+        "not_supported": [
+          "BILLINGTYPE",
+          "EMAIL",
+          "HDRBACKCOLOR",
+          "HDRBORDERCOLOR",
+          "HDRIMG",
+          "L_BILLINGAGREEMENTCUSTOMn",
+          "L_BILLINGTYPEn",
+          "L_PAYMENTTYPEn",
+          "PAGESTYLE",
+          "PAYFLOWCOLOR",
+          "REQBILLINGADDRESS"
+        ]
+      }
+    },
+    "soap": {
+      "v3": {
+        "supported": {
+          "ReturnURL": "payment_source.paypal.experience_context.return_url",
+          "CancelURL": "payment_source.paypal.experience_context.cancel_url",
+          "LocaleCode": "payment_source.paypal.experience_context.locale",
+          "BillingAgreementDetails.BillingAgreementDescription": "payment_source.paypal.description",
+          "Version": "API.EndPoint",
+          "Method": "API.Endpoint"
+        },
+        "not_supported": [
+          "BillingAgreementDetails.BillingAgreementCustom",
+          "BillingAgreementDetails.BillingType",
+          "BillingAgreementDetails.PaymentType",
+          "BuyerEmail",
+          "PageStyle",
+          "cpp-header-back-color",
+          "cpp-header-border",
+          "cpp-header-image",
+          "cpp-payflow-color"
+        ]
+      }
+    }
+  },
+  "error_mappings": {
+    "10004": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX" },
+    "10404": { "v3_error": "INVALID_REQUEST", "v3_issue": "MISSING_REQUIRED_PARAMETER", "description": "ReturnURL is missing" },
+    "10405": { "v3_error": "INVALID_REQUEST", "v3_issue": "MISSING_REQUIRED_PARAMETER", "description": "CancelURL is missing" },
+    "10407": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "Invalid buyer email address" },
+    "10436": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "PageStyle value exceeds maximum length" },
+    "10437": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "cpp-header-image value exceeds maximum length" },
+    "10438": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "cpp-header-border-color value exceeds maximum length" },
+    "10439": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "cpp-header-back-color value exceeds maximum length" },
+    "10440": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "cpp-payflow-color value exceeds maximum length" },
+    "10452": { "v3_error": "UNPROCESSABLE_ENTITY", "v3_issue": "PERMISSION_DENIED", "description": "Merchant not enabled for reference transactions" },
+    "10453": { "v3_error": "UNPROCESSABLE_ENTITY", "v3_issue": "PERMISSION_DENIED", "description": "Reference transactions temporarily unavailable" },
+    "10471": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "ReturnURL is invalid" },
+    "10472": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX", "description": "CancelURL is invalid" },
+    "10476": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX" },
+    "10477": { "v3_error": "INVALID_REQUEST", "v3_issue": "INVALID_PARAMETER_SYNTAX" },
+    "10485": { "v3_error": "NOT_AUTHORIZED", "v3_issue": "PERMISSION_DENIED", "description": "Payment not authorized by user" },
+    "10601": { "v3_error": "UNPROCESSABLE_ENTITY", "v3_issue": "PERMISSION_DENIED", "description": "Billing address request not enabled for merchant" },
+    "10602": { "v3_error": "UNPROCESSABLE_ENTITY", "v3_issue": "PERMISSION_DENIED", "description": "Feature not yet available" }
+  },
+  "rest_only_fields": {
+    "payment_source.paypal.usage_pattern": "IMMEDIATE",
+    "payment_source.paypal.usage_type": "MERCHANT"
+  },
+  "special_notes": {
+    "token_format": "Legacy returns tokens with 'RP-' prefix. REST returns setup token ID.",
+    "authentication": "Replace USER/PWD/SIGNATURE with OAuth 2.0 Bearer token",
+    "webhook_required": "Configure webhook for VAULT.PAYMENT-TOKEN.CREATED event",
+    "migration_tips": [
+      "Both Flow A (SetExpressCheckout) and Flow B (SetCustomerBillingAgreement) migrate to the same REST endpoint",
+      "UI customization parameters (PAGESTYLE, HDRIMG, etc.) are not supported in v3",
+      "BILLINGTYPE is handled by the vault endpoint structure itself",
+      "Use SetExpressCheckout with AMT=0 for new integrations instead of this deprecated API"
+    ]
+  }
+}
+

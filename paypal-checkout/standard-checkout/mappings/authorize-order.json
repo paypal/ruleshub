@@ -1,0 +1,91 @@
+{
+  "operation": "Authorize Order",
+  "description": "Authorize an approved PayPal order for delayed capture",
+  "api_endpoints": {
+    "authorize_order": {
+      "method": "POST",
+      "path": "/v2/checkout/orders/{order_id}/authorize",
+      "description": "Authorize the order after buyer approval"
+    },
+    "capture_authorization": {
+      "method": "POST",
+      "path": "/v2/payments/authorizations/{authorization_id}/capture",
+      "description": "Capture an authorized payment"
+    },
+    "void_authorization": {
+      "method": "POST",
+      "path": "/v2/payments/authorizations/{authorization_id}/void",
+      "description": "Void an authorization (release hold)"
+    },
+    "reauthorize": {
+      "method": "POST",
+      "path": "/v2/payments/authorizations/{authorization_id}/reauthorize",
+      "description": "Reauthorize an expired or partially captured authorization"
+    }
+  },
+  "authorize_order_response": {
+    "id": "Order ID",
+    "status": "COMPLETED",
+    "purchase_units": [{
+      "payments": {
+        "authorizations": [{
+          "id": "Authorization ID (use for capture/void/reauthorize)",
+          "status": "CREATED",
+          "amount": {
+            "currency_code": "USD",
+            "value": "50.00"
+          },
+          "expiration_time": "ISO 8601 timestamp (authorization valid for ~29 days)",
+          "create_time": "ISO 8601 timestamp"
+        }]
+      }
+    }]
+  },
+  "capture_authorization_request": {
+    "amount": {
+      "required": false,
+      "description": "Omit for full capture. Provide for partial capture.",
+      "fields": {
+        "currency_code": "Must match authorization currency",
+        "value": "Amount to capture (up to authorization amount)"
+      }
+    },
+    "final_capture": {
+      "type": "boolean",
+      "default": true,
+      "description": "Set to false to allow multiple partial captures"
+    },
+    "invoice_id": "Optional invoice number",
+    "note_to_payer": "Optional note to buyer"
+  },
+  "authorization_lifecycle": {
+    "honor_period": "3 days — guaranteed funds hold",
+    "authorization_period": "29 days — extended period (not guaranteed after honor period)",
+    "reauthorization": "Available after original authorization expires or for amount changes",
+    "void": "Available anytime before capture to release the hold"
+  },
+  "when_to_use": [
+    "Ship after 3+ days",
+    "Verify order before fulfillment",
+    "Need to adjust amount before capture",
+    "Buy online, pick up in store (BOPIS)",
+    "Pre-order or backorder scenarios",
+    "Split shipments requiring multiple captures"
+  ],
+  "flow": [
+    "1. Create order with intent: AUTHORIZE",
+    "2. Buyer approves payment",
+    "3. POST /v2/checkout/orders/{order_id}/authorize",
+    "4. Extract authorization_id from response",
+    "5. When ready: POST /v2/payments/authorizations/{authorization_id}/capture",
+    "6. Or to cancel: POST /v2/payments/authorizations/{authorization_id}/void"
+  ],
+  "important_notes": [
+    "Authorization holds funds but does not transfer them",
+    "Honor period is 3 days — capture within this window when possible",
+    "After 3 days, funds hold is not guaranteed but capture can still be attempted",
+    "Authorization expires after 29 days",
+    "Partial captures: set final_capture=false for all but the last capture",
+    "Void releases the authorization hold — cannot capture after void"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "operation": "Agentic Commerce / Store Sync",
+  "description": "AI agent-driven product discovery, cart creation, and checkout via Store Sync and Cart Operations API",
+  "documentation": {
+    "overview": "https://docs.paypal.ai/growth/agentic-commerce/overview",
+    "agent_ready": "https://docs.paypal.ai/growth/agentic-commerce/agent-ready",
+    "store_sync_overview": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview",
+    "product_catalog": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/create-a-product-catalog",
+    "api_overview": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/api-overview",
+    "integration_use_cases": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/integration-use-cases",
+    "orders_v2_setup": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/orders-v2-integration",
+    "braintree_setup": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/braintree-integration",
+    "response_handling": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/response-handling",
+    "paypal_ai_site": "https://www.paypal.ai/"
+  },
+  "store_sync": {
+    "description": "Sync your product catalog so AI agents can discover and recommend products",
+    "flow": [
+      "1. Create product catalog via Store Sync API",
+      "2. Sync products, prices, inventory, and images",
+      "3. AI agents query catalog to find matching products",
+      "4. Agent presents options to buyer",
+      "5. Buyer confirms — proceed to cart/checkout"
+    ]
+  },
+  "cart_operations_api": {
+    "create_cart": {
+      "method": "POST",
+      "path": "/v2/cart",
+      "description": "Create a new shopping cart"
+    },
+    "get_cart": {
+      "method": "GET",
+      "path": "/v2/cart/{cart_id}",
+      "description": "Retrieve cart details"
+    },
+    "update_cart": {
+      "method": "PATCH",
+      "path": "/v2/cart/{cart_id}",
+      "description": "Add/remove items, update quantities"
+    }
+  },
+  "checkout_flow": {
+    "orders_v2": [
+      "1. AI agent creates cart via POST /v2/cart",
+      "2. Agent adds items via PATCH /v2/cart/{id}",
+      "3. Convert cart to order via POST /v2/checkout/orders",
+      "4. Buyer approves payment",
+      "5. Complete checkout via POST /v2/checkout/orders/{id}/capture"
+    ],
+    "braintree": [
+      "1. AI agent creates cart via Store Sync / merchant API",
+      "2. Generate client token for payment UI",
+      "3. Buyer completes payment in Braintree Drop-in",
+      "4. Process transaction via Braintree SDK"
+    ]
+  },
+  "integration_paths": {
+    "orders_v2": "Use PayPal Orders API v2 — standard REST approach",
+    "braintree": "Use Braintree SDK — enterprise card processing and vault"
+  },
+  "best_practices": [
+    "Keep product catalog in sync with your inventory system",
+    "Handle product availability changes gracefully",
+    "Validate cart contents and prices server-side before checkout",
+    "Implement proper error handling for out-of-stock items",
+    "Follow PayPal response handling guidelines for consistent agent behavior"
+  ]
+}

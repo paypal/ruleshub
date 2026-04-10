@@ -1,0 +1,305 @@
+{
+  "operation": "V4 Error Handling to V6",
+  "description": "Migration from v4 error handling patterns to v6 enhanced error handling",
+  "official_docs": {
+    "v4_archive": "https://developer.paypal.com/docs/archive/",
+    "v6_docs": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  },
+  "v4_error_handling": {
+    "callback": {
+      "signature": "onError: function(err) { ... }",
+      "error_object": {
+        "message": "string - error description",
+        "stack": "string - stack trace (may be present)",
+        "name": "string - error name/type"
+      },
+      "limitations": [
+        "Limited error details",
+        "No debug ID in client errors",
+        "Inconsistent error structure",
+        "No typed error categories"
+      ]
+    },
+    "client_side_errors": {
+      "payment_create_error": "Caught in payment() callback",
+      "payment_execute_error": "Caught in onAuthorize() callback",
+      "button_render_error": "Thrown during Button.render()",
+      "network_error": "Generic network failures"
+    },
+    "server_side_errors": {
+      "api_error_structure": {
+        "name": "ERROR_NAME",
+        "message": "Human-readable description",
+        "debug_id": "PayPal-Debug-Id header",
+        "information_link": "URL to error documentation",
+        "details": [
+          {
+            "field": "Field that caused error",
+            "issue": "Description of the issue"
+          }
+        ]
+      }
+    }
+  },
+  "v6_error_handling": {
+    "callback": {
+      "signature": "onError: (error: Error) => void",
+      "error_object": {
+        "message": "string - error description",
+        "name": "string - error type",
+        "details": {
+          "debug_id": "string - PayPal debug ID for support",
+          "issue": "string - specific issue description",
+          "description": "string - detailed description"
+        }
+      },
+      "improvements": [
+        "Consistent error structure",
+        "Debug IDs included in client errors",
+        "Detailed error information",
+        "Better error categorization"
+      ]
+    },
+    "client_side_errors": {
+      "sdk_initialization_error": "Caught during createInstance()",
+      "eligibility_check_error": "Caught during findEligibleMethods()",
+      "session_creation_error": "Caught during create*Session()",
+      "order_creation_error": "Caught in createOrder callback",
+      "payment_approval_error": "Caught in onApprove callback",
+      "network_error": "Enhanced with debug IDs"
+    },
+    "server_side_errors": {
+      "api_error_structure": {
+        "name": "ERROR_NAME",
+        "message": "Human-readable description",
+        "debug_id": "From PayPal-Debug-Id header",
+        "details": [
+          {
+            "issue": "Error type/category",
+            "description": "Detailed description",
+            "field": "Field path (if applicable)",
+            "value": "Problematic value (if applicable)",
+            "location": "Request location (body, query, path)"
+          }
+        ],
+        "links": [
+          {
+            "href": "URL for more information",
+            "rel": "information_link",
+            "method": "GET"
+          }
+        ]
+      }
+    }
+  },
+  "common_errors": {
+    "authentication_errors": {
+      "v4": {
+        "error": "AUTHENTICATION_FAILURE",
+        "causes": [
+          "Invalid client ID",
+          "Invalid secret",
+          "Expired access token"
+        ]
+      },
+      "v6": {
+        "error": "AUTHENTICATION_FAILURE",
+        "causes": [
+          "Invalid client token",
+          "Expired client token",
+          "Token not valid for domain"
+        ],
+        "additional_check": "Ensure token generated correctly server-side"
+      }
+    },
+    "validation_errors": {
+      "v4": {
+        "error": "VALIDATION_ERROR",
+        "common_issues": [
+          "Invalid amount format",
+          "Missing required fields",
+          "Invalid currency code"
+        ]
+      },
+      "v6": {
+        "error": "INVALID_REQUEST",
+        "common_issues": [
+          "Invalid amount format (must be string with 2 decimals)",
+          "Missing purchase_units",
+          "Invalid currency_code",
+          "Amount breakdown doesn't match total"
+        ],
+        "enhanced_details": "Error.details includes specific field path"
+      }
+    },
+    "payment_errors": {
+      "v4": {
+        "errors": [
+          "INSTRUMENT_DECLINED",
+          "INSUFFICIENT_FUNDS",
+          "TRANSACTION_REFUSED"
+        ]
+      },
+      "v6": {
+        "errors": [
+          "INSTRUMENT_DECLINED",
+          "INSUFFICIENT_FUNDS",
+          "PAYMENT_DENIED"
+        ],
+        "additional_info": "Enhanced buyer messaging in error.details"
+      }
+    },
+    "order_errors": {
+      "v6_specific": {
+        "ORDER_NOT_APPROVED": "Order not approved by buyer",
+        "ORDER_ALREADY_CAPTURED": "Attempting to capture already-captured order",
+        "ORDER_ALREADY_AUTHORIZED": "Attempting to authorize already-authorized order",
+        "ORDER_EXPIRED": "Order exceeded 3-hour approval window"
+      }
+    }
+  },
+  "error_recovery_patterns": {
+    "v4": {
+      "client_side": {
+        "pattern": "try { return actions.payment.create(...); } catch (err) { console.error(err); }",
+        "limitations": "Limited recovery options, usually requires page reload"
+      },
+      "server_side": {
+        "pattern": "if (error.response) { const debugId = error.response.headers['paypal-debug-id']; }",
+        "limitations": "Manual extraction of debug ID"
+      }
+    },
+    "v6": {
+      "client_side": {
+        "pattern": "try { await session.start(...); } catch (error) { const debugId = error.details?.debug_id; }",
+        "improvements": "Debug ID directly in error object"
+      },
+      "server_side": {
+        "pattern": "catch (error) { const debugId = error.response?.headers?.['paypal-debug-id']; const details = error.response?.data?.details; }",
+        "improvements": "Structured error details with field-level information"
+      }
+    }
+  },
+  "migration_examples": {
+    "v4_error_handler": {
+      "code": "onError: function(err) {\n  console.error('Payment error:', err.message);\n  alert('Payment failed. Please try again.');\n}",
+      "limitations": [
+        "No debug ID available",
+        "Generic error message",
+        "No user guidance"
+      ]
+    },
+    "v6_error_handler": {
+      "code": "onError: (error) => {\n  console.error('Payment error:', error);\n  const debugId = error.details?.debug_id || 'N/A';\n  const message = error.message || 'Payment failed';\n  alert(`${message}\\n\\nReference: ${debugId}\\n\\nPlease contact support if the issue persists.`);\n}",
+      "improvements": [
+        "Debug ID included",
+        "Specific error message",
+        "User guidance with reference number"
+      ]
+    },
+    "v4_server_error_handling": {
+      "code": "request.post(PAYPAL_API + '/v1/payments/payment', {...}, (err, response) => {\n  if (err) {\n    console.error(err);\n    return res.sendStatus(500);\n  }\n});",
+      "limitations": [
+        "No debug ID logging",
+        "No structured error response",
+        "No client-friendly message"
+      ]
+    },
+    "v6_server_error_handling": {
+      "code": "try {\n  const response = await axios.post(`${PAYPAL_BASE_URL}/v2/checkout/orders`, ...);\n} catch (error) {\n  const debugId = error.response?.headers?.['paypal-debug-id'];\n  const details = error.response?.data?.details;\n  console.error('Order creation failed:', { debugId, details });\n  return res.status(error.response?.status || 500).json({\n    error: 'ORDER_CREATION_FAILED',\n    debugId,\n    message: 'Unable to create order'\n  });\n}",
+      "improvements": [
+        "Debug ID captured and logged",
+        "Structured error details",
+        "Client receives actionable error"
+      ]
+    }
+  },
+  "debugging_improvements": {
+    "v4_limitations": [
+      "Client-side errors lack debug IDs",
+      "Inconsistent error formats",
+      "Limited error context",
+      "Manual correlation between client and server errors"
+    ],
+    "v6_enhancements": [
+      "Debug IDs in all error responses",
+      "Consistent error structure",
+      "Field-level validation errors",
+      "Error details include suggested resolution",
+      "Better correlation with PayPal support"
+    ]
+  },
+  "callback_signature_changes": {
+    "v4": {
+      "onError": {
+        "signature": "onError: function(err) { ... }",
+        "parameters": "Single error object (untyped)"
+      },
+      "onAuthorize_error": {
+        "signature": "onAuthorize: function(data, actions) { return actions.payment.execute().catch(err => {...}); }",
+        "pattern": "Promise rejection handling"
+      }
+    },
+    "v6": {
+      "onError": {
+        "signature": "onError: (error: Error) => void",
+        "parameters": "Error object with .details property",
+        "typescript": "error: { message: string, details?: { debug_id?: string, issue?: string } }"
+      },
+      "onApprove_error": {
+        "signature": "onApprove: async (data) => { try { await captureOrder(...); } catch (error) {...} }",
+        "pattern": "Async/await with try-catch"
+      }
+    }
+  },
+  "best_practices": [
+    "Always log debug IDs for support correlation",
+    "Display user-friendly messages, not technical errors",
+    "Provide debug ID to users for support cases",
+    "Implement structured error logging",
+    "Use try-catch for all async operations",
+    "Handle network errors separately from API errors",
+    "Implement exponential backoff for transient errors",
+    "Test error scenarios in sandbox thoroughly"
+  ],
+  "migration_checklist": [
+    {
+      "task": "Update onError callback signature",
+      "v4": "function(err)",
+      "v6": "(error: Error) => void"
+    },
+    {
+      "task": "Extract debug IDs from errors",
+      "v4": "Not available client-side",
+      "v6": "error.details?.debug_id"
+    },
+    {
+      "task": "Update error messages for users",
+      "v4": "Generic messages",
+      "v6": "Include debug ID reference"
+    },
+    {
+      "task": "Implement server-side error logging",
+      "v4": "Basic logging",
+      "v6": "Log debugId and details"
+    },
+    {
+      "task": "Update webhook error handling",
+      "v4": "Basic status checks",
+      "v6": "Structured error responses"
+    },
+    {
+      "task": "Test all error scenarios",
+      "v4": "Limited error states",
+      "v6": "Comprehensive error testing"
+    }
+  ],
+  "summary": {
+    "v4_limitations": "Basic error handling, no client-side debug IDs, inconsistent structure",
+    "v6_improvements": "Enhanced error details, debug IDs everywhere, structured responses",
+    "migration_impact": "Requires updating all error handlers but provides much better debugging",
+    "key_benefit": "Faster issue resolution with comprehensive error information"
+  }
+}
+
+

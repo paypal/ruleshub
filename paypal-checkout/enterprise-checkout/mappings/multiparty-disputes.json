@@ -1,0 +1,59 @@
+{
+  "operation": "Multiparty Disputes",
+  "description": "Handle disputes and chargebacks in multiparty/marketplace integrations",
+  "documentation": "https://developer.paypal.com/docs/multiparty/disputes-chargebacks/",
+  "dispute_flow": [
+    "1. Buyer opens dispute (item not received, not as described, unauthorized)",
+    "2. PayPal notifies platform and seller via webhook",
+    "3. Seller/platform responds with evidence within dispute window",
+    "4. PayPal adjudicates or buyer/seller resolve directly",
+    "5. Resolution: refund, partial refund, or case closed in seller's favor"
+  ],
+  "dispute_api": {
+    "list_disputes": {
+      "method": "GET",
+      "path": "/v1/customer/disputes",
+      "filters": ["dispute_state", "start_time", "end_time"]
+    },
+    "get_dispute": {
+      "method": "GET",
+      "path": "/v1/customer/disputes/{dispute_id}"
+    },
+    "provide_evidence": {
+      "method": "POST",
+      "path": "/v1/customer/disputes/{dispute_id}/provide-evidence",
+      "evidence_types": [
+        "PROOF_OF_FULFILLMENT",
+        "PROOF_OF_REFUND",
+        "TRACKING_INFO",
+        "OTHER"
+      ]
+    },
+    "accept_claim": {
+      "method": "POST",
+      "path": "/v1/customer/disputes/{dispute_id}/accept-claim"
+    },
+    "appeal": {
+      "method": "POST",
+      "path": "/v1/customer/disputes/{dispute_id}/appeal"
+    }
+  },
+  "multiparty_considerations": {
+    "platform_responsibility": "Platform may need to act on behalf of sellers for dispute responses",
+    "fee_handling": "Platform fees may be affected by dispute resolution",
+    "seller_notification": "Platform should notify sellers of disputes immediately",
+    "evidence_collection": "Platform may need to coordinate evidence from seller"
+  },
+  "webhook_events": {
+    "CUSTOMER.DISPUTE.CREATED": "New dispute opened",
+    "CUSTOMER.DISPUTE.UPDATED": "Dispute status changed",
+    "CUSTOMER.DISPUTE.RESOLVED": "Dispute resolved"
+  },
+  "best_practices": [
+    "Subscribe to dispute webhooks for real-time notification",
+    "Respond to disputes within the required window (typically 10 days)",
+    "Collect shipping tracking information proactively",
+    "Provide comprehensive evidence when responding",
+    "Track dispute rates per seller for platform health monitoring"
+  ]
+}

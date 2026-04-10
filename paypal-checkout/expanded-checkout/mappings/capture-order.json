@@ -1,0 +1,42 @@
+{
+  "operation": "Capture Order — Expanded Checkout",
+  "description": "Capture an approved order including card payments with 3D Secure results",
+  "api_endpoint": {
+    "method": "POST",
+    "path": "/v2/checkout/orders/{order_id}/capture",
+    "sandbox": "https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture",
+    "production": "https://api-m.paypal.com/v2/checkout/orders/{order_id}/capture"
+  },
+  "card_specific_response_fields": {
+    "purchase_units[].payments.captures[].id": "Capture ID for refunds",
+    "payment_source.card": {
+      "brand": "VISA, MASTERCARD, AMEX, etc.",
+      "last_digits": "Last 4 digits of card number",
+      "type": "CREDIT or DEBIT",
+      "authentication_result": {
+        "liability_shift": "POSSIBLE, YES, NO, UNKNOWN",
+        "three_d_secure": {
+          "enrollment_status": "Y (enrolled), N (not enrolled), U (unknown)",
+          "authentication_status": "Y (success), N (fail), A (attempted), U (unable), R (rejected), C (challenge)"
+        }
+      }
+    }
+  },
+  "liability_shift": {
+    "POSSIBLE": "3D Secure was available but not completed — limited protection",
+    "YES": "Liability shifted to card issuer — chargeback protection for merchant",
+    "NO": "No liability shift — merchant bears chargeback risk",
+    "UNKNOWN": "Unable to determine — treat as NO"
+  },
+  "post_capture_actions": {
+    "check_liability_shift": "Verify authentication_result.liability_shift before fulfillment",
+    "store_capture_id": "Persist capture ID for refund operations",
+    "log_3ds_result": "Log 3D Secure enrollment and authentication status for debugging"
+  },
+  "important_notes": [
+    "Card captures may include 3D Secure authentication results",
+    "Always check liability_shift for fraud protection decisions",
+    "Capture ID is needed for POST /v2/payments/captures/{id}/refund",
+    "Some card payments may have PENDING status requiring webhook confirmation"
+  ]
+}

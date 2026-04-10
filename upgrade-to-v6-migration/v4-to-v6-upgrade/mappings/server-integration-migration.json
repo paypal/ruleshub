@@ -1,0 +1,399 @@
+{
+  "operation": "V4 Server Integration to V6",
+  "description": "Complete migration from v4 server integration patterns to v6 server-side requirements",
+  "official_docs": {
+    "v4_server_integration": "https://developer.paypal.com/docs/archive/checkout/how-to/server-integration/",
+    "v4_api_reference": "https://developer.paypal.com/docs/api/payments/v1/",
+    "v6_orders_api": "https://developer.paypal.com/docs/api/orders/v2/"
+  },
+  "v4_patterns": {
+    "client_side_helpers": {
+      "payment_create": "actions.payment.create({ payment: {...} })",
+      "payment_execute": "actions.payment.execute()",
+      "server_call": "actions.request.post(url, data)"
+    },
+    "payment_callback": {
+      "signature": "payment: function(data, actions) { ... }",
+      "client_side_option": "return actions.payment.create({ payment: {...} });",
+      "server_side_option": "return actions.request.post('/create-payment').then(res => res.id);",
+      "return_value": "Payment ID (string)"
+    },
+    "authorization_callback": {
+      "signature": "onAuthorize: function(data, actions) { ... }",
+      "parameters": {
+        "data": {
+          "paymentID": "PAY-XXXXX format",
+          "payerID": "Buyer's payer ID",
+          "paymentToken": "EC-XXXXX token"
+        },
+        "actions": {
+          "payment_execute": "actions.payment.execute()",
+          "request_post": "actions.request.post(url, data)"
+        }
+      },
+      "client_side_option": "return actions.payment.execute();",
+      "server_side_option": "return actions.request.post('/execute-payment', { paymentID, payerID });"
+    }
+  },
+  "v4_api_structure": {
+    "endpoints": {
+      "create_payment": "POST /v1/payments/payment",
+      "execute_payment": "POST /v1/payments/payment/{payment-id}/execute",
+      "get_payment": "GET /v1/payments/payment/{payment-id}",
+      "authorize": "POST /v1/payments/authorization/{auth-id}/capture",
+      "void": "POST /v1/payments/authorization/{auth-id}/void",
+      "refund": "POST /v1/payments/capture/{capture-id}/refund"
+    },
+    "authentication": "Basic Auth (Client ID + Secret in base64)",
+    "payment_object": {
+      "intent": "sale | authorize | order",
+      "payer": {
+        "payment_method": "paypal"
+      },
+      "transactions": [{
+        "amount": {
+          "total": "string",
+          "currency": "string",
+          "details": {
+            "subtotal": "string",
+            "tax": "string",
+            "shipping": "string",
+            "handling_fee": "string",
+            "shipping_discount": "string",
+            "insurance": "string"
+          }
+        },
+        "description": "string",
+        "item_list": {
+          "items": [{
+            "name": "string",
+            "sku": "string",
+            "price": "string",
+            "currency": "string",
+            "quantity": "integer",
+            "tax": "string"
+          }],
+          "shipping_address": {
+            "recipient_name": "string",
+            "line1": "string",
+            "line2": "string",
+            "city": "string",
+            "state": "string",
+            "postal_code": "string",
+            "country_code": "string",
+            "phone": "string"
+          }
+        }
+      }],
+      "redirect_urls": {
+        "return_url": "string (required in v4)",
+        "cancel_url": "string (required in v4)"
+      }
+    },
+    "payment_id_format": "PAY-XXXXX"
+  },
+  "v6_api_structure": {
+    "endpoints": {
+      "create_order": "POST /v2/checkout/orders",
+      "capture_order": "POST /v2/checkout/orders/{order-id}/capture",
+      "get_order": "GET /v2/checkout/orders/{order-id}",
+      "authorize": "POST /v2/payments/authorizations/{auth-id}/capture",
+      "void": "POST /v2/payments/authorizations/{auth-id}/void",
+      "refund": "POST /v2/payments/captures/{capture-id}/refund"
+    },
+    "authentication": "OAuth 2.0 Bearer token",
+    "client_token_generation": {
+      "endpoint": "POST /v1/oauth2/token",
+      "grant_type": "client_credentials",
+      "response_type": "client_token",
+      "intent": "sdk_init"
+    },
+    "order_object": {
+      "intent": "CAPTURE | AUTHORIZE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "string",
+          "value": "string",
+          "breakdown": {
+            "item_total": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "shipping": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "tax_total": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "handling": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "shipping_discount": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "insurance": {
+              "currency_code": "string",
+              "value": "string"
+            },
+            "discount": {
+              "currency_code": "string",
+              "value": "string"
+            }
+          }
+        },
+        "description": "string",
+        "items": [{
+          "name": "string",
+          "unit_amount": {
+            "currency_code": "string",
+            "value": "string"
+          },
+          "tax": {
+            "currency_code": "string",
+            "value": "string"
+          },
+          "quantity": "string",
+          "sku": "string"
+        }],
+        "shipping": {
+          "name": {
+            "full_name": "string"
+          },
+          "address": {
+            "address_line_1": "string",
+            "address_line_2": "string",
+            "admin_area_2": "string",
+            "admin_area_1": "string",
+            "postal_code": "string",
+            "country_code": "string"
+          }
+        }
+      }]
+    },
+    "order_id_format": "Alphanumeric"
+  },
+  "field_mappings": [
+    {
+      "v4_path": "intent: 'sale'",
+      "v6_path": "intent: 'CAPTURE'",
+      "notes": "Lowercase to uppercase, terminology change"
+    },
+    {
+      "v4_path": "intent: 'authorize'",
+      "v6_path": "intent: 'AUTHORIZE'",
+      "notes": "Lowercase to uppercase"
+    },
+    {
+      "v4_path": "intent: 'order'",
+      "v6_path": "intent: 'CAPTURE' or 'AUTHORIZE'",
+      "notes": "'order' intent removed, use CAPTURE or AUTHORIZE"
+    },
+    {
+      "v4_path": "transactions[0].amount.total",
+      "v6_path": "purchase_units[0].amount.value",
+      "notes": "Array name and field name changed"
+    },
+    {
+      "v4_path": "transactions[0].amount.currency",
+      "v6_path": "purchase_units[0].amount.currency_code",
+      "notes": "Field name changed"
+    },
+    {
+      "v4_path": "transactions[0].amount.details.subtotal",
+      "v6_path": "purchase_units[0].amount.breakdown.item_total.value",
+      "notes": "Nested structure, field names changed"
+    },
+    {
+      "v4_path": "transactions[0].amount.details.tax",
+      "v6_path": "purchase_units[0].amount.breakdown.tax_total.value",
+      "notes": "Nested structure, field names changed"
+    },
+    {
+      "v4_path": "transactions[0].amount.details.shipping",
+      "v6_path": "purchase_units[0].amount.breakdown.shipping.value",
+      "notes": "Nested structure, field names changed"
+    },
+    {
+      "v4_path": "transactions[0].item_list.items[]",
+      "v6_path": "purchase_units[0].items[]",
+      "notes": "Simplified path"
+    },
+    {
+      "v4_path": "transactions[0].item_list.items[].price",
+      "v6_path": "purchase_units[0].items[].unit_amount.value",
+      "notes": "Field becomes object with currency"
+    },
+    {
+      "v4_path": "transactions[0].item_list.items[].quantity",
+      "v6_path": "purchase_units[0].items[].quantity",
+      "notes": "Type changes: integer → string"
+    },
+    {
+      "v4_path": "transactions[0].item_list.shipping_address",
+      "v6_path": "purchase_units[0].shipping.address",
+      "notes": "Structure and field names changed"
+    },
+    {
+      "v4_path": "transactions[0].item_list.shipping_address.recipient_name",
+      "v6_path": "purchase_units[0].shipping.name.full_name",
+      "notes": "Field path changed"
+    },
+    {
+      "v4_path": "transactions[0].item_list.shipping_address.line1",
+      "v6_path": "purchase_units[0].shipping.address.address_line_1",
+      "notes": "Field name changed"
+    },
+    {
+      "v4_path": "transactions[0].item_list.shipping_address.city",
+      "v6_path": "purchase_units[0].shipping.address.admin_area_2",
+      "notes": "Field name changed"
+    },
+    {
+      "v4_path": "transactions[0].item_list.shipping_address.state",
+      "v6_path": "purchase_units[0].shipping.address.admin_area_1",
+      "notes": "Field name changed"
+    },
+    {
+      "v4_path": "redirect_urls.return_url",
+      "v6_path": "N/A - Not needed",
+      "notes": "Removed in v6"
+    },
+    {
+      "v4_path": "redirect_urls.cancel_url",
+      "v6_path": "N/A - Not needed",
+      "notes": "Removed in v6"
+    }
+  ],
+  "migration_examples": {
+    "v4_server_create_payment": {
+      "method": "POST",
+      "url": "/v1/payments/payment",
+      "headers": {
+        "Authorization": "Basic <base64(client_id:secret)>",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "intent": "sale",
+        "payer": { "payment_method": "paypal" },
+        "transactions": [{
+          "amount": {
+            "total": "100.00",
+            "currency": "USD",
+            "details": {
+              "subtotal": "90.00",
+              "tax": "10.00"
+            }
+          }
+        }],
+        "redirect_urls": {
+          "return_url": "https://example.com/return",
+          "cancel_url": "https://example.com/cancel"
+        }
+      }
+    },
+    "v6_server_create_order": {
+      "method": "POST",
+      "url": "/v2/checkout/orders",
+      "headers": {
+        "Authorization": "Bearer <access_token>",
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": "<idempotency_key>"
+      },
+      "body": {
+        "intent": "CAPTURE",
+        "purchase_units": [{
+          "amount": {
+            "currency_code": "USD",
+            "value": "100.00",
+            "breakdown": {
+              "item_total": { "currency_code": "USD", "value": "90.00" },
+              "tax_total": { "currency_code": "USD", "value": "10.00" }
+            }
+          }
+        }]
+      }
+    }
+  },
+  "client_server_communication": {
+    "v4_helper": {
+      "method": "actions.request.post(url, data)",
+      "description": "Built-in helper for client-server communication",
+      "example": "actions.request.post('/create-payment').then(res => res.id)",
+      "features": [
+        "Automatic request handling",
+        "Promise-based",
+        "No manual fetch setup required"
+      ]
+    },
+    "v6_manual": {
+      "method": "Standard fetch() API",
+      "description": "Use native JavaScript fetch for server communication",
+      "example": "const res = await fetch('/api/orders', { method: 'POST' }); return (await res.json()).id;",
+      "features": [
+        "Standard web API",
+        "Full control over headers/body",
+        "Async/await support"
+      ]
+    }
+  },
+  "breaking_changes": [
+    {
+      "change": "actions.payment.create() removed",
+      "impact": "Cannot create payments client-side",
+      "migration": "Create server endpoint POST /v2/checkout/orders"
+    },
+    {
+      "change": "actions.payment.execute() removed",
+      "impact": "Cannot execute payments client-side",
+      "migration": "Create server endpoint POST /v2/checkout/orders/{id}/capture"
+    },
+    {
+      "change": "actions.request.post() removed",
+      "impact": "No built-in helper for server calls",
+      "migration": "Use standard fetch() API"
+    },
+    {
+      "change": "Payment ID format changed",
+      "impact": "PAY-XXXXX no longer used",
+      "migration": "Use alphanumeric order IDs from v2 API"
+    },
+    {
+      "change": "redirect_urls required in v4",
+      "impact": "No longer needed in v6",
+      "migration": "Remove redirect_urls from payload"
+    },
+    {
+      "change": "transactions[] array → purchase_units[]",
+      "impact": "Complete payload structure change",
+      "migration": "Restructure entire payment object"
+    },
+    {
+      "change": "Basic Auth → OAuth 2.0",
+      "impact": "Authentication method changed",
+      "migration": "Implement OAuth 2.0 token generation"
+    }
+  ],
+  "security_improvements": [
+    "Client credentials never exposed to browser",
+    "Time-limited OAuth tokens",
+    "Idempotency keys for duplicate prevention",
+    "Server-side validation required",
+    "No client-side API calls possible"
+  ],
+  "best_practices": [
+    "Always validate amounts server-side",
+    "Use PayPal-Request-Id for idempotency",
+    "Cache OAuth access tokens (expires in 9 hours)",
+    "Implement proper error handling with debug IDs",
+    "Store order IDs for reconciliation",
+    "Use webhooks for order events",
+    "Never trust client-side data",
+    "Implement retry logic for network failures"
+  ]
+}
+
+

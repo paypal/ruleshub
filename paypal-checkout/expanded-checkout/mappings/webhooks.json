@@ -1,0 +1,61 @@
+{
+  "operation": "Webhooks — Expanded Checkout",
+  "description": "Webhook events for card payments, 3D Secure, and card vaulting",
+  "webhook_setup": {
+    "dashboard": "https://developer.paypal.com/dashboard/applications → Your App → Webhooks",
+    "api": "POST /v1/notifications/webhooks"
+  },
+  "expanded_checkout_events": {
+    "payment_events": {
+      "PAYMENT.CAPTURE.COMPLETED": {
+        "description": "Card payment captured successfully",
+        "action": "Fulfill the order",
+        "key_fields": ["resource.id", "resource.amount", "resource.status"]
+      },
+      "PAYMENT.CAPTURE.DENIED": {
+        "description": "Card payment capture was denied",
+        "action": "Notify buyer, suggest alternative payment"
+      },
+      "PAYMENT.CAPTURE.PENDING": {
+        "description": "Card payment is pending review",
+        "action": "Wait for completion webhook before fulfilling"
+      },
+      "PAYMENT.CAPTURE.REFUNDED": {
+        "description": "Captured card payment was refunded",
+        "action": "Update order status"
+      }
+    },
+    "vault_events": {
+      "VAULT.PAYMENT-TOKEN.CREATED": {
+        "description": "Card was successfully saved to vault",
+        "action": "Store payment token ID for future charges",
+        "key_fields": ["resource.id", "resource.payment_source.card.last_digits"]
+      },
+      "VAULT.PAYMENT-TOKEN.DELETED": {
+        "description": "Saved card was removed from vault",
+        "action": "Remove payment token from your database"
+      }
+    },
+    "authorization_events": {
+      "PAYMENT.AUTHORIZATION.CREATED": {
+        "description": "Card authorization created (for AUTHORIZE intent)",
+        "action": "Record authorization ID for later capture"
+      },
+      "PAYMENT.AUTHORIZATION.VOIDED": {
+        "description": "Card authorization was voided",
+        "action": "Update order status, release hold"
+      }
+    }
+  },
+  "webhook_verification": {
+    "endpoint": "POST /v1/notifications/verify-webhook-signature",
+    "note": "Same verification process as Standard Checkout — see standard-checkout webhooks mapping for full details"
+  },
+  "best_practices": [
+    "Subscribe to VAULT.PAYMENT-TOKEN.CREATED for card vaulting flows",
+    "Use PAYMENT.CAPTURE.COMPLETED as authoritative confirmation of card payment",
+    "Handle PAYMENT.CAPTURE.PENDING for cards that require additional review",
+    "Implement idempotent webhook processing",
+    "Verify webhook signatures before processing"
+  ]
+}

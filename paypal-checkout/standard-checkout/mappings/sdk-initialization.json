@@ -1,0 +1,102 @@
+{
+  "operation": "SDK Initialization",
+  "description": "PayPal Standard Checkout SDK setup for v5 and v6",
+  "v5_pattern": {
+    "script_tag": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID\"></script>",
+    "script_parameters": {
+      "client-id": "Required. Your PayPal client ID",
+      "currency": "Optional. Default: USD",
+      "components": "Optional. Default: buttons. Options: buttons,messages,funding-eligibility",
+      "enable-funding": "Optional. Enable specific funding sources: venmo,paylater,credit",
+      "disable-funding": "Optional. Disable specific funding sources",
+      "locale": "Optional. e.g., en_US",
+      "merchant-id": "Optional. Merchant identifier",
+      "intent": "Optional. capture or authorize. Default: capture",
+      "debug": "Optional. Enable debug mode"
+    },
+    "initialization": {
+      "method": "paypal.Buttons({ ... }).render('#container')",
+      "global_object": "window.paypal",
+      "available_immediately": true
+    },
+    "sandbox_url": "https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID",
+    "production_url": "https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"
+  },
+  "v6_pattern": {
+    "script_tag": {
+      "sandbox": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>",
+      "production": "<script async src=\"https://www.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    "initialization": {
+      "method": "window.paypal.createInstance()",
+      "required_parameters": {
+        "clientToken": "Server-generated browser-safe client token",
+        "components": "Array of component names, e.g. [\"paypal-payments\"]"
+      },
+      "optional_parameters": {
+        "pageType": "\"cart\" | \"checkout\" | \"home\" | \"mini-cart\" | \"product-details\" | \"product-listing\" | \"search-results\"",
+        "locale": "BCP-47 language code (e.g., \"en-US\")",
+        "testBuyerCountry": "Two-letter ISO country code for testing"
+      }
+    },
+    "available_components": [
+      "paypal-payments",
+      "venmo-payments",
+      "paypal-billing-agreements"
+    ],
+    "web_components": {
+      "paypal-button": "PayPal payment button",
+      "paypal-pay-later-button": "Pay Later button",
+      "paypal-credit-button": "PayPal Credit button"
+    },
+    "eligibility_check": {
+      "method": "sdkInstance.findEligibleMethods({ currencyCode: \"USD\" })",
+      "returns": "Object with isEligible(method) function"
+    },
+    "client_token_endpoint": {
+      "method": "GET",
+      "path": "/paypal-api/auth/browser-safe-client-token",
+      "paypal_api": "POST /v1/oauth2/token with grant_type=client_credentials&response_type=client_token&intent=sdk_init"
+    }
+  },
+  "upgrade_steps": [
+    {
+      "step": 1,
+      "action": "Remove v5 script tag with client-id parameter",
+      "example": "Remove: <script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID\"></script>"
+    },
+    {
+      "step": 2,
+      "action": "Add v6 core SDK script tag without credentials",
+      "example": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    {
+      "step": 3,
+      "action": "Create server endpoint for client token generation",
+      "endpoint": "GET /paypal-api/auth/browser-safe-client-token"
+    },
+    {
+      "step": 4,
+      "action": "Implement SDK initialization with server-generated token",
+      "code": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: [\"paypal-payments\"] })"
+    },
+    {
+      "step": 5,
+      "action": "Check eligibility before rendering buttons",
+      "code": "const eligible = await sdkInstance.findEligibleMethods({ currencyCode: \"USD\" })"
+    },
+    {
+      "step": 6,
+      "action": "Replace paypal.Buttons() with payment session",
+      "code": "const session = sdkInstance.createPayPalOneTimePaymentSession({ onApprove, onCancel, onError })"
+    }
+  ],
+  "best_practices": [
+    "Load SDK asynchronously to avoid blocking page render",
+    "Show loading indicators during SDK initialization",
+    "Handle initialization failures gracefully with user-friendly messages",
+    "Cache client tokens on server within expiration window (v6)",
+    "Initialize SDK only after client token is retrieved (v6)",
+    "Provide fallback UI when SDK fails to load"
+  ]
+}

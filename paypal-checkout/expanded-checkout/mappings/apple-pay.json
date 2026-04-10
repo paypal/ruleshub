@@ -1,0 +1,43 @@
+{
+  "operation": "Apple Pay",
+  "description": "Apple Pay integration via PayPal JS SDK for Expanded Checkout",
+  "documentation": {
+    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay",
+    "developer_paypal": "https://developer.paypal.com/docs/checkout/apm/apple-pay/"
+  },
+  "requirements": {
+    "merchant": "Must register Apple Pay domain with PayPal",
+    "browser": "Safari on macOS/iOS (Apple Pay JS API)",
+    "ssl": "HTTPS required — Apple Pay does not work on HTTP",
+    "domain_verification": "Must host /.well-known/apple-developer-merchantid-domain-association file"
+  },
+  "v6_pattern": {
+    "component": "applepay-payments",
+    "initialization": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: ['applepay-payments'] })",
+    "eligibility": "eligibleMethods.isEligible('applepay')",
+    "flow": [
+      "1. Initialize SDK with applepay-payments component",
+      "2. Check eligibility",
+      "3. Create Apple Pay session via SDK",
+      "4. Present Apple Pay payment sheet",
+      "5. Buyer authenticates with Face ID / Touch ID",
+      "6. Server creates and captures order"
+    ]
+  },
+  "order_payload": {
+    "payment_source": {
+      "apple_pay": {
+        "experience_context": {
+          "return_url": "https://yoursite.com/success",
+          "cancel_url": "https://yoursite.com/cancel"
+        }
+      }
+    }
+  },
+  "best_practices": [
+    "Only show Apple Pay button on supported devices/browsers",
+    "Always provide alternative payment methods (PayPal, card)",
+    "Complete domain verification before going live",
+    "Test on real Apple devices in sandbox"
+  ]
+}

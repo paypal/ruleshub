@@ -1,0 +1,92 @@
+{
+  "operation": "Multiparty Orders with Platform Fees",
+  "description": "Create and capture orders with platform fees, payment splitting, and disbursement controls",
+  "documentation": {
+    "accept_payments_standard": "https://developer.paypal.com/docs/multiparty/checkout/standard/",
+    "accept_payments_expanded": "https://developer.paypal.com/docs/multiparty/checkout/advanced/integrate/"
+  },
+  "api_endpoint": {
+    "method": "POST",
+    "path": "/v2/checkout/orders",
+    "sandbox": "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+    "production": "https://api-m.paypal.com/v2/checkout/orders"
+  },
+  "required_headers": {
+    "Authorization": "Bearer {partner_access_token}",
+    "Content-Type": "application/json",
+    "PayPal-Auth-Assertion": "JWT asserting partner is acting on behalf of seller",
+    "PayPal-Request-Id": "Unique idempotency key"
+  },
+  "paypal_auth_assertion": {
+    "description": "JWT that identifies the partner and the seller merchant_id",
+    "format": "Base64URL({alg:none}).Base64URL({iss:partner_client_id, payer_id:seller_merchant_id}).",
+    "note": "Required when partner creates orders on behalf of seller"
+  },
+  "order_with_platform_fee": {
+    "intent": "CAPTURE",
+    "purchase_units": [{
+      "amount": {
+        "currency_code": "USD",
+        "value": "100.00",
+        "breakdown": {
+          "item_total": { "currency_code": "USD", "value": "100.00" }
+        }
+      },
+      "payee": {
+        "merchant_id": "SELLER_MERCHANT_ID"
+      },
+      "payment_instruction": {
+        "disbursement_mode": "INSTANT",
+        "platform_fees": [{
+          "amount": {
+            "currency_code": "USD",
+            "value": "10.00"
+          },
+          "payee": {
+            "merchant_id": "PLATFORM_MERCHANT_ID"
+          }
+        }]
+      }
+    }],
+    "payment_source": {
+      "paypal": {
+        "experience_context": {
+          "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+          "user_action": "PAY_NOW",
+          "return_url": "https://yourplatform.com/return",
+          "cancel_url": "https://yourplatform.com/cancel"
+        }
+      }
+    }
+  },
+  "disbursement_modes": {
+    "INSTANT": "Funds disbursed to seller immediately after capture",
+    "DELAYED": "Funds held by PayPal — platform controls release"
+  },
+  "platform_fee_rules": [
+    "Fee currency must match purchase_units currency",
+    "Platform fee payee must have a bank account on their PayPal account",
+    "Fees settle daily into the bank account on the partner account",
+    "Platform fee not supported for first-party integrations",
+    "Total platform fees cannot exceed the purchase unit amount"
+  ],
+  "capture": {
+    "method": "POST",
+    "path": "/v2/checkout/orders/{order_id}/capture",
+    "headers": "Same as create (including PayPal-Auth-Assertion)",
+    "result": "Funds split: seller receives (amount - platform_fee), platform receives platform_fee"
+  },
+  "refund_with_fee": {
+    "method": "POST",
+    "path": "/v2/payments/captures/{capture_id}/refund",
+    "payload": {
+      "amount": { "currency_code": "USD", "value": "100.00" },
+      "payment_instruction": {
+        "platform_fees": [{
+          "amount": { "currency_code": "USD", "value": "10.00" }
+        }]
+      }
+    },
+    "note": "Include platform_fees in refund to also refund the platform fee to the buyer"
+  }
+}

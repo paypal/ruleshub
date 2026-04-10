@@ -1,0 +1,326 @@
+{
+  "operation": "Fastlane - Accelerated Guest Checkout",
+  "description": "v6 SDK Fastlane for recognizing returning guest customers and pre-filling payment details",
+  "breaking_changes": true,
+  "v5_pattern": {
+    "script_loading": "URL-based with fastlane component",
+    "initialization": "window.paypal.Fastlane()",
+    "authentication": "Client ID",
+    "component_name": "FastlaneCardComponent",
+    "profile": "Email-based lookup"
+  },
+  "v6_pattern": {
+    "script_loading": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalLoaded()\"></script>",
+    "initialization": "sdkInstance.createFastlane()",
+    "authentication": "Client token from backend",
+    "component_name": "FastlanePaymentComponent",
+    "profile": "Email-based lookup with identity API"
+  },
+  "api_signature": {
+    "sdk_initialization": {
+      "method": "window.paypal.createInstance",
+      "parameters": {
+        "clientToken": {
+          "type": "string",
+          "required": true,
+          "description": "Browser-safe client token from backend"
+        },
+        "components": {
+          "type": "array",
+          "required": true,
+          "value": ["fastlane"],
+          "description": "Must include fastlane component"
+        },
+        "pageType": {
+          "type": "string",
+          "required": false,
+          "values": ["product-details", "checkout"],
+          "default": "product-details"
+        },
+        "clientMetadataId": {
+          "type": "string",
+          "required": false,
+          "description": "Unique ID for tracking (use crypto.randomUUID())"
+        }
+      }
+    },
+    "fastlane_creation": {
+      "method": "sdkInstance.createFastlane",
+      "parameters": {},
+      "returns": "FastlaneInstance"
+    },
+    "locale_setting": {
+      "method": "fastlane.setLocale",
+      "parameters": {
+        "locale": {
+          "type": "string",
+          "values": ["en_us", "en_gb", "de_de", "fr_fr", "es_es"],
+          "description": "Language and region code"
+        }
+      }
+    },
+    "identity_lookup": {
+      "method": "fastlane.identity.lookupCustomerByEmail",
+      "parameters": {
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "Customer email address"
+        }
+      },
+      "returns": {
+        "customerContextId": "string | undefined"
+      }
+    },
+    "authentication": {
+      "method": "fastlane.identity.triggerAuthenticationFlow",
+      "parameters": {
+        "customerContextId": {
+          "type": "string",
+          "required": true,
+          "description": "ID from lookupCustomerByEmail"
+        }
+      },
+      "returns": {
+        "authenticationState": "string (succeeded, failed, canceled)",
+        "profileData": "object (if succeeded)"
+      }
+    },
+    "payment_component": {
+      "method": "fastlane.FastlanePaymentComponent",
+      "parameters": {
+        "styles": {
+          "type": "object",
+          "description": "CSS properties for styling"
+        }
+      },
+      "returns": "FastlanePaymentComponent instance"
+    },
+    "render_payment": {
+      "method": "paymentComponent.render",
+      "parameters": {
+        "selector": {
+          "type": "string",
+          "description": "CSS selector for container"
+        }
+      }
+    },
+    "get_payment_token": {
+      "method": "paymentComponent.getPaymentToken",
+      "parameters": {
+        "options": {
+          "billingAddress": "object (optional)"
+        }
+      },
+      "returns": {
+        "id": "single-use token for order creation"
+      }
+    }
+  },
+  "fastlane_flow": [
+    {
+      "step": 1,
+      "phase": "Email Collection",
+      "description": "User enters email on your site",
+      "action": "Capture email input"
+    },
+    {
+      "step": 2,
+      "phase": "Identity Lookup",
+      "description": "Check if email has saved profile",
+      "method": "fastlane.identity.lookupCustomerByEmail(email)",
+      "returns": "customerContextId or undefined"
+    },
+    {
+      "step": 3,
+      "phase": "Authentication (if recognized)",
+      "description": "Trigger OTP or biometric auth",
+      "method": "fastlane.identity.triggerAuthenticationFlow(customerContextId)",
+      "condition": "Only if customerContextId exists"
+    },
+    {
+      "step": 4,
+      "phase": "Profile Pre-fill",
+      "description": "Pre-fill shipping and payment info",
+      "data": "profileData from authentication"
+    },
+    {
+      "step": 5,
+      "phase": "Payment Component",
+      "description": "Render Fastlane payment component",
+      "method": "paymentComponent.render('#container')"
+    },
+    {
+      "step": 6,
+      "phase": "Get Payment Token",
+      "description": "Get single-use payment token",
+      "method": "paymentComponent.getPaymentToken()"
+    },
+    {
+      "step": 7,
+      "phase": "Create Order",
+      "description": "Use token in payment_source.card.singleUseToken",
+      "server_side": true
+    },
+    {
+      "step": 8,
+      "phase": "Capture Order",
+      "description": "Capture the order",
+      "server_side": true
+    }
+  ],
+  "order_creation_with_fastlane": {
+    "payment_source": {
+      "card": {
+        "singleUseToken": "{TOKEN_FROM_PAYMENT_COMPONENT}",
+        "attributes": {
+          "verification": {
+            "method": "SCA_WHEN_REQUIRED"
+          }
+        }
+      }
+    },
+    "note": "Use singleUseToken, NOT vault_id"
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "title": "Update SDK Script",
+      "old": "<script src=\"https://www.paypal.com/sdk/js?client-id=...\">",
+      "new": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalLoaded()\">"
+    },
+    {
+      "step": 2,
+      "title": "Create Client Token Endpoint",
+      "endpoint": "/paypal-api/auth/browser-safe-client-token",
+      "required": true
+    },
+    {
+      "step": 3,
+      "title": "Initialize SDK with Fastlane Component",
+      "pattern": "window.paypal.createInstance({ clientToken, components: ['fastlane'] })"
+    },
+    {
+      "step": 4,
+      "title": "Create Fastlane Instance",
+      "old": "window.paypal.Fastlane()",
+      "new": "sdkInstance.createFastlane()"
+    },
+    {
+      "step": 5,
+      "title": "Set Locale",
+      "method": "fastlane.setLocale('en_us')",
+      "required": true
+    },
+    {
+      "step": 6,
+      "title": "Implement Email Lookup Flow",
+      "methods": [
+        "fastlane.identity.lookupCustomerByEmail",
+        "fastlane.identity.triggerAuthenticationFlow"
+      ]
+    },
+    {
+      "step": 7,
+      "title": "Update Payment Component Name",
+      "old": "FastlaneCardComponent",
+      "new": "FastlanePaymentComponent"
+    },
+    {
+      "step": 8,
+      "title": "Update Server Order Creation",
+      "field": "payment_source.card.singleUseToken",
+      "note": "Use singleUseToken from getPaymentToken()"
+    }
+  ],
+  "profile_data_structure": {
+    "name": {
+      "fullName": "string",
+      "firstName": "string",
+      "lastName": "string"
+    },
+    "shippingAddress": {
+      "address": {
+        "addressLine1": "string",
+        "addressLine2": "string",
+        "adminArea1": "string (state)",
+        "adminArea2": "string (city)",
+        "postalCode": "string",
+        "countryCode": "string"
+      }
+    },
+    "card": {
+      "id": "string (payment token)",
+      "paymentSource": {
+        "card": {
+          "brand": "string",
+          "lastDigits": "string",
+          "expiry": "string"
+        }
+      }
+    }
+  },
+  "fastlane_vs_card_fields": {
+    "fastlane": {
+      "purpose": "Guest checkout acceleration",
+      "profile": "Guest profile recognition",
+      "cross_merchant": "Yes - works across merchants",
+      "email_lookup": "Yes",
+      "shipping_prefill": "Yes",
+      "component": "FastlanePaymentComponent",
+      "use_case": "Optimizing guest checkout experience"
+    },
+    "card_fields": {
+      "purpose": "Regular card payments",
+      "profile": "No profile",
+      "cross_merchant": "No",
+      "email_lookup": "No",
+      "shipping_prefill": "No",
+      "component": "CardFieldsComponent",
+      "use_case": "Any card payment"
+    }
+  },
+  "critical_notes": [
+    "Component name is FastlanePaymentComponent (NOT FastlaneCardComponent)",
+    "Must call setLocale() before using Fastlane",
+    "Use singleUseToken in order creation (NOT vault_id)",
+    "Client token required from backend",
+    "Email lookup must happen before authentication",
+    "Authentication is optional - only for recognized users",
+    "Profile data includes shipping address for pre-fill",
+    "Fastlane works across merchants - shared profile",
+    "Use pageType: 'product-details' for product pages",
+    "clientMetadataId helps with tracking"
+  ],
+  "best_practices": [
+    "Implement email validation before lookup",
+    "Handle both recognized and new customers",
+    "Pre-fill shipping address from profileData",
+    "Show loading states during authentication",
+    "Implement fallback to standard checkout",
+    "Use HTTPS in production",
+    "Log authentication attempts",
+    "Test with both new and returning users",
+    "Implement proper error handling",
+    "Cache client tokens appropriately"
+  ],
+  "common_errors": [
+    {
+      "error": "FastlaneCardComponent is not defined",
+      "cause": "Using old v5 component name",
+      "fix": "Use FastlanePaymentComponent instead"
+    },
+    {
+      "error": "window.paypal.Fastlane is not a function",
+      "cause": "Using v5 initialization pattern",
+      "fix": "Use sdkInstance.createFastlane() after createInstance()"
+    },
+    {
+      "error": "Locale not set",
+      "cause": "Forgot to call setLocale()",
+      "fix": "Call fastlane.setLocale('en_us') after creating Fastlane"
+    }
+  ],
+  "official_docs": "https://docs.paypal.ai/payments/methods/cards/fastlane"
+}
+

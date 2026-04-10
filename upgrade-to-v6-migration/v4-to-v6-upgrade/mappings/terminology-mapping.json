@@ -1,0 +1,356 @@
+{
+  "mapping_name": "v4 to v6 Terminology & Feature Mapping",
+  "description": "Complete mapping of checkout.js v4 terminology, button labels, funding sources, and features to v6 JS SDK equivalents",
+  "official_sources": [
+    "https://github.com/paypal/paypal-checkout-components/tree/v4",
+    "https://developer.paypal.com/sdk/js/"
+  ],
+  
+  "button_labels": {
+    "description": "v4 used style.label to configure button appearance, v6 uses session types and components",
+    "v4_to_v6_mapping": {
+      "label_paypal": {
+        "v4_syntax": "style: { label: 'paypal' }",
+        "v4_description": "Displays 'PayPal' button with PayPal logo",
+        "v6_equivalent": "createPayPalOneTimePaymentSession()",
+        "v6_description": "PayPal one-time payment session",
+        "v6_component": "paypal-payments",
+        "migration_notes": "Standard PayPal button. Most common v4 button type."
+      },
+      "label_checkout": {
+        "v4_syntax": "style: { label: 'checkout' }",
+        "v4_description": "Displays 'Checkout' button with PayPal logo",
+        "v6_equivalent": "createPayPalOneTimePaymentSession()",
+        "v6_description": "PayPal one-time payment session",
+        "v6_component": "paypal-payments",
+        "migration_notes": "Button text was different in v4, but functionality is the same as PayPal button in v6."
+      },
+      "label_buynow": {
+        "v4_syntax": "style: { label: 'buynow' }",
+        "v4_description": "Displays 'Buy Now' button with PayPal logo",
+        "v6_equivalent": "createPayPalOneTimePaymentSession()",
+        "v6_description": "PayPal one-time payment session",
+        "v6_component": "paypal-payments",
+        "migration_notes": "Button text was different in v4, but functionality is the same as PayPal button in v6."
+      },
+      "label_pay": {
+        "v4_syntax": "style: { label: 'pay' }",
+        "v4_description": "Displays 'Pay with PayPal' or 'Pay' button",
+        "v6_equivalent": "createPayPalOneTimePaymentSession()",
+        "v6_description": "PayPal one-time payment session",
+        "v6_component": "paypal-payments",
+        "migration_notes": "Generic payment button. Maps to standard PayPal session in v6."
+      },
+      "label_credit": {
+        "v4_syntax": "style: { label: 'credit' }",
+        "v4_description": "Displays PayPal Credit button (Pay Later)",
+        "v6_equivalent": "createPayLaterOneTimePaymentSession()",
+        "v6_description": "Pay Later one-time payment session",
+        "v6_component": "paypal-payments",
+        "v6_additional": "Requires eligibility check via findEligibleMethods()",
+        "migration_notes": "V4 'Credit' is now 'Pay Later' in v6. Must check eligibility first."
+      }
+    },
+    "breaking_changes": [
+      "v6 does not support style.label configuration",
+      "v6 uses session types instead of button labels",
+      "Button appearance is controlled by eligibility and merchant configuration",
+      "Text customization is not available in v6 (follows PayPal branding guidelines)"
+    ]
+  },
+
+  "funding_sources": {
+    "description": "v4 used funding.allowed/disallowed to enable payment methods, v6 uses components and session types",
+    "v4_to_v6_mapping": {
+      "FUNDING_PAYPAL": {
+        "v4_syntax": "paypal.FUNDING.PAYPAL",
+        "v4_description": "PayPal account payments (default, cannot be disabled)",
+        "v4_usage": "Always enabled by default",
+        "v6_equivalent": "createPayPalOneTimePaymentSession()",
+        "v6_component": "paypal-payments",
+        "v6_description": "PayPal one-time payment",
+        "migration_notes": "PayPal is always available. No need to explicitly enable."
+      },
+      "FUNDING_CREDIT": {
+        "v4_syntax": "funding: { allowed: [paypal.FUNDING.CREDIT] }",
+        "v4_description": "PayPal Credit (Pay Later financing)",
+        "v4_usage": "Must be explicitly enabled in funding.allowed",
+        "v6_equivalent": "createPayLaterOneTimePaymentSession()",
+        "v6_component": "paypal-payments",
+        "v6_description": "Pay Later financing options",
+        "v6_eligibility": "Must check eligibleMethods.payLater.isEligible",
+        "migration_notes": "V4 'Credit' terminology changed to 'Pay Later' in v6. Requires eligibility check."
+      },
+      "FUNDING_VENMO": {
+        "v4_syntax": "funding: { allowed: [paypal.FUNDING.VENMO] }",
+        "v4_description": "Venmo payments",
+        "v4_usage": "Constant existed but was NOT functional",
+        "v4_support": "NOT SUPPORTED in v4 (per official feature matrix)",
+        "v4_reality": "FUNDING.VENMO constant existed in code but Venmo payments did not work",
+        "v6_equivalent": "createVenmoOneTimePaymentSession()",
+        "v6_component": "venmo-payments",
+        "v6_description": "Venmo one-time payment",
+        "v6_eligibility": "Must check eligibleMethods.venmo.isEligible",
+        "migration_notes": "Venmo was NOT supported in v4 despite constant existing. V6 has full native support. This is a NEW feature, not a migration."
+      },
+      "FUNDING_CARD": {
+        "v4_syntax": "funding: { allowed: [paypal.FUNDING.CARD] }",
+        "v4_description": "Credit/debit card payments",
+        "v4_usage": "Must be explicitly enabled in funding.allowed",
+        "v4_support": "Limited support in v4",
+        "v6_equivalent": "createCardOneTimePaymentSession()",
+        "v6_component": "card-payments",
+        "v6_description": "Card one-time payment",
+        "v6_eligibility": "Must check eligibleMethods.card.isEligible",
+        "migration_notes": "Card payments require separate component in v6."
+      },
+      "FUNDING_ELV": {
+        "v4_syntax": "paypal.FUNDING.ELV",
+        "v4_description": "German bank payments (ELV)",
+        "v4_support": "Limited support in v4",
+        "v6_equivalent": "Alternative payment methods",
+        "v6_component": "paypal-payments (APMs)",
+        "migration_notes": "APMs handled through standard PayPal session in v6."
+      }
+    },
+    "breaking_changes": [
+      "v6 does not have funding.allowed or funding.disallowed configuration",
+      "v6 requires separate components for each payment method",
+      "v6 requires eligibility checks before rendering buttons",
+      "v6 components must be specified during SDK initialization"
+    ]
+  },
+
+  "api_endpoints": {
+    "description": "v4 primarily used v1 Payments API, v6 uses v2 Orders API",
+    "v4_patterns": {
+      "client_side": {
+        "create": "actions.payment.create()",
+        "execute": "actions.payment.execute()",
+        "api_version": "v1 Payments API",
+        "endpoint_create": "POST /v1/payments/payment",
+        "endpoint_execute": "POST /v1/payments/payment/{payment-id}/execute",
+        "id_format": "PAY-XXXXX"
+      },
+      "alternative_v4_pattern": {
+        "description": "v4 also supported v2 Orders API (less common)",
+        "create": "actions.order.create()",
+        "execute": "actions.order.capture()",
+        "api_version": "v2 Orders API",
+        "endpoint_create": "POST /v2/checkout/orders",
+        "endpoint_capture": "POST /v2/checkout/orders/{order-id}/capture",
+        "id_format": "Alphanumeric (5O190127TN364715T)"
+      }
+    },
+    "v6_patterns": {
+      "server_side_only": true,
+      "create": "Server-side POST to /v2/checkout/orders",
+      "capture": "Server-side POST to /v2/checkout/orders/{order-id}/capture",
+      "api_version": "v2 Orders API (only)",
+      "id_format": "Alphanumeric order ID",
+      "client_side": {
+        "createOrder": "Returns order ID from server",
+        "onApprove": "Sends order ID to server for capture",
+        "note": "No client-side API calls in v6"
+      }
+    },
+    "migration_notes": [
+      "If using v4 actions.payment.create() → Must migrate to v2 Orders API",
+      "If using v4 actions.order.create() → Server endpoints may need minimal changes",
+      "v6 eliminates client-side API calls for better security",
+      "All order creation and capture happens server-side in v6"
+    ]
+  },
+
+  "feature_terminology": {
+    "description": "Product and feature name changes from v4 to v6",
+    "mappings": {
+      "pay_later_credit": {
+        "v4_name": "PayPal Credit",
+        "v4_also_called": "Credit",
+        "v6_name": "Pay Later",
+        "v6_also_called": "PayPal Pay Later",
+        "description": "Financing and installment payment options",
+        "notes": "Terminology changed from 'Credit' to 'Pay Later' to reflect expanded financing options"
+      },
+      "venmo": {
+        "v4_name": "Venmo",
+        "v4_support": "NOT SUPPORTED (per official feature matrix)",
+        "v4_reality": "FUNDING.VENMO constant existed but feature did not work",
+        "v6_name": "Venmo",
+        "v6_support": "Full native support",
+        "description": "Venmo mobile payment method",
+        "notes": "Venmo was NOT supported in checkout.js v4. This is a NEW feature in v6, not a migration."
+      },
+      "vault": {
+        "v4_name": "Vault / Billing Agreements",
+        "v4_feature": "1-click/Vaulted Button (Not supported in v4)",
+        "v6_name": "PayPal Vault",
+        "v6_feature": "Full vault support with setup tokens and payment tokens",
+        "description": "Save and reuse payment methods",
+        "notes": "Vault functionality was not available in checkout.js v4"
+      },
+      "subscription": {
+        "v4_support": "Not supported in checkout.js v4",
+        "v6_support": "Fully supported",
+        "v6_name": "Subscriptions",
+        "description": "Recurring payment subscriptions",
+        "notes": "New feature in v6"
+      },
+      "marks": {
+        "v4_support": "Not supported in checkout.js v4",
+        "v6_support": "Fully supported",
+        "v6_name": "Marks",
+        "description": "Logo placements for alternative payment display",
+        "notes": "New feature in v6"
+      },
+      "hosted_fields": {
+        "v4_name": "Not supported in checkout.js v4",
+        "v6_name": "Unbranded Card Fields / Hosted Fields",
+        "v6_support": "Fully supported",
+        "description": "Custom branded card payment forms",
+        "notes": "New feature in v6"
+      }
+    }
+  },
+
+  "style_configuration": {
+    "description": "Button styling options comparison",
+    "v4_options": {
+      "label": ["paypal", "checkout", "buynow", "pay", "credit"],
+      "size": ["small", "medium", "large", "responsive"],
+      "shape": ["rect", "pill"],
+      "color": ["gold", "blue", "silver", "black", "darkblue", "white"],
+      "layout": ["horizontal", "vertical"],
+      "tagline": ["true", "false"],
+      "height": "Number (25-55)"
+    },
+    "v6_options": {
+      "note": "v6 has limited customization - buttons follow PayPal branding guidelines",
+      "available": "Layout and presentation mode configuration only",
+      "layout": "Controlled by container and eligibility",
+      "presentation": ["auto", "popup", "modal", "redirect", "payment-handler"],
+      "customization": "Minimal - PayPal controls button appearance based on context"
+    },
+    "breaking_changes": [
+      "v6 does not support label customization",
+      "v6 does not support extensive color/shape customization",
+      "v6 buttons auto-adapt based on eligibility and merchant configuration",
+      "v6 prioritizes consistent branding over customization"
+    ]
+  },
+
+  "integration_patterns": {
+    "v4_pattern": {
+      "name": "Client-side rendering and execution",
+      "steps": [
+        "Include checkout.js script with client ID",
+        "Configure paypal.Button.render() with style and funding",
+        "Implement payment() callback to create payment (client or server)",
+        "Implement onAuthorize() callback to execute payment",
+        "Optional: Add onCancel, onError callbacks"
+      ],
+      "characteristics": [
+        "Can create payments client-side using actions.payment.create()",
+        "Can create payments server-side and return payment ID",
+        "Execution can happen client-side or server-side",
+        "Minimal server requirements for basic integration"
+      ]
+    },
+    "v6_pattern": {
+      "name": "Server-mediated integration",
+      "steps": [
+        "Server generates client token with credentials",
+        "Client loads v6 SDK and initializes with client token",
+        "Client checks eligibility with findEligibleMethods()",
+        "Client creates session (PayPal, Venmo, Pay Later, etc.)",
+        "Client implements createOrder callback (server endpoint)",
+        "Client implements onApprove callback (server endpoint)",
+        "Server creates order and captures payment"
+      ],
+      "characteristics": [
+        "All API calls happen server-side only",
+        "Client never handles credentials or payment creation",
+        "Eligibility determined before button rendering",
+        "Enhanced security with client token authentication"
+      ]
+    },
+    "migration_impact": [
+      "Server-side endpoints are required for v6 (no client-side API calls)",
+      "Client token generation must be implemented",
+      "Eligibility checks must be added for conditional rendering",
+      "Payment flow changes from client-executed to server-mediated"
+    ]
+  },
+
+  "components_and_products": {
+    "description": "Component/product naming in v4 vs v6",
+    "v4_products": [
+      "PayPal Checkout Button",
+      "PayPal Credit Button (limited)",
+      "Native Checkout",
+      "Alternative Payment Methods (limited)"
+    ],
+    "v4_note": "Venmo was NOT supported in v4 despite FUNDING.VENMO constant existing",
+    "v6_components": [
+      "paypal-payments (PayPal + Pay Later)",
+      "venmo-payments (Venmo)",
+      "card-payments (Card payments)",
+      "paypal-vault (Save payment methods)",
+      "applepay-payments (Apple Pay)",
+      "googlepay-payments (Google Pay)"
+    ],
+    "v6_features_not_in_v4": [
+      "Venmo payments (not supported in v4)",
+      "Vault (save payment methods)",
+      "Subscriptions",
+      "Marks (logo placements)",
+      "Hosted Fields (custom card forms)",
+      "Shipping callbacks",
+      "Credit messaging/banners",
+      "Connect with PayPal button",
+      "Full APM support"
+    ]
+  },
+
+  "quick_reference": {
+    "description": "Quick lookup for common v4 → v6 migrations",
+    "common_migrations": {
+      "standard_paypal_button": {
+        "v4": "paypal.Button.render({ style: { label: 'paypal' } })",
+        "v6": "sdk.createPayPalOneTimePaymentSession()"
+      },
+      "credit_button": {
+        "v4": "paypal.Button.render({ style: { label: 'credit' } })",
+        "v6": "sdk.createPayLaterOneTimePaymentSession() with eligibility check"
+      },
+      "venmo_button": {
+        "v4": "NOT SUPPORTED (FUNDING.VENMO constant existed but didn't work)",
+        "v6": "sdk.createVenmoOneTimePaymentSession() with venmo-payments component",
+        "note": "This is a NEW feature in v6, not a migration from v4"
+      },
+      "payment_creation": {
+        "v4": "actions.payment.create({ payment: {...} })",
+        "v6": "Server endpoint: POST /v2/checkout/orders"
+      },
+      "payment_execution": {
+        "v4": "actions.payment.execute()",
+        "v6": "Server endpoint: POST /v2/checkout/orders/{id}/capture"
+      }
+    }
+  },
+
+  "summary": {
+    "key_terminology_changes": [
+      "PayPal Credit → Pay Later",
+      "funding.allowed → components + eligibility",
+      "style.label → session types",
+      "actions.payment → server-side /v2/checkout/orders",
+      "Button labels (checkout, buynow, pay) → removed in v6"
+    ],
+    "architectural_shift": "V4 allowed client-side payment operations, v6 requires server-mediated flow for enhanced security",
+    "feature_expansion": "V6 adds Vault, Subscriptions, Hosted Fields, and full APM support not available in v4",
+    "customization_reduction": "V6 reduces button customization in favor of consistent PayPal branding and auto-adaptation"
+  }
+}
+

@@ -1,0 +1,56 @@
+{
+  "operation": "ManageRecurringPaymentsProfileStatus",
+  "_endpoints": {
+    "suspend": "POST /v1/billing/subscriptions/{id}/suspend",
+    "cancel": "POST /v1/billing/subscriptions/{id}/cancel",
+    "reactivate": "POST /v1/billing/subscriptions/{id}/activate"
+  },
+  "_note": "Maps to three separate REST endpoints based on ACTION value",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "PROFILEID": {
+          "rest_field": "{subscription_id} (path parameter)",
+          "required": true
+        },
+        "ACTION": {
+          "rest_field": "Determines endpoint",
+          "transform": "Suspend→/suspend, Cancel→/cancel, Reactivate→/activate",
+          "required": true
+        },
+        "NOTE": {
+          "rest_field": "reason",
+          "notes": "Required in REST API request body"
+        }
+      },
+      "not_supported": []
+    },
+    "soap": {
+      "supported": {
+        "ProfileID": {
+          "rest_field": "{subscription_id} (path parameter)",
+          "required": true
+        },
+        "Action": {
+          "rest_field": "Determines endpoint",
+          "transform": "Suspend→/suspend, Cancel→/cancel, Reactivate→/activate",
+          "required": true
+        },
+        "Note": {
+          "rest_field": "reason",
+          "notes": "Required in REST API request body"
+        }
+      },
+      "not_supported": []
+    }
+  },
+  "special_notes": {
+    "usage": "Use to suspend, cancel, or reactivate existing subscriptions",
+    "upgrade_tips": [
+      "NVP/SOAP used single endpoint with ACTION parameter",
+      "REST uses separate endpoints for each action",
+      "reason field is required in REST request body"
+    ]
+  }
+}
+

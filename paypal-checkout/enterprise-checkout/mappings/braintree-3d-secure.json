@@ -1,0 +1,75 @@
+{
+  "operation": "Braintree 3D Secure",
+  "description": "3D Secure / SCA authentication via Braintree for card transactions",
+  "documentation": "https://developer.paypal.com/braintree/docs/guides/3d-secure/",
+  "client_setup": {
+    "scripts": [
+      "https://js.braintreegateway.com/web/3.x.x/js/client.min.js",
+      "https://js.braintreegateway.com/web/3.x.x/js/three-d-secure.min.js"
+    ],
+    "with_hosted_fields": "Also include hosted-fields.min.js",
+    "with_dropin": "Pass threeDSecure: true in Drop-in configuration"
+  },
+  "flow": {
+    "with_hosted_fields": [
+      "1. Tokenize card via hostedFields.tokenize() → get nonce",
+      "2. Call threeDSecure.verifyCard({ nonce, amount, ... })",
+      "3. If challenge required: buyer completes in modal/iframe",
+      "4. Receive new nonce with 3DS authentication data",
+      "5. Send 3DS nonce to server for Transaction.sale()"
+    ],
+    "with_dropin": [
+      "1. Configure Drop-in with threeDSecure: true",
+      "2. Call requestPaymentMethod({ threeDSecure: { amount } })",
+      "3. 3DS handled automatically — returns nonce with auth data",
+      "4. Send nonce to server"
+    ]
+  },
+  "verify_card_options": {
+    "nonce": "Payment method nonce from tokenization",
+    "amount": "Transaction amount as string",
+    "email": "Buyer email (recommended for better 3DS results)",
+    "billingAddress": {
+      "givenName": "First name",
+      "surname": "Last name",
+      "phoneNumber": "Phone",
+      "streetAddress": "Street",
+      "locality": "City",
+      "region": "State/Province",
+      "postalCode": "ZIP/Postal code",
+      "countryCodeAlpha2": "Two-letter country code"
+    },
+    "additionalInformation": {
+      "shippingAddress": "Shipping address details"
+    }
+  },
+  "liability_shift": {
+    "description": "Check threeDSecureInfo on the nonce or transaction",
+    "fields": {
+      "liabilityShifted": "true = issuer accepts fraud liability (merchant protected)",
+      "liabilityShiftPossible": "true = 3DS was possible for this card"
+    },
+    "decision_matrix": {
+      "shifted_true": "Safe to proceed — issuer bears chargeback liability",
+      "shifted_false_possible_true": "3DS available but not completed — consider risk tolerance",
+      "shifted_false_possible_false": "3DS not available for this card — proceed with caution"
+    }
+  },
+  "server_side": {
+    "description": "Braintree server SDK automatically includes 3DS data with the nonce",
+    "check_after_sale": "result.transaction.threeDSecureInfo",
+    "fields": ["status", "liabilityShifted", "liabilityShiftPossible", "enrolled", "cavv", "eciFlag"]
+  },
+  "regional_requirements": {
+    "Europe_PSD2": "SCA required for most electronic payments — 3D Secure satisfies this",
+    "UK": "Strong Customer Authentication required",
+    "US": "3D Secure optional but recommended for fraud reduction"
+  },
+  "best_practices": [
+    "Always pass amount matching the final transaction amount",
+    "Include billing address and email for better 3DS pass-through rates",
+    "Check liabilityShifted before deciding to proceed",
+    "Handle 3DS challenge UI gracefully (loading states)",
+    "Test with Braintree sandbox 3DS test cards"
+  ]
+}

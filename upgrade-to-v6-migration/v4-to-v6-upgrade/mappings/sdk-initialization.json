@@ -1,0 +1,186 @@
+{
+  "operation": "SDK Initialization - v4 to v6",
+  "description": "Migration from PayPal checkout.js v4 to v6 SDK initialization",
+  "official_docs": {
+    "v4_archive": "https://developer.paypal.com/docs/archive/",
+    "v6_docs": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  },
+  "v4_pattern": {
+    "script_loading": {
+      "pattern": "<script src=\"https://www.paypalobjects.com/api/checkout.js\"></script>",
+      "characteristics": [
+        "No credentials in script URL",
+        "Global paypal object available",
+        "All functionality loaded upfront",
+        "Direct API communication"
+      ]
+    },
+    "button_rendering": {
+      "method": "paypal.Button.render(config, selector)",
+      "configuration": {
+        "env": "'sandbox' | 'production'",
+        "client": "{ sandbox: 'client_id', production: 'client_id' }",
+        "commit": "boolean (recommended true)",
+        "style": "{ label, size, shape, color, layout, tagline }",
+        "funding": "{ allowed: [], disallowed: [] }",
+        "payment": "function(data, actions) { return actions.payment.create({...}); }",
+        "onAuthorize": "function(data, actions) { return actions.payment.execute(); }",
+        "onCancel": "function(data) { ... }",
+        "onError": "function(err) { ... }"
+      }
+    },
+    "global_object": {
+      "pattern": "window.paypal",
+      "usage": "Available immediately after script load"
+    }
+  },
+  "v6_pattern": {
+    "script_loading": {
+      "sandbox": "https://www.sandbox.paypal.com/web-sdk/v6/core",
+      "production": "https://www.paypal.com/web-sdk/v6/core",
+      "attributes": {
+        "async": true,
+        "onload": "onPayPalWebSdkLoaded()"
+      },
+      "security": [
+        "No credentials in URL",
+        "Requires server-side token generation",
+        "Time-limited client tokens",
+        "Server-mediated API calls"
+      ]
+    },
+    "sdk_initialization": {
+      "method": "window.paypal.createInstance()",
+      "required_parameters": {
+        "clientToken": "Server-generated client token",
+        "components": "Array of component names"
+      },
+      "optional_parameters": {
+        "pageType": "\"cart\" | \"checkout\" | \"home\" | etc.",
+        "locale": "BCP-47 language code",
+        "testBuyerCountry": "ISO country code for testing"
+      }
+    },
+    "payment_session": {
+      "method": "sdkInstance.createPayPalOneTimePaymentSession()",
+      "callbacks": {
+        "onApprove": "async (data) => Promise<void> - MUST return Promise",
+        "onCancel": "() => void - NO parameters",
+        "onError": "(error: Error) => void - Error object only",
+        "onComplete": "(data) => void - Optional"
+      },
+      "start_method": "session.start({ presentationMode }, createOrderCallback)"
+    }
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "action": "Remove v4 script tag",
+      "v4": "<script src=\"https://www.paypalobjects.com/api/checkout.js\"></script>",
+      "v6": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    {
+      "step": 2,
+      "action": "Create server endpoint for client token generation",
+      "endpoint": "GET /paypal-api/auth/browser-safe-client-token",
+      "purpose": "Replace client ID in v4 button config"
+    },
+    {
+      "step": 3,
+      "action": "Replace paypal.Button.render() with SDK initialization",
+      "v4": "paypal.Button.render({ env, client, ... }, '#button')",
+      "v6": "const sdkInstance = await window.paypal.createInstance({ clientToken, ... })"
+    },
+    {
+      "step": 4,
+      "action": "Create payment session instead of button render",
+      "v4": "Button configuration with callbacks",
+      "v6": "sdkInstance.createPayPalOneTimePaymentSession({ callbacks })"
+    },
+    {
+      "step": 5,
+      "action": "Move payment creation to server",
+      "v4": "actions.payment.create({ payment: {...} })",
+      "v6": "Server endpoint: POST /paypal-api/checkout/orders/create"
+    },
+    {
+      "step": 6,
+      "action": "Move payment execution to server",
+      "v4": "actions.payment.execute()",
+      "v6": "Server endpoint: POST /paypal-api/checkout/orders/{orderId}/capture"
+    }
+  ],
+  "breaking_changes": [
+    {
+      "change": "No global paypal object immediately available",
+      "impact": "Must wait for SDK initialization",
+      "solution": "Use onload callback and createInstance()"
+    },
+    {
+      "change": "Client ID no longer in frontend config",
+      "impact": "Cannot use client: { sandbox, production }",
+      "solution": "Generate client token on server"
+    },
+    {
+      "change": "Payment creation must be server-side",
+      "impact": "actions.payment.create() no longer available",
+      "solution": "Create server endpoint for order creation"
+    },
+    {
+      "change": "Payment execution must be server-side",
+      "impact": "actions.payment.execute() no longer available",
+      "solution": "Create server endpoint for order capture"
+    },
+    {
+      "change": "onApprove must return Promise<void>",
+      "impact": "Callback signature different from v4",
+      "solution": "Make callback async and await server capture"
+    },
+    {
+      "change": "onCancel takes NO parameters",
+      "impact": "v4 passed data parameter",
+      "solution": "Remove data parameter from callback"
+    }
+  ],
+  "configuration_comparison": {
+    "v4_example": {
+      "env": "sandbox",
+      "client": {
+        "sandbox": "YOUR_CLIENT_ID",
+        "production": "YOUR_CLIENT_ID"
+      },
+      "commit": true,
+      "style": {
+        "label": "paypal",
+        "size": "medium",
+        "shape": "rect",
+        "color": "gold",
+        "layout": "horizontal"
+      }
+    },
+    "v6_example": {
+      "clientToken": "server_generated_token",
+      "components": ["paypal-payments"],
+      "pageType": "checkout",
+      "locale": "en-US"
+    }
+  },
+  "security_improvements": [
+    "Client credentials never exposed to browser (v4 exposed client ID)",
+    "Time-limited tokens reduce security window",
+    "Server-side validation required for all operations",
+    "No direct browser-to-PayPal API calls",
+    "Domain-bound tokens prevent unauthorized reuse"
+  ],
+  "best_practices": [
+    "Always validate v4 patterns before migration",
+    "Create server endpoints before removing v4 code",
+    "Test token generation thoroughly",
+    "Implement token refresh logic",
+    "Use presentation mode 'auto' for best UX",
+    "Handle token expiration gracefully",
+    "Provide loading states during initialization",
+    "Test across browsers and devices"
+  ]
+}
+
