@@ -1,0 +1,56 @@
+{
+  "operation": "Fastlane",
+  "description": "Fastlane accelerated guest checkout — recognizes returning buyers for one-click card payments",
+  "documentation": {
+    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/cards/fastlane",
+    "developer_paypal": "https://developer.paypal.com/studio/checkout/fastlane"
+  },
+  "v6_pattern": {
+    "initialization": {
+      "components": ["fastlane"],
+      "code": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: ['fastlane'] })"
+    },
+    "fastlane_instance": {
+      "create": "const fastlane = await sdkInstance.createFastlane()",
+      "identity_lookup": "const { customerContextId } = await fastlane.identity.lookupCustomerByEmail(email)",
+      "trigger_auth": "const authResult = await fastlane.identity.triggerAuthenticationFlow(customerContextId)",
+      "profile_data": "authResult.profileData — contains name, shippingAddress, card"
+    },
+    "waterfall_component": {
+      "description": "Fastlane Waterfall Component for new/unrecognized customers",
+      "usage": "const cardComponent = await fastlane.FastlaneWaterfallComponent({ ... })",
+      "render": "cardComponent.render('#card-container')",
+      "note": "Provides card fields with address autofill for unrecognized buyers"
+    }
+  },
+  "flow": {
+    "recognized_customer": [
+      "1. Buyer enters email",
+      "2. lookupCustomerByEmail(email) — finds customer",
+      "3. triggerAuthenticationFlow() — buyer authenticates (OTP)",
+      "4. Retrieve saved card and shipping from profileData",
+      "5. Display saved payment method for one-click confirmation",
+      "6. Create order and capture on confirmation"
+    ],
+    "new_customer": [
+      "1. Buyer enters email",
+      "2. lookupCustomerByEmail(email) — no match",
+      "3. Render FastlaneWaterfallComponent for card entry",
+      "4. Buyer fills card and address (with autofill assistance)",
+      "5. Create order and capture",
+      "6. Card saved in Fastlane network for future use"
+    ]
+  },
+  "server_requirements": {
+    "client_token": "Must generate client token with Fastlane scope",
+    "order_creation": "Standard POST /v2/checkout/orders",
+    "order_capture": "Standard POST /v2/checkout/orders/{id}/capture"
+  },
+  "best_practices": [
+    "Place email input early in checkout flow for early recognition",
+    "Show loading indicator during identity lookup",
+    "Handle both recognized and unrecognized flows gracefully",
+    "Fall back to standard Card Fields if Fastlane is not eligible",
+    "Test with sandbox Fastlane-enrolled test accounts"
+  ]
+}

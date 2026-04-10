@@ -1,0 +1,160 @@
+{
+  "operation": "Pay Later Messaging (US)",
+  "description": "PayPal Pay Later promotional messaging SDK — displays financing banners on product, cart, and checkout pages",
+  "official_docs": {
+    "get_started_v6": "https://docs.paypal.ai/payments/methods/pay-later/get-started",
+    "upgrade_v5_to_v6": "https://docs.paypal.ai/payments/methods/pay-later/upgrade",
+    "overview": "https://docs.paypal.ai/payments/methods/pay-later/overview",
+    "analytics": "https://docs.paypal.ai/payments/methods/pay-later/analytics",
+    "v5_config": "https://developer.paypal.com/sdk/js/configuration/"
+  },
+  "v5_pattern": {
+    "script_tag": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=messages\"></script>",
+    "script_with_buttons": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&components=buttons,messages\"></script>",
+    "html_attribute_method": {
+      "element": "<div data-pp-message data-pp-amount=\"300.00\" data-pp-style-layout=\"text\" data-pp-style-logo-type=\"primary\" data-pp-style-logo-position=\"left\" data-pp-style-text-color=\"black\"></div>",
+      "note": "Messages render automatically when data-pp-message attribute is present on the element"
+    },
+    "javascript_method": {
+      "code": "paypal.Messages({ amount: 300, style: { layout: 'text', logo: { type: 'primary', position: 'left' }, text: { color: 'black' } } }).render('#message-container')",
+      "note": "Programmatic rendering using paypal.Messages() constructor"
+    },
+    "style_options": {
+      "layout": ["text", "flex"],
+      "logo.type": ["primary", "alternative", "inline", "none"],
+      "logo.position": ["left", "right", "top"],
+      "text.color": ["black", "white", "monochrome", "grayscale"]
+    }
+  },
+  "v6_pattern": {
+    "script_tags": {
+      "option_a_html": ["<script src=\"https://www.paypal.com/web-sdk/v6/core\"></script>", "<script src=\"https://www.paypal.com/web-sdk/v6/paypal-messages\"></script>"],
+      "option_b_js_dynamic": "const sdkInstance = await window.paypal.createInstance({ clientId: 'YOUR_CLIENT_ID', components: ['paypal-messages'] });"
+    },
+    "web_component": {
+      "element": "<paypal-message>",
+      "attributes": {
+        "amount": { "type": "string", "example": "300.00", "default": "None", "note": "Number string with up to 2 decimal places" },
+        "currency-code": { "type": "string", "example": "USD", "default": "None", "note": "3-letter currency code" },
+        "logo-type": { "type": "string", "options": ["MONOGRAM", "TEXT", "WORDMARK"], "default": "WORDMARK", "constraints": "MONOGRAM requires logo-position=LEFT; TEXT requires logo-position=INLINE" },
+        "logo-position": { "type": "string", "options": ["INLINE", "LEFT", "RIGHT", "TOP"], "default": "LEFT" },
+        "text-color": { "type": "string", "options": ["BLACK", "MONOCHROME", "WHITE"], "default": "BLACK" },
+        "presentation-mode": { "type": "string", "options": ["AUTO", "MODAL", "POPUP", "REDIRECT"], "default": "AUTO", "note": "Controls Learn More link behavior" },
+        "auto-bootstrap": { "type": "boolean", "default": "false", "note": "If true, PayPal data layer auto-fetches content. If false, must use fetchContent()." }
+      },
+      "methods": {
+        "setContent": { "description": "Set fetched content on the message component", "arguments": "Content from fetchContent()", "returns": "void" },
+        "getFetchContentOptions": { "description": "Extract config from HTML attributes for use in fetchContent", "arguments": "None", "returns": "Object with config from HTML attributes" }
+      }
+    },
+    "messages_instance": {
+      "creation": "const messagesInstance = sdkInstance.createPayPalMessages();",
+      "creation_with_options": "const messagesInstance = sdkInstance.createPayPalMessages({ currencyCode: 'USD' });",
+      "methods": {
+        "fetchContent": {
+          "description": "Fetch message content from PayPal servers",
+          "options": {
+            "amount": "string — dollar amount",
+            "currencyCode": "string — 3-letter currency code",
+            "logoType": "MONOGRAM | TEXT | WORDMARK",
+            "logoPosition": "INLINE | LEFT | RIGHT | TOP",
+            "textColor": "BLACK | MONOCHROME | WHITE",
+            "onReady": "callback when content is received (cache or server)",
+            "onContentReady": "callback when content is received from server (takes precedence over onReady)",
+            "onTemplateReady": "callback when content is received from cache (takes precedence over onReady)"
+          },
+          "returns": "Content object with update() method"
+        },
+        "createLearnMore": {
+          "description": "Initialize Learn More modal/popup/redirect",
+          "options": {
+            "amount": "string — dollar amount",
+            "presentationMode": "AUTO | MODAL | POPUP | REDIRECT",
+            "onApply": "callback when buyer clicks Apply",
+            "onCalculate": "callback when buyer enters amount in calculator",
+            "onShow": "callback when Learn More is shown",
+            "onClose": "callback when Learn More is closed"
+          },
+          "returns": "LearnMore object with open() method"
+        }
+      }
+    },
+    "sdk_instance_options": {
+      "clientId": { "note": "Recommended. Your PayPal client ID. Mutually exclusive with clientToken." },
+      "clientToken": { "note": "Server-generated token. Mutually exclusive with clientId." },
+      "pageType": { "options": ["home", "product", "product-details", "product-listing", "cart", "mini-cart", "checkout", "search-results"] },
+      "partnerAttributionId": { "note": "For partner integrations" },
+      "shopperSessionId": { "note": "Shopper session ID for analytics" }
+    },
+    "css_properties": {
+      "--paypal-message-font-size": { "range": "10px to 16px", "default": "14px" },
+      "--paypal-message-text-align": { "options": ["left", "center", "right"], "default": "left" }
+    },
+    "learn_more_event": {
+      "event_name": "paypal-message-click",
+      "handler": "messageElement.addEventListener('paypal-message-click', (event) => { event.preventDefault(); learnMore.open(event.detail.config); })"
+    },
+    "dynamic_amount_update": {
+      "via_attribute": "messageElement.setAttribute('amount', newAmount);",
+      "via_content_update": "content.update({ amount: newAmount });"
+    }
+  },
+  "configuration_patterns": {
+    "html": {
+      "description": "Web component attributes + minimal JS. Simplest approach.",
+      "best_for": "Simple, static placements"
+    },
+    "javascript": {
+      "description": "Minimal HTML, JS fetchContent() drives config. Uses onReady callback with setContent().",
+      "best_for": "Dynamic pages, SPAs"
+    },
+    "hybrid": {
+      "description": "HTML attributes for static config + JS getFetchContentOptions() for dynamic. Combines both.",
+      "best_for": "Advanced use cases"
+    }
+  },
+  "v5_to_v6_mapping": {
+    "script_tag": {
+      "v5": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_ID&components=messages\"></script>",
+      "v6": "<script src=\"https://www.paypal.com/web-sdk/v6/core\"></script> + <script src=\"https://www.paypal.com/web-sdk/v6/paypal-messages\"></script>"
+    },
+    "container_element": {
+      "v5": "<div data-pp-message data-pp-amount=\"300.00\"></div>",
+      "v6": "<paypal-message amount=\"300.00\" currency-code=\"USD\"></paypal-message>"
+    },
+    "rendering": {
+      "v5": "paypal.Messages({ amount: 300, style: { layout: 'text' } }).render('#container')",
+      "v6": "sdkInstance.createPayPalMessages() + fetchContent() or auto-bootstrap"
+    },
+    "amount_update": {
+      "v5": "Re-render with new amount or use paypal.Messages().render() again",
+      "v6": "content.update({ amount }) or messageElement.setAttribute('amount', newAmount)"
+    },
+    "style_mapping": {
+      "v5_layout_text": "v6 uses web component attributes (logo-type, text-color, etc.)",
+      "v5_logo_type_primary": "v6 WORDMARK",
+      "v5_logo_type_alternative": "v6 MONOGRAM",
+      "v5_logo_type_inline": "v6 TEXT with logo-position=INLINE",
+      "v5_logo_type_none": "v6 TEXT (closest equivalent)",
+      "v5_text_color_black": "v6 BLACK",
+      "v5_text_color_white": "v6 WHITE",
+      "v5_text_color_monochrome": "v6 MONOCHROME"
+    }
+  },
+  "recommended_placement": {
+    "product_page": { "what": "Pay Later message with product price as amount", "why": "Awareness — buyer sees financing before adding to cart" },
+    "cart_page": { "what": "Pay Later message with cart total as amount", "why": "Reinforcement — dynamic amount updates as cart changes" },
+    "checkout_page": { "what": "Pay Later button + message", "why": "Conversion — final decision point" },
+    "homepage": { "what": "Pay Later message (generic, no amount)", "why": "Broad awareness" },
+    "product_listing": { "what": "Pay Later message per product tile", "why": "Drive click-through" }
+  },
+  "best_practices": [
+    "Place messages on product, cart, and checkout pages for maximum impact",
+    "Always set amount attribute to show accurate financing info",
+    "Update amount dynamically when cart changes",
+    "Use auto-bootstrap for simplest integration",
+    "Do NOT modify or create custom Pay Later messaging content",
+    "Use official PayPal-provided code only",
+    "Test in sandbox to verify messages render correctly"
+  ]
+}

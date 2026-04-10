@@ -1,0 +1,66 @@
+{
+  "operation": "CreateRecurringPaymentsProfile",
+  "_endpoint": "POST /v1/catalogs/products",
+  "_note": "One-time setup: Create a product before creating plans",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "DESC": {
+          "rest_field": "name",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "required": true
+        },
+        "L_BILLINGAGREEMENTDESCRIPTION0": {
+          "rest_field": "name",
+          "typically_found_in": "SetExpressCheckout call",
+          "notes": "Fallback if DESC not found"
+        },
+        "L_PAYMENTREQUEST_0_ITEMCATEGORY0": {
+          "rest_field": "type",
+          "typically_found_in": "SetExpressCheckout call",
+          "transform": "Digital→DIGITAL, Physical→PHYSICAL",
+          "default": "SERVICE"
+        },
+        "L_PAYMENTREQUEST_0_ITEMURL0": {
+          "rest_field": "image_url or home_url",
+          "typically_found_in": "SetExpressCheckout call",
+          "notes": "Use as image_url if URL points to image, home_url if product page"
+        }
+      },
+      "not_supported": []
+    },
+    "soap": {
+      "supported": {
+        "ScheduleDetails.Description": {
+          "rest_field": "name",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "required": true
+        },
+        "BillingAgreementDetails.BillingAgreementDescription": {
+          "rest_field": "name",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "notes": "Fallback if ScheduleDetails.Description not found"
+        },
+        "PaymentDetailsItem.ItemCategory": {
+          "rest_field": "type",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "transform": "Digital→DIGITAL, Physical→PHYSICAL",
+          "default": "SERVICE"
+        },
+        "PaymentDetailsItem.ItemURL": {
+          "rest_field": "image_url or home_url",
+          "typically_found_in": "SetExpressCheckoutRequest"
+        }
+      },
+      "not_supported": []
+    }
+  },
+  "special_notes": {
+    "usage": "Run ONCE during upgrade to create the product catalog entry",
+    "upgrade_tips": [
+      "Product ID is returned in response - save to config/paypal-subscriptions.json",
+      "Product type defaults to SERVICE if not specified in legacy code"
+    ]
+  }
+}
+

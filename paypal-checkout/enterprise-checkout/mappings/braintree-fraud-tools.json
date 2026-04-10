@@ -1,0 +1,64 @@
+{
+  "operation": "Braintree Fraud Tools",
+  "description": "Premium fraud management tools including device data collection and risk decisions",
+  "documentation": "https://developer.paypal.com/braintree/docs/guides/premium-fraud-management-tools/",
+  "device_data_collection": {
+    "description": "Collect device fingerprint data for fraud assessment",
+    "client_scripts": [
+      "https://js.braintreegateway.com/web/3.x.x/js/client.min.js",
+      "https://js.braintreegateway.com/web/3.x.x/js/data-collector.min.js"
+    ],
+    "method": "braintree.dataCollector.create({ client, paypal: true })",
+    "output": "dataCollectorInstance.deviceData — JSON string to send with transaction"
+  },
+  "server_integration": {
+    "description": "Pass deviceData in Transaction.sale() for fraud scoring",
+    "payload": {
+      "amount": "10.00",
+      "paymentMethodNonce": "nonce",
+      "deviceData": "device-data-from-client",
+      "options": { "submitForSettlement": true }
+    }
+  },
+  "risk_decisions": {
+    "description": "Braintree evaluates risk and may reject transactions",
+    "gateway_rejected_reasons": {
+      "fraud": "Transaction flagged as fraudulent",
+      "avs": "Address Verification System check failed",
+      "cvv": "CVV check failed",
+      "avs_and_cvv": "Both AVS and CVV checks failed",
+      "risk_threshold": "Transaction exceeded risk threshold"
+    }
+  },
+  "avs_responses": {
+    "M": "Match — street and postal code match",
+    "N": "No match",
+    "U": "Unavailable — issuer doesn't support AVS",
+    "I": "Not provided — address not provided for comparison",
+    "A": "Partial — street matches, postal code doesn't"
+  },
+  "cvv_responses": {
+    "M": "Match",
+    "N": "No match",
+    "U": "Not verified — issuer doesn't support CVV",
+    "I": "Not provided",
+    "S": "Issuer does not participate"
+  },
+  "kount": {
+    "description": "Braintree integrates with Kount for advanced fraud detection",
+    "features": [
+      "Real-time risk scoring",
+      "Custom rule engine",
+      "Device fingerprinting",
+      "Order linking and velocity checks"
+    ],
+    "note": "Requires Kount enrollment through Braintree — contact Braintree support"
+  },
+  "best_practices": [
+    "Always collect and send deviceData with every transaction",
+    "Configure AVS and CVV rules in Braintree Control Panel",
+    "Monitor gateway_rejected transactions for fraud patterns",
+    "Review flagged transactions in Braintree Control Panel",
+    "Use 3D Secure alongside fraud tools for layered protection"
+  ]
+}

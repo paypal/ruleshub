@@ -1,0 +1,258 @@
+{
+  "operation": "3D Secure (3DS) Authentication",
+  "description": "Strong Customer Authentication (SCA) with 3D Secure for card payments",
+  "breaking_changes": false,
+  "v5_pattern": {
+    "configuration": "Server-side only, no client changes",
+    "verification_method": "Set in order creation",
+    "handling": "Automatic redirect/iframe",
+    "result_location": "onApprove callback"
+  },
+  "v6_pattern": {
+    "configuration": "Server-side only, same as v5",
+    "verification_method": "payment_source.card.attributes.verification.method",
+    "handling": "Automatic redirect/iframe - SDK handles it",
+    "result_location": "submit() response data.liabilityShift"
+  },
+  "verification_methods": {
+    "SCA_ALWAYS": {
+      "description": "Always perform 3DS authentication for every transaction",
+      "use_case": "Maximum security, regulatory compliance",
+      "impact": "May reduce conversion rates",
+      "regions": "Useful for all regions"
+    },
+    "SCA_WHEN_REQUIRED": {
+      "description": "Only perform 3DS when required by card issuer or regulation",
+      "use_case": "Balance security and user experience",
+      "impact": "Optimal conversion rates",
+      "regions": "Recommended for EU/UK/India",
+      "recommended": true
+    }
+  },
+  "regional_requirements": {
+    "mandatory": [
+      {
+        "region": "European Union",
+        "regulation": "PSD2/SCA",
+        "requirement": "Required for most transactions"
+      },
+      {
+        "region": "United Kingdom",
+        "regulation": "UK FCA",
+        "requirement": "Required for most transactions"
+      },
+      {
+        "region": "India",
+        "regulation": "RBI guidelines",
+        "requirement": "Mandatory for all card transactions"
+      }
+    ],
+    "optional_recommended": [
+      {
+        "region": "United States",
+        "use_case": "High-value or high-risk transactions"
+      },
+      {
+        "region": "Brazil",
+        "use_case": "Fraud prevention"
+      },
+      {
+        "region": "Australia",
+        "use_case": "Growing adoption"
+      }
+    ]
+  },
+  "server_side_configuration": {
+    "order_creation": {
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "verification": {
+              "method": "SCA_WHEN_REQUIRED"
+            }
+          },
+          "experience_context": {
+            "return_url": "https://example.com/returnUrl",
+            "cancel_url": "https://example.com/cancelUrl"
+          }
+        }
+      }
+    },
+    "critical_note": "experience_context with return_url and cancel_url is REQUIRED for 3DS to work"
+  },
+  "client_side_handling": {
+    "no_code_changes": "3DS is automatic - SDK handles redirect/iframe",
+    "state_handling": "Same as any card payment - use switch on state",
+    "liability_shift_check": {
+      "location": "data.liabilityShift in submit() response",
+      "values": {
+        "POSSIBLE": "Liability shifted to card issuer - safe to proceed",
+        "NO": "Liability remains with merchant - higher risk",
+        "UNKNOWN": "Cannot determine - evaluate risk",
+        "null": "3DS not performed"
+      }
+    }
+  },
+  "liability_shift_response": {
+    "submit_response": {
+      "state": "succeeded",
+      "data": {
+        "orderId": "5O190127TN364715T",
+        "liabilityShift": "POSSIBLE"
+      }
+    },
+    "capture_response": {
+      "payment_source": {
+        "card": {
+          "authentication_result": {
+            "liability_shift": "POSSIBLE",
+            "three_d_secure": {
+              "authentication_status": "Y",
+              "enrollment_status": "Y"
+            }
+          }
+        }
+      }
+    }
+  },
+  "authentication_status_codes": {
+    "Y": "Authentication successful",
+    "N": "Authentication failed",
+    "A": "Attempted authentication",
+    "U": "Unable to perform authentication",
+    "R": "Authentication rejected",
+    "C": "Challenge required"
+  },
+  "enrollment_status_codes": {
+    "Y": "Card enrolled in 3DS",
+    "N": "Card not enrolled",
+    "U": "Unable to verify enrollment",
+    "B": "Bypass authentication"
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "title": "Add Verification Method",
+      "description": "Add verification.method to payment_source.card.attributes in order creation",
+      "location": "Server-side order creation endpoint"
+    },
+    {
+      "step": 2,
+      "title": "Add Experience Context",
+      "description": "REQUIRED: Add return_url and cancel_url",
+      "required": true,
+      "note": "3DS will not work without these URLs"
+    },
+    {
+      "step": 3,
+      "title": "Check Liability Shift Client-Side",
+      "description": "Log liabilityShift from submit() response",
+      "code": "console.log('Liability Shift:', data.liabilityShift);"
+    },
+    {
+      "step": 4,
+      "title": "Check Authentication Result Server-Side",
+      "description": "Verify authentication_result in capture response",
+      "location": "captureData.payment_source.card.authentication_result"
+    },
+    {
+      "step": 5,
+      "title": "Test 3DS Flow",
+      "description": "Use test cards that trigger 3DS challenge",
+      "test_cards": true
+    }
+  ],
+  "test_cards": [
+    {
+      "number": "4000002500001001",
+      "scenario": "Successful authentication",
+      "expected_status": "Y"
+    },
+    {
+      "number": "4000008260001005",
+      "scenario": "Failed authentication",
+      "expected_status": "N"
+    },
+    {
+      "number": "4000002760001006",
+      "scenario": "Challenge flow required",
+      "note": "Modal will appear"
+    },
+    {
+      "number": "4000002760003184",
+      "scenario": "Frictionless authentication",
+      "note": "No modal, automatic"
+    },
+    {
+      "number": "4000008400001629",
+      "scenario": "Card not enrolled in 3DS",
+      "expected_enrollment": "N"
+    }
+  ],
+  "vaulting_with_3ds": {
+    "note": "3DS and vaulting work together",
+    "server_config": {
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "verification": {
+              "method": "SCA_WHEN_REQUIRED"
+            },
+            "vault": {
+              "store_in_vault": "ON_SUCCESS",
+              "usage_type": "MERCHANT",
+              "customer_type": "CONSUMER",
+              "permit_multiple_payment_tokens": true
+            }
+          },
+          "experience_context": {
+            "return_url": "https://example.com/returnUrl",
+            "cancel_url": "https://example.com/cancelUrl"
+          }
+        }
+      }
+    },
+    "description": "Card is vaulted after successful 3DS authentication"
+  },
+  "best_practices": [
+    "MUST include return_url and cancel_url - Required for 3DS",
+    "Handle every submit state with switch and break statements",
+    "Track liability shift to manage risk",
+    "Always use HTTPS in production",
+    "Implement SCA for EU/UK/India (regulatory requirement)",
+    "Use SCA_WHEN_REQUIRED for best balance",
+    "Check liabilityShift before capturing",
+    "Log authentication attempts for compliance",
+    "Store 3DS results in database for audit",
+    "Test all flows: success, failure, cancellation"
+  ],
+  "troubleshooting": [
+    {
+      "issue": "3DS modal not appearing",
+      "cause": "Missing return_url or cancel_url",
+      "fix": "Add experience_context with both URLs"
+    },
+    {
+      "issue": "liabilityShift is null",
+      "cause": "3DS not configured or not triggered",
+      "fix": "Add verification.method to order creation"
+    },
+    {
+      "issue": "Authentication always fails",
+      "cause": "Using wrong test cards or invalid credentials",
+      "fix": "Use correct test cards with any password in sandbox"
+    }
+  ],
+  "critical_notes": [
+    "return_url and cancel_url are REQUIRED for 3DS",
+    "3DS is handled automatically by SDK - no client code changes",
+    "Check liabilityShift in submit response",
+    "Use SCA_WHEN_REQUIRED for best UX",
+    "Always combine 3DS with vaulting",
+    "Test with 3DS test cards in sandbox",
+    "Store authentication results for compliance",
+    "Handle all three states: succeeded, failed, canceled"
+  ],
+  "official_docs": "https://docs.paypal.ai/payments/methods/cards/3ds"
+}
+

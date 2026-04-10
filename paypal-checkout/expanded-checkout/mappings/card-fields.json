@@ -1,0 +1,92 @@
+{
+  "operation": "Card Fields",
+  "description": "Custom card input fields for Expanded Checkout — PCI DSS compliant",
+  "v6_pattern": {
+    "card_fields_setup": {
+      "step_1": "Initialize SDK with card-fields component",
+      "step_2": "Create card fields session via sdkInstance",
+      "step_3": "Render individual field elements into containers",
+      "step_4": "Handle form submission and card tokenization"
+    },
+    "card_field_elements": {
+      "number": {
+        "description": "Card number input",
+        "container": "<div id=\"card-number-container\"></div>"
+      },
+      "expiry": {
+        "description": "Expiration date input (MM/YY)",
+        "container": "<div id=\"card-expiry-container\"></div>"
+      },
+      "cvv": {
+        "description": "CVV/CVC security code input",
+        "container": "<div id=\"card-cvv-container\"></div>"
+      },
+      "name": {
+        "description": "Cardholder name input (optional)",
+        "container": "<div id=\"card-name-container\"></div>"
+      }
+    },
+    "styling": {
+      "description": "Pass CSS-like styles to Card Fields for consistent branding",
+      "properties": [
+        "color", "font-size", "font-family", "font-weight", "font-style",
+        "letter-spacing", "line-height", "padding", "text-align",
+        "text-decoration", "text-shadow", "text-transform",
+        "background-color", "border", "border-radius", "box-shadow",
+        "transition", "placeholder.color", "placeholder.font-style"
+      ]
+    },
+    "events": {
+      "onChange": "Fired when field value changes — use for validation UI",
+      "onFocus": "Fired when field gains focus",
+      "onBlur": "Fired when field loses focus",
+      "onInputSubmitRequest": "Fired when user presses Enter in a field"
+    },
+    "submission": {
+      "method": "Call submit on the card fields session to tokenize and process",
+      "triggers_3ds": "3D Secure is triggered automatically when required"
+    }
+  },
+  "v5_pattern": {
+    "initialization": "const cardFields = paypal.CardFields({ createOrder, onApprove, onError, style })",
+    "individual_fields": {
+      "number": "cardFields.NumberField().render('#card-number')",
+      "expiry": "cardFields.ExpiryField().render('#card-expiry')",
+      "cvv": "cardFields.CVVField().render('#card-cvv')",
+      "name": "cardFields.NameField().render('#card-name')"
+    },
+    "submit": "cardFields.submit()",
+    "eligibility": "cardFields.isEligible() — check before rendering",
+    "styling": {
+      "input": {
+        "font-size": "16px",
+        "font-family": "monospace",
+        "color": "#333"
+      },
+      ".invalid": {
+        "color": "#c23d4b"
+      }
+    }
+  },
+  "pci_compliance": {
+    "description": "Card Fields are PCI DSS compliant — PayPal handles card data in iframes. Your page never touches raw card data.",
+    "required_disclosure": [
+      "Show 'Payment Methods' badge linking to https://developer.paypal.com/docs/checkout/payment-methods/",
+      "Include text: 'By paying with your card, you acknowledge that your data will be processed by PayPal subject to the PayPal Privacy Statement.'",
+      "Include disclosure in your privacy notice"
+    ]
+  },
+  "supported_card_brands": [
+    "Visa", "Mastercard", "American Express", "Discover",
+    "JCB", "Diners Club", "Carte Bancaire", "eftpos", "China UnionPay"
+  ],
+  "best_practices": [
+    "Always check card eligibility before rendering fields",
+    "Style card fields to match your site branding for trust",
+    "Show real-time validation feedback using onChange events",
+    "Display card brand icon as user types card number",
+    "Handle 3D Secure automatically — do not skip",
+    "Provide clear error messages for declined cards",
+    "Include cardholder name field for better authorization rates"
+  ]
+}

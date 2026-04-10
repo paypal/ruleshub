@@ -1,0 +1,101 @@
+{
+  "operation": "GetBillingAgreementCustomerDetails",
+  "deprecated": true,
+  "deprecated_since": "API version 54.0",
+  "rest_endpoint": "GET /v3/vault/setup-tokens/{id}",
+  "parameter_mappings": {
+    "nvp": {
+      "v3": {
+        "request": {
+          "supported": {
+            "TOKEN": "id (path parameter)",
+            "METHOD": "API.Endpoint",
+            "VERSION": "API.EndPoint"
+          },
+          "not_supported": []
+        },
+        "response": {
+          "supported": {},
+          "not_supported": [
+            "ADDRESSSTATUS",
+            "COUNTRYCODE",
+            "EMAIL",
+            "FIRSTNAME",
+            "LASTNAME",
+            "MIDDLENAME",
+            "PAYERBUSINESS",
+            "PAYERID",
+            "PAYERSTATUS",
+            "SALUTATION",
+            "SHIPTOCITY",
+            "SHIPTOCOUNTRYCODE",
+            "SHIPTONAME",
+            "SHIPTOSTATE",
+            "SHIPTOSTREET",
+            "SHIPTOSTREET2",
+            "SHIPTOZIP",
+            "SUFFIX"
+          ]
+        }
+      }
+    },
+    "soap": {
+      "v3": {
+        "request": {
+          "supported": {
+            "Token": "id (path parameter)",
+            "Method": "API.Endpoint",
+            "Version": "API.EndPoint"
+          },
+          "not_supported": []
+        },
+        "response": {
+          "supported": {
+            "PayeeInfo.PayeeID": "customer.id",
+            "PayerInfo.Payer": "payment_source.paypal.email_address",
+            "PayerInfo.PayerID": "payment_source.paypal.account_id",
+            "PayerInfo.PayerName.FirstName": "payment_source.paypal.name.full_name",
+            "PayerInfo.Address.CityName": "payment_source.paypal.address.admin_area_2",
+            "PayerInfo.Address.Country": "payment_source.paypal.address.country_code",
+            "PayerInfo.Address.PostalCode": "payment_source.paypal.address.postal_code",
+            "PayerInfo.Address.StateOrProvince": "payment_source.paypal.address.admin_area_1",
+            "PayerInfo.Address.Street1": "payment_source.paypal.address.address_line_1",
+            "PayerInfo.Address.Street2": "payment_source.paypal.address.address_line_2"
+          },
+          "not_supported": [
+            "PayeeInfo.PayeeEmail",
+            "PayerInfo.Address.Name",
+            "PayerInfo.PayerBusiness",
+            "PayerInfo.PayerCountry",
+            "PayerInfo.PayerName.LastName",
+            "PayerInfo.PayerName.MiddleName",
+            "PayerInfo.PayerName.Salutation",
+            "PayerInfo.PayerName.Suffix",
+            "PayerInfo.PayerStatus"
+          ]
+        }
+      }
+    }
+  },
+  "error_mappings": {
+    "10408": { "v3_error": "TOKEN_NOT_FOUND", "v3_issue": "TOKEN_NOT_FOUND", "description": "Token is missing" },
+    "10409": { "v3_error": "Not Supported", "v3_issue": "Not Supported", "description": "You are not authorized to access this info" },
+    "10410": { "v3_error": "Not Supported", "v3_issue": "Not Supported", "description": "Invalid token" },
+    "10411": { "v3_error": "Not Supported", "v3_issue": "Not Supported", "description": "Express Checkout session has expired" }
+  },
+  "special_notes": {
+    "critical_warning": "NVP response fields are ALL NOT SUPPORTED in v3. SOAP response has PARTIAL support.",
+    "nvp_migration": "NVP users must store customer information in their own database before redirecting to PayPal",
+    "soap_migration": "SOAP users can retrieve some customer data from the payment token response after token creation",
+    "token_format": "Legacy uses 'RP-' prefix tokens. REST uses setup token ID directly.",
+    "authentication": "Replace USER/PWD/SIGNATURE with OAuth 2.0 Bearer token",
+    "migration_tips": [
+      "Customer details are NOT returned by GET /v3/vault/setup-tokens/{id}",
+      "For customer info, retrieve payment token after approval: GET /v3/vault/payment-tokens/{id}",
+      "NVP users lose ALL customer response data - plan accordingly",
+      "SOAP users retain email, account_id, name (full_name only), and address fields",
+      "Consider using PayPal Identity APIs for detailed customer information"
+    ]
+  }
+}
+

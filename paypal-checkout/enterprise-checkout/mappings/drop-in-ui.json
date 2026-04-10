@@ -1,0 +1,58 @@
+{
+  "operation": "Drop-in UI",
+  "description": "Braintree Drop-in UI — pre-built payment form with minimal setup",
+  "documentation": "https://developer.paypal.com/braintree/docs/guides/drop-in/",
+  "client_sdk": {
+    "script": "https://js.braintreegateway.com/web/dropin/1.43.0/js/dropin.min.js",
+    "note": "Check latest version at Braintree docs"
+  },
+  "initialization": {
+    "method": "braintree.dropin.create({ authorization, container, ... })",
+    "required_parameters": {
+      "authorization": "Client token from server (gateway.clientToken.generate())",
+      "container": "CSS selector or DOM element for the Drop-in UI"
+    },
+    "optional_parameters": {
+      "paypal": { "flow": "checkout", "amount": "10.00", "currency": "USD" },
+      "paypalCredit": { "flow": "checkout" },
+      "venmo": { "allowDesktop": true },
+      "applePay": { "displayName": "Your Store" },
+      "googlePay": { "merchantId": "your-google-pay-merchant-id", "transactionInfo": {} },
+      "card": { "cardholderName": { "required": true } },
+      "threeDSecure": true
+    }
+  },
+  "payment_flow": {
+    "step_1": "Server: Generate client token via gateway.clientToken.generate()",
+    "step_2": "Client: braintree.dropin.create({ authorization: clientToken, container: '#dropin-container' })",
+    "step_3": "Buyer: Selects payment method and fills in details",
+    "step_4": "Client: dropinInstance.requestPaymentMethod() — returns nonce",
+    "step_5": "Client: Send nonce to server",
+    "step_6": "Server: gateway.transaction.sale({ amount, paymentMethodNonce })"
+  },
+  "supported_payment_methods": [
+    "Credit/Debit cards",
+    "PayPal",
+    "PayPal Credit / Pay Later",
+    "Venmo",
+    "Apple Pay",
+    "Google Pay",
+    "Local payment methods"
+  ],
+  "customization": {
+    "styles": "Limited CSS customization — use Hosted Fields for full control",
+    "locale": "Set locale for translated labels",
+    "vaulted_methods": "Pass customerId in client token to show saved payment methods"
+  },
+  "events": {
+    "paymentMethodRequestable": "Fired when a payment method is available",
+    "noPaymentMethodRequestable": "Fired when no payment method is available",
+    "paymentOptionSelected": "Fired when buyer selects a payment option"
+  },
+  "best_practices": [
+    "Always call requestPaymentMethod() only on form submit",
+    "Show loading state while Drop-in initializes",
+    "Handle errors from requestPaymentMethod() gracefully",
+    "Generate fresh client tokens per session"
+  ]
+}

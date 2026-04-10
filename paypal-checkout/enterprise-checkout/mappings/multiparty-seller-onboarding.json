@@ -1,0 +1,81 @@
+{
+  "operation": "Multiparty Seller Onboarding",
+  "description": "Onboard sellers to a platform/marketplace using Partner Referral API",
+  "documentation": {
+    "overview": "https://developer.paypal.com/docs/multiparty/seller-onboarding/",
+    "get_started": "https://developer.paypal.com/docs/multiparty/get-started/"
+  },
+  "api_base_urls": {
+    "sandbox": "https://api-m.sandbox.paypal.com",
+    "production": "https://api-m.paypal.com"
+  },
+  "partner_referral_api": {
+    "create_referral": {
+      "method": "POST",
+      "path": "/v2/customer/partner-referrals",
+      "description": "Generate a sign-up link for sellers to connect their PayPal account",
+      "required_headers": {
+        "Authorization": "Bearer {partner_access_token}",
+        "Content-Type": "application/json"
+      },
+      "payload": {
+        "tracking_id": "your_unique_seller_tracking_id",
+        "partner_config_override": {
+          "return_url": "https://yourplatform.com/seller/onboard/return"
+        },
+        "operations": [{
+          "operation": "API_INTEGRATION",
+          "api_integration_preference": {
+            "rest_api_integration": {
+              "integration_method": "PAYPAL",
+              "integration_type": "THIRD_PARTY",
+              "third_party_details": {
+                "features": ["PAYMENT", "REFUND", "PARTNER_FEE"]
+              }
+            }
+          }
+        }],
+        "products": ["EXPRESS_CHECKOUT"],
+        "legal_consents": [{
+          "type": "SHARE_DATA_CONSENT",
+          "granted": true
+        }]
+      },
+      "response": {
+        "links": "Contains action_url for seller to complete sign-up"
+      }
+    }
+  },
+  "check_onboarding_status": {
+    "method": "GET",
+    "path": "/v1/customer/partners/{partner_id}/merchant-integrations/{merchant_id}",
+    "key_fields": {
+      "merchant_id": "Seller's PayPal merchant ID",
+      "payments_receivable": "true = seller can receive payments",
+      "primary_email_confirmed": "true = seller email verified",
+      "oauth_integrations": "Contains third-party permissions granted"
+    }
+  },
+  "onboarding_flow": [
+    "1. Platform: POST /v2/customer/partner-referrals — get sign-up link",
+    "2. Redirect seller to PayPal sign-up link (action_url)",
+    "3. Seller creates/links PayPal account and grants permissions",
+    "4. Seller redirected back to platform (return_url)",
+    "5. Platform: GET merchant-integrations to verify onboarding status",
+    "6. Store seller merchant_id for future order creation"
+  ],
+  "features_to_request": {
+    "PAYMENT": "Receive payments on behalf of seller",
+    "REFUND": "Process refunds on behalf of seller",
+    "PARTNER_FEE": "Collect platform/partner fees",
+    "DELAY_FUNDS_DISBURSEMENT": "Hold funds before disbursing to seller",
+    "READ_SELLER_DISPUTE": "Read seller dispute information"
+  },
+  "best_practices": [
+    "Use unique tracking_id per seller for correlation",
+    "Always check onboarding status before processing payments for a seller",
+    "Verify payments_receivable and primary_email_confirmed",
+    "Store merchant_id securely server-side",
+    "Handle sellers who abandon onboarding — allow re-entry"
+  ]
+}

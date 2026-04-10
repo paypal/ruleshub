@@ -1,0 +1,145 @@
+{
+  "operation": "CreateRecurringPaymentsProfile",
+  "_endpoint": "POST /v1/billing/subscriptions",
+  "_note": "Per-customer flow: Create a subscription for each customer (requires plan_id from config)",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "RETURNURL": {
+          "rest_field": "application_context.return_url",
+          "typically_found_in": "SetExpressCheckout call",
+          "required": true
+        },
+        "CANCELURL": {
+          "rest_field": "application_context.cancel_url",
+          "typically_found_in": "SetExpressCheckout call",
+          "required": true
+        },
+        "BRANDNAME": {
+          "rest_field": "application_context.brand_name",
+          "typically_found_in": "SetExpressCheckout call"
+        },
+        "LOCALECODE": {
+          "rest_field": "application_context.locale",
+          "typically_found_in": "SetExpressCheckout call"
+        },
+        "NOSHIPPING": {
+          "rest_field": "application_context.shipping_preference",
+          "typically_found_in": "SetExpressCheckout call",
+          "transform": "1→NO_SHIPPING, 0→GET_FROM_FILE"
+        },
+        "PROFILESTARTDATE": {
+          "rest_field": "start_time",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "ISO 8601 format. Omit to start immediately."
+        },
+        "PROFILEREFERENCE": {
+          "rest_field": "custom_id",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "Merchant's own reference/invoice number"
+        },
+        "L_PAYMENTREQUEST_0_QTY0": {
+          "rest_field": "quantity",
+          "typically_found_in": "SetExpressCheckout call",
+          "notes": "Only for per-seat/quantity pricing. Most merchants omit."
+        },
+        "SHIPPINGAMT": {
+          "rest_field": "shipping_amount.value",
+          "typically_found_in": "CreateRecurringPaymentsProfile call",
+          "notes": "Per-cycle shipping charge"
+        },
+        "PAYMENTREQUEST_0_ALLOWEDPAYMENTMETHOD": {
+          "rest_field": "payment_method.payee_preferred",
+          "typically_found_in": "SetExpressCheckout call",
+          "transform": "InstantPaymentOnly→IMMEDIATE_PAYMENT_REQUIRED"
+        }
+      },
+      "not_supported": {
+        "auto_filled_fields": {
+          "description": "PayPal auto-fills these from buyer's account. Do NOT include in subscription request.",
+          "fields": ["EMAIL", "FIRSTNAME", "LASTNAME", "SHIPTOPHONENUM", "SHIPTONAME", "SHIPTOSTREET", "SHIPTOSTREET2", "SHIPTOCITY", "SHIPTOSTATE", "SHIPTOZIP", "SHIPTOCOUNTRYCODE"]
+        },
+        "direct_card_fields": {
+          "description": "Only for direct card integration. OMIT for Express Checkout flows.",
+          "fields": ["ACCT", "EXPDATE", "CVV2", "CREDITCARDTYPE", "STREET", "CITY", "STATE", "ZIP", "COUNTRYCODE"]
+        }
+      }
+    },
+    "soap": {
+      "supported": {
+        "SetExpressCheckoutRequestDetails.ReturnURL": {
+          "rest_field": "application_context.return_url",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "required": true
+        },
+        "SetExpressCheckoutRequestDetails.CancelURL": {
+          "rest_field": "application_context.cancel_url",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "required": true
+        },
+        "SetExpressCheckoutRequestDetails.BrandName": {
+          "rest_field": "application_context.brand_name",
+          "typically_found_in": "SetExpressCheckoutRequest"
+        },
+        "SetExpressCheckoutRequestDetails.LocaleCode": {
+          "rest_field": "application_context.locale",
+          "typically_found_in": "SetExpressCheckoutRequest"
+        },
+        "SetExpressCheckoutRequestDetails.NoShipping": {
+          "rest_field": "application_context.shipping_preference",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "transform": "1→NO_SHIPPING, 0→GET_FROM_FILE"
+        },
+        "RecurringPaymentsProfileDetails.BillingStartDate": {
+          "rest_field": "start_time",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest",
+          "notes": "ISO 8601 format"
+        },
+        "RecurringPaymentsProfileDetails.ProfileReference": {
+          "rest_field": "custom_id",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest"
+        },
+        "PaymentDetailsItem.Quantity": {
+          "rest_field": "quantity",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "notes": "Only for per-seat pricing"
+        },
+        "ScheduleDetails.PaymentPeriod.ShippingAmount": {
+          "rest_field": "shipping_amount.value",
+          "typically_found_in": "CreateRecurringPaymentsProfileRequest"
+        },
+        "PaymentDetails.AllowedPaymentMethod": {
+          "rest_field": "payment_method.payee_preferred",
+          "typically_found_in": "SetExpressCheckoutRequest",
+          "transform": "InstantPaymentOnly→IMMEDIATE_PAYMENT_REQUIRED"
+        }
+      },
+      "not_supported": {
+        "auto_filled_fields": {
+          "description": "PayPal auto-fills these from buyer's account. Do NOT include in subscription request.",
+          "fields": ["PayerInfo.Payer", "PayerInfo.PayerName.FirstName", "PayerInfo.PayerName.LastName", "PayerInfo.ContactPhone", "PayerInfo.Address.Name", "PayerInfo.Address.Street1", "PayerInfo.Address.Street2", "PayerInfo.Address.CityName", "PayerInfo.Address.StateOrProvince", "PayerInfo.Address.PostalCode", "PayerInfo.Address.Country"]
+        },
+        "direct_card_fields": {
+          "description": "Only for direct card integration. OMIT for Express Checkout flows.",
+          "fields": ["CreditCard.CreditCardNumber", "CreditCard.ExpirationDate", "CreditCard.CVV2", "CreditCard.CreditCardType", "CreditCard.CardOwner.Address"]
+        }
+      }
+    }
+  },
+  "critical_requirements": {
+    "user_action": {
+      "field": "application_context.user_action",
+      "value": "CONTINUE",
+      "notes": "ALWAYS set to CONTINUE (never SUBSCRIBE_NOW). No NVP/SOAP equivalent. Required for activation flow matching legacy behavior."
+    }
+  },
+  "special_notes": {
+    "usage": "Run for EACH customer to create their subscription",
+    "upgrade_tips": [
+      "Read plan_id from config/paypal-subscriptions.json",
+      "Redirect customer to approval_url from response",
+      "After approval, call /activate endpoint"
+    ]
+  }
+}
+

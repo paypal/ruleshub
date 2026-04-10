@@ -1,0 +1,42 @@
+{
+  "operation": "Google Pay",
+  "description": "Google Pay integration via PayPal JS SDK for Expanded Checkout",
+  "documentation": {
+    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/digital-wallets/google-pay",
+    "developer_paypal": "https://developer.paypal.com/docs/checkout/apm/google-pay/"
+  },
+  "requirements": {
+    "browser": "Chrome, Firefox, Safari, Edge (Google Pay JS API)",
+    "ssl": "HTTPS required",
+    "merchant_id": "Google Pay Merchant ID from Google Pay Business Console"
+  },
+  "v6_pattern": {
+    "component": "googlepay-payments",
+    "initialization": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: ['googlepay-payments'] })",
+    "eligibility": "eligibleMethods.isEligible('googlepay')",
+    "flow": [
+      "1. Initialize SDK with googlepay-payments component",
+      "2. Check eligibility",
+      "3. Create Google Pay session via SDK",
+      "4. Present Google Pay payment sheet",
+      "5. Buyer selects card and authenticates",
+      "6. Server creates and captures order"
+    ]
+  },
+  "order_payload": {
+    "payment_source": {
+      "google_pay": {
+        "experience_context": {
+          "return_url": "https://yoursite.com/success",
+          "cancel_url": "https://yoursite.com/cancel"
+        }
+      }
+    }
+  },
+  "best_practices": [
+    "Only show Google Pay button when eligible",
+    "Always provide alternative payment methods",
+    "Register with Google Pay Business Console for production",
+    "Test with Google Pay test cards in sandbox"
+  ]
+}

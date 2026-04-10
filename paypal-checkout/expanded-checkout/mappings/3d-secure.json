@@ -1,0 +1,91 @@
+{
+  "operation": "3D Secure / SCA",
+  "description": "3D Secure authentication for card payments — required for PSD2/SCA compliance in Europe",
+  "documentation": {
+    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/cards/3ds",
+    "developer_paypal": "https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/"
+  },
+  "verification_methods": {
+    "SCA_WHEN_REQUIRED": {
+      "description": "Trigger 3D Secure only when required by card issuer, regulation, or risk assessment",
+      "recommended": true,
+      "use_case": "Default for most integrations"
+    },
+    "SCA_ALWAYS": {
+      "description": "Always trigger 3D Secure authentication regardless of requirements",
+      "recommended": false,
+      "use_case": "When maximum fraud protection is needed, even at the cost of conversion"
+    }
+  },
+  "order_payload": {
+    "payment_source": {
+      "card": {
+        "attributes": {
+          "verification": {
+            "method": "SCA_WHEN_REQUIRED"
+          }
+        }
+      }
+    }
+  },
+  "authentication_result": {
+    "liability_shift": {
+      "YES": "Issuer accepts fraud liability — merchant protected from chargebacks",
+      "POSSIBLE": "3D Secure available but not fully completed",
+      "NO": "No liability shift — merchant bears fraud risk",
+      "UNKNOWN": "Cannot determine — treat as NO for business decisions"
+    },
+    "three_d_secure": {
+      "enrollment_status": {
+        "Y": "Card enrolled in 3D Secure",
+        "N": "Card not enrolled",
+        "U": "Enrollment status unknown",
+        "B": "Authentication bypassed"
+      },
+      "authentication_status": {
+        "Y": "Authentication successful",
+        "N": "Authentication failed — DO NOT proceed with capture",
+        "A": "Authentication attempted but not completed",
+        "U": "Unable to authenticate",
+        "R": "Authentication rejected",
+        "C": "Challenge required"
+      }
+    }
+  },
+  "v6_behavior": {
+    "description": "In v6, 3D Secure is triggered automatically by the Card Fields SDK when the card issuer requires it",
+    "flow": [
+      "1. Buyer enters card details in Card Fields",
+      "2. On submit, SDK sends card data to PayPal",
+      "3. PayPal evaluates 3D Secure requirement",
+      "4. If required: SDK presents 3D Secure challenge to buyer",
+      "5. Buyer completes challenge (password, OTP, biometric)",
+      "6. SDK returns result to onApprove callback",
+      "7. Server captures order and checks authentication_result"
+    ]
+  },
+  "v5_behavior": {
+    "description": "In v5, 3D Secure is also handled automatically by CardFields when SCA is required",
+    "flow": "Similar to v6 — CardFields.submit() triggers 3DS if needed"
+  },
+  "business_logic_recommendations": {
+    "liability_shift_YES": "Safe to fulfill — issuer bears chargeback liability",
+    "liability_shift_NO": "Consider additional verification for high-value orders",
+    "authentication_N": "Do NOT capture — authentication failed",
+    "authentication_R": "Do NOT capture — authentication rejected"
+  },
+  "regional_requirements": {
+    "Europe_PSD2": "SCA required for most electronic payments — 3D Secure satisfies this",
+    "UK_SCA": "Strong Customer Authentication required post-Brexit",
+    "US": "3D Secure optional but recommended for fraud reduction",
+    "Asia_Pacific": "Requirements vary by country and card network"
+  },
+  "best_practices": [
+    "Use SCA_WHEN_REQUIRED for optimal balance of security and conversion",
+    "Always check liability_shift in capture response before fulfillment",
+    "Log 3D Secure results for dispute resolution",
+    "Do not capture when authentication_status is N or R",
+    "Handle 3D Secure challenge UI gracefully (loading states, error messages)",
+    "Test with sandbox cards that trigger different 3DS scenarios"
+  ]
+}

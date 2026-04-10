@@ -1,0 +1,190 @@
+{
+  "operation": "Pay Later Buttons (US)",
+  "description": "PayPal Pay Later button integration for US — allows buyers to pay in installments (Pay in 4 or Pay Monthly)",
+  "official_docs": {
+    "overview": "https://developer.paypal.com/docs/checkout/pay-later/us/",
+    "ai_docs": "https://docs.paypal.ai/payments/methods/pay-later/overview",
+    "v6_setup": "https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration",
+    "v5_config": "https://developer.paypal.com/sdk/js/configuration/"
+  },
+  "us_products": {
+    "pay_in_4": {
+      "payments": 4,
+      "frequency": "Every 2 weeks (biweekly)",
+      "amount_range": { "min": "30.00", "max": "1500.00", "currency": "USD" },
+      "interest": "Interest-free",
+      "first_payment": "Due at checkout"
+    },
+    "pay_monthly": {
+      "payments": "3, 6, 12, or 24",
+      "frequency": "Monthly",
+      "amount_range": { "min": "49.00", "max": "10000.00", "currency": "USD" },
+      "interest": "9.99–35.99% APR (variable, based on creditworthiness)",
+      "lender": "WebBank",
+      "subject_to": "Consumer credit approval"
+    }
+  },
+  "v5_pattern": {
+    "script_tag": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&enable-funding=paylater&currency=USD\"></script>",
+    "script_parameters": {
+      "client-id": "Required. Your PayPal REST client ID",
+      "enable-funding": "paylater — explicitly enables the Pay Later button",
+      "disable-funding": "paylater — to disable the Pay Later button",
+      "currency": "USD — required for US Pay Later",
+      "components": "buttons — default, includes Pay Later when enabled"
+    },
+    "standalone_button": {
+      "method": "paypal.Buttons({ fundingSource: paypal.FUNDING.PAYLATER })",
+      "funding_constant": "paypal.FUNDING.PAYLATER",
+      "render_target": ".render('#paylater-button-container')",
+      "callbacks": {
+        "createOrder": "function(data, actions) { return actions.order.create({ purchase_units: [{ amount: { value: '100.00' } }] }); }",
+        "onApprove": "function(data, actions) { return actions.order.capture(); }",
+        "onError": "function(err) { console.error(err); }"
+      }
+    },
+    "all_buttons_with_paylater": {
+      "method": "paypal.Buttons({ createOrder, onApprove }).render('#paypal-button-container')",
+      "note": "When enable-funding=paylater is in the script tag, Pay Later button renders automatically alongside PayPal button"
+    }
+  },
+  "v6_pattern": {
+    "script_tag": {
+      "production": "<script src=\"https://www.paypal.com/web-sdk/v6/core\"></script>",
+      "sandbox": "<script src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\"></script>"
+    },
+    "initialization": {
+      "method": "window.paypal.createInstance()",
+      "auth_options": {
+        "clientId": {
+          "code": "const sdkInstance = await window.paypal.createInstance({ clientId: 'YOUR_CLIENT_ID', components: ['paypal-payments'], pageType: 'checkout' });",
+          "note": "Recommended for most integrations. No server-side token needed."
+        },
+        "clientToken": {
+          "code": "const sdkInstance = await window.paypal.createInstance({ clientToken, components: ['paypal-payments'], pageType: 'checkout' });",
+          "note": "Required for PayPal vaulting and Fastlane."
+        }
+      },
+      "components": ["paypal-payments"],
+      "note": "Pay Later is included in the paypal-payments component — no separate component needed"
+    },
+    "eligibility_check": {
+      "method": "sdkInstance.findEligibleMethods({ currencyCode: 'USD' })",
+      "paylater_check": "paymentMethods.isEligible('paylater')",
+      "paylater_details": "paymentMethods.getDetails('paylater')",
+      "credit_check": "paymentMethods.isEligible('credit')",
+      "credit_details": "paymentMethods.getDetails('credit')",
+      "details_structure": {
+        "paylater": {
+          "canBeVaulted": "boolean",
+          "countryCode": "US",
+          "productCode": "PAYLATER | PAY_LATER_SHORT_TERM"
+        },
+        "credit": {
+          "canBeVaulted": "boolean",
+          "countryCode": "US"
+        }
+      }
+    },
+    "payment_sessions": {
+      "paylater": {
+        "method": "sdkInstance.createPayLaterOneTimePaymentSession(options)",
+        "web_component": "<paypal-pay-later-button>",
+        "required_button_attributes": {
+          "productCode": "From getDetails('paylater').productCode",
+          "countryCode": "From getDetails('paylater').countryCode"
+        },
+        "start_method": "payLaterSession.start({ presentationMode: 'auto' }, createOrder())"
+      },
+      "credit": {
+        "method": "sdkInstance.createPayPalCreditOneTimePaymentSession(options)",
+        "web_component": "<paypal-credit-button>",
+        "required_button_attributes": {
+          "countryCode": "From getDetails('credit').countryCode"
+        },
+        "start_method": "creditSession.start({ presentationMode: 'auto' }, createOrder())"
+      }
+    },
+    "session_callbacks": {
+      "onApprove": {
+        "signature": "(data: { orderId: string, payerId?: string }) => Promise<void>",
+        "required": true,
+        "action": "Capture order on server: POST /v2/checkout/orders/{orderId}/capture"
+      },
+      "onCancel": {
+        "signature": "() => void",
+        "required": false,
+        "note": "No parameters"
+      },
+      "onError": {
+        "signature": "(error: Error) => void",
+        "required": false
+      },
+      "onComplete": {
+        "signature": "(data: { paymentSessionState: 'approved' | 'canceled' | 'error' }) => void",
+        "required": false
+      }
+    },
+    "createOrder_return": {
+      "format": "{ orderId: 'YOUR_ORDER_ID' }",
+      "note": "v6 requires returning an object with orderId. This differs from v5 which returned just the order ID string."
+    }
+  },
+  "order_creation": {
+    "endpoint": "POST /v2/checkout/orders",
+    "note": "No special payload fields needed for Pay Later. Standard order creation works. PayPal determines Pay Later eligibility at checkout based on order amount, buyer location, and buyer credit profile.",
+    "payload": {
+      "intent": "CAPTURE",
+      "purchase_units": [{
+        "amount": {
+          "currency_code": "USD",
+          "value": "100.00"
+        }
+      }]
+    }
+  },
+  "v5_to_v6_mapping": {
+    "script_tag": {
+      "v5": "<script src=\"https://www.paypal.com/sdk/js?client-id=YOUR_ID&enable-funding=paylater\"></script>",
+      "v6": "<script src=\"https://www.paypal.com/web-sdk/v6/core\"></script>"
+    },
+    "funding_source": {
+      "v5": "paypal.FUNDING.PAYLATER",
+      "v6": "paymentMethods.isEligible('paylater')"
+    },
+    "button_render": {
+      "v5": "paypal.Buttons({ fundingSource: paypal.FUNDING.PAYLATER }).render('#container')",
+      "v6": "<paypal-pay-later-button> web component + createPayLaterOneTimePaymentSession()"
+    },
+    "eligibility": {
+      "v5": "Automatic — button shows if eligible based on script params",
+      "v6": "Explicit — must call findEligibleMethods() and check isEligible('paylater')"
+    },
+    "createOrder_return": {
+      "v5": "Returns order ID string directly",
+      "v6": "Returns { orderId: 'ORDER_ID' } object"
+    }
+  },
+  "eligibility_requirements": {
+    "merchant": [
+      "US-based PayPal merchant with Business Account",
+      "US-facing website",
+      "Transacts in USD",
+      "One-time payment integration (NOT recurring or reference transactions)"
+    ],
+    "buyer": [
+      "US-based buyer",
+      "Order amount within range ($30–$1,500 for Pay in 4; $49–$10,000 for Pay Monthly)",
+      "Passes PayPal credit assessment"
+    ]
+  },
+  "best_practices": [
+    "Always check eligibility before showing Pay Later button (v6)",
+    "Extract and set productCode and countryCode from getDetails() (v6)",
+    "Provide standard PayPal as fallback when Pay Later is not eligible",
+    "Do not promise Pay Later availability before eligibility is confirmed",
+    "Use enable-funding=paylater in script tag (v5) to ensure button appears",
+    "Keep order creation and amount validation on the server side",
+    "Test with sandbox accounts using eligible US buyer and amounts in range"
+  ]
+}

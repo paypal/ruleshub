@@ -1,0 +1,181 @@
+{
+  "operation": "Card Vaulting - Save for Future Use",
+  "description": "v6 SDK card vaulting for saving payment methods with or without purchase",
+  "breaking_changes": true,
+  "v5_pattern": {
+    "vault_directive": "Passed in createOrder callback",
+    "vault_data_location": "Order response",
+    "initialization": "paypal.CardFields({ createOrder, onApprove })",
+    "flow": "Callback-based with onApprove"
+  },
+  "v6_pattern": {
+    "vault_directive": "Server-side in payment_source.card.attributes.vault",
+    "vault_data_location": "Capture response (NOT order response)",
+    "initialization": "Same as card fields - uses card fields session",
+    "flow": "Promise-based with state handling"
+  },
+  "vault_directive_structure": {
+    "location": "payment_source.card.attributes.vault",
+    "required_fields": {
+      "store_in_vault": {
+        "type": "string",
+        "values": ["ON_SUCCESS"],
+        "description": "When to vault the card"
+      },
+      "usage_type": {
+        "type": "string",
+        "values": ["MERCHANT", "PLATFORM"],
+        "description": "How the vault will be used"
+      },
+      "customer_type": {
+        "type": "string",
+        "values": ["CONSUMER", "BUSINESS"],
+        "description": "Type of customer"
+      },
+      "permit_multiple_payment_tokens": {
+        "type": "boolean",
+        "description": "Allow multiple cards per customer",
+        "recommended": true
+      }
+    }
+  },
+  "vault_response_structure": {
+    "location": "captureData.payment_source.card.attributes.vault",
+    "fields": {
+      "id": "Vault ID - use this for future charges",
+      "customer": {
+        "id": "PayPal customer ID"
+      },
+      "status": "VAULTED status"
+    },
+    "card_details": {
+      "brand": "VISA, MASTERCARD, AMEX, etc.",
+      "last_digits": "Last 4 digits",
+      "expiry": "Expiration date YYYY-MM"
+    }
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "title": "Add Save Card Checkbox",
+      "description": "Add UI checkbox for users to opt-in to saving card",
+      "html": "<input type=\"checkbox\" id=\"save-card-checkbox\" name=\"save-card\">"
+    },
+    {
+      "step": 2,
+      "title": "Pass Checkbox Value to Server",
+      "description": "Send saveCard boolean when creating order",
+      "client_side": "body: JSON.stringify({ amount, currency, saveCard: checkbox.checked })"
+    },
+    {
+      "step": 3,
+      "title": "Add Vault Directive Server-Side",
+      "description": "Include vault object in payment_source.card.attributes when saveCard is true",
+      "location": "Order creation endpoint"
+    },
+    {
+      "step": 4,
+      "title": "Extract Vault Data from Capture",
+      "description": "Get vault.id and vault.customer.id from capture response",
+      "location": "captureData.payment_source.card.attributes.vault"
+    },
+    {
+      "step": 5,
+      "title": "Store Vault IDs in Database",
+      "description": "Save vault.id and customer.id linked to your user",
+      "fields": ["vaultId", "customerId", "cardBrand", "lastDigits", "expiry"]
+    },
+    {
+      "step": 6,
+      "title": "Use Vault ID for Future Payments",
+      "description": "Pass vault_id in payment_source.card when creating orders",
+      "pattern": "payment_source: { card: { vault_id: 'stored_vault_id' } }"
+    }
+  ],
+  "server_side_order_creation": {
+    "with_vault": {
+      "payment_source": {
+        "card": {
+          "attributes": {
+            "verification": {
+              "method": "SCA_WHEN_REQUIRED"
+            },
+            "vault": {
+              "store_in_vault": "ON_SUCCESS",
+              "usage_type": "MERCHANT",
+              "customer_type": "CONSUMER",
+              "permit_multiple_payment_tokens": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "using_vaulted_card": {
+    "order_creation": {
+      "payment_source": {
+        "card": {
+          "vault_id": "8h29sha8a91"
+        }
+      }
+    },
+    "note": "Order can be immediately captured - no SDK interaction needed"
+  },
+  "vault_management_apis": {
+    "list_payment_tokens": {
+      "endpoint": "GET /v3/vault/payment-tokens?customer_id={customerId}",
+      "description": "List all saved cards for a customer"
+    },
+    "delete_payment_token": {
+      "endpoint": "DELETE /v3/vault/payment-tokens/{tokenId}",
+      "description": "Delete a saved card"
+    }
+  },
+  "critical_notes": [
+    "Vault directive MUST be in payment_source.card.attributes (NOT at root level)",
+    "Vault data is in CAPTURE response, NOT order response",
+    "Use vault.id (not order ID) for future payments",
+    "Always combine vaulting with 3DS (SCA_WHEN_REQUIRED)",
+    "Store vault.customer.id to list all cards for a customer",
+    "permit_multiple_payment_tokens: true allows multiple cards",
+    "Client-side flow is same as regular card fields",
+    "No special SDK methods for vaulting - it's server-side",
+    "Vault data only appears if payment succeeds (ON_SUCCESS)"
+  ],
+  "best_practices": [
+    "Always use 3DS with vaulting (SCA_WHEN_REQUIRED)",
+    "Store vault IDs securely in your database",
+    "Display saved cards clearly to customers",
+    "Allow customers to manage (delete) saved cards",
+    "Use permit_multiple_payment_tokens: true",
+    "Log vault operations for audit trail",
+    "Handle vault failures gracefully",
+    "Don't store actual card numbers (use vault IDs only)",
+    "Get customer consent before vaulting",
+    "Check card expiry before using saved cards"
+  ],
+  "test_cards": [
+    {
+      "number": "4032039573587304",
+      "type": "Visa",
+      "scenario": "Success"
+    },
+    {
+      "number": "5425233430109903",
+      "type": "Mastercard",
+      "scenario": "Success"
+    },
+    {
+      "number": "378282246310005",
+      "type": "Amex",
+      "scenario": "Success"
+    },
+    {
+      "number": "4000002500001001",
+      "type": "Visa",
+      "scenario": "3DS Success"
+    }
+  ],
+  "official_docs": "https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault"
+}
+

@@ -1,0 +1,315 @@
+{
+  "operation": "V4 Button Customization to V6",
+  "description": "Complete migration from v4 button style options to v6 (most customization removed)",
+  "official_docs": {
+    "v4_customization": "https://developer.paypal.com/docs/archive/checkout/how-to/customize-button/",
+    "v6_docs": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  },
+  "v4_style_options": {
+    "locale": {
+      "description": "Manual locale setting",
+      "v4_usage": "locale: 'en_US'",
+      "examples": ["en_US", "de_DE", "fr_FR", "es_ES", "ja_JP", "zh_CN"],
+      "v6_equivalent": "Auto-detected from browser or client token",
+      "v6_status": "removed"
+    },
+    "label": {
+      "description": "Button text/label",
+      "v4_options": {
+        "checkout": "PayPal Checkout button (default)",
+        "pay": "Pay With PayPal button",
+        "buynow": "Buy Now button",
+        "paypal": "Generic PayPal logo button",
+        "credit": "PayPal Credit button",
+        "installment": "PayPal Installment button (MX, BR only)"
+      },
+      "v4_usage": "style: { label: 'checkout' }",
+      "v6_equivalent": "Determined by session type (createPayPalOneTimePaymentSession vs createPayLaterOneTimePaymentSession)",
+      "v6_status": "removed"
+    },
+    "color": {
+      "description": "Button background color",
+      "v4_options": {
+        "gold": "Recommended - highest conversion",
+        "blue": "First alternative - PayPal brand color",
+        "silver": "Second alternative - recessive design",
+        "white": "Second alternative - recessive design",
+        "black": "Third alternative - monochromatic sites"
+      },
+      "v4_usage": "style: { color: 'gold' }",
+      "v6_equivalent": "Auto-determined by PayPal based on context",
+      "v6_status": "removed"
+    },
+    "shape": {
+      "description": "Button corner style",
+      "v4_options": {
+        "pill": "Recommended - rounded corners",
+        "rect": "Alternative - sharp corners"
+      },
+      "v4_usage": "style: { shape: 'pill' }",
+      "v6_equivalent": "Auto-determined by PayPal",
+      "v6_status": "removed"
+    },
+    "size": {
+      "description": "Button fixed size",
+      "v4_options": {
+        "small": "150px × 25px",
+        "medium": "250px × 35px",
+        "large": "350px × 40px",
+        "responsive": "100-500px width (recommended)"
+      },
+      "v4_usage": "style: { size: 'medium' }",
+      "v6_equivalent": "Container-based sizing (always responsive)",
+      "v6_status": "changed"
+    },
+    "height": {
+      "description": "Custom button height",
+      "v4_options": "25-55 pixels (only with size: 'responsive')",
+      "v4_usage": "style: { size: 'responsive', height: 40 }",
+      "v6_equivalent": "Not customizable",
+      "v6_status": "removed"
+    },
+    "tagline": {
+      "description": "Show/hide tagline text below button",
+      "v4_options": {
+        "true": "Display tagline (default)",
+        "false": "Hide tagline"
+      },
+      "v4_usage": "style: { tagline: false }",
+      "v6_equivalent": "Not supported",
+      "v6_status": "removed"
+    },
+    "fundingicons": {
+      "description": "Show funding instrument icons",
+      "v4_options": {
+        "true": "Display icons below button (horizontal layout only)",
+        "false": "Hide icons (default)"
+      },
+      "v4_usage": "style: { fundingicons: true, layout: 'horizontal' }",
+      "v6_equivalent": "Not supported",
+      "v6_status": "removed"
+    },
+    "layout": {
+      "description": "Multiple button arrangement",
+      "v4_options": {
+        "vertical": "Stack buttons top-to-bottom (max 4)",
+        "horizontal": "Side-by-side buttons (max 2)"
+      },
+      "v4_usage": "style: { layout: 'vertical' }",
+      "v6_equivalent": "Use separate container elements for each payment method",
+      "v6_status": "changed"
+    }
+  },
+  "v4_funding_options": {
+    "allowed": {
+      "description": "Show specified funding sources (if buyer eligible)",
+      "v4_usage": "funding: { allowed: [paypal.FUNDING.CARD, paypal.FUNDING.CREDIT] }",
+      "v4_options": [
+        "paypal.FUNDING.PAYPAL (always shown)",
+        "paypal.FUNDING.CREDIT",
+        "paypal.FUNDING.CARD",
+        "paypal.FUNDING.ELV (Germany only)"
+      ],
+      "v6_equivalent": "Create separate sessions for each payment method",
+      "v6_status": "changed"
+    },
+    "disallowed": {
+      "description": "Hide specified funding sources",
+      "v4_usage": "funding: { disallowed: [paypal.FUNDING.CREDIT] }",
+      "v6_equivalent": "Don't create session for unwanted methods",
+      "v6_status": "changed"
+    }
+  },
+  "migration_examples": {
+    "v4_full_customization": {
+      "code": {
+        "locale": "en_US",
+        "style": {
+          "label": "checkout",
+          "size": "medium",
+          "shape": "pill",
+          "color": "gold",
+          "tagline": true,
+          "fundingicons": false,
+          "layout": "vertical"
+        },
+        "funding": {
+          "allowed": ["paypal.FUNDING.CARD", "paypal.FUNDING.CREDIT"],
+          "disallowed": []
+        }
+      },
+      "v6_equivalent": "Most options removed - PayPal controls appearance"
+    },
+    "v4_responsive_button": {
+      "html": "<div id=\"paypal-button\" style=\"width: 50%\"></div>",
+      "code": {
+        "style": {
+          "size": "responsive",
+          "height": 40,
+          "color": "blue",
+          "shape": "rect"
+        }
+      },
+      "v6_equivalent": {
+        "html": "<paypal-button id=\"paypal-button\" style=\"width: 50%\"></paypal-button>",
+        "notes": "Auto-responsive, color/shape/height not customizable"
+      }
+    },
+    "v4_multiple_buttons": {
+      "html": "<div id=\"payment-buttons\"></div>",
+      "code": {
+        "style": {
+          "layout": "vertical"
+        },
+        "funding": {
+          "allowed": ["paypal.FUNDING.CREDIT", "paypal.FUNDING.VENMO"]
+        }
+      },
+      "v6_equivalent": {
+        "html": "<div id=\"paypal-button\"></div>\n<div id=\"paylater-button\"></div>\n<div id=\"venmo-button\"></div>",
+        "notes": "Separate container for each payment method"
+      }
+    }
+  },
+  "v4_label_to_v6_session": {
+    "label_paypal": {
+      "v4": "style: { label: 'paypal' }",
+      "v6": "sdk.createPayPalOneTimePaymentSession()",
+      "component": "paypal-payments"
+    },
+    "label_checkout": {
+      "v4": "style: { label: 'checkout' }",
+      "v6": "sdk.createPayPalOneTimePaymentSession()",
+      "component": "paypal-payments"
+    },
+    "label_buynow": {
+      "v4": "style: { label: 'buynow' }",
+      "v6": "sdk.createPayPalOneTimePaymentSession()",
+      "component": "paypal-payments"
+    },
+    "label_pay": {
+      "v4": "style: { label: 'pay' }",
+      "v6": "sdk.createPayPalOneTimePaymentSession()",
+      "component": "paypal-payments"
+    },
+    "label_credit": {
+      "v4": "style: { label: 'credit' }",
+      "v6": "sdk.createPayLaterOneTimePaymentSession() + eligibility check",
+      "component": "paypal-payments",
+      "notes": "Terminology changed: Credit → Pay Later"
+    },
+    "label_installment": {
+      "v4": "style: { label: 'installment', installmentperiod: 3 }",
+      "v6": "sdk.createPayLaterOneTimePaymentSession()",
+      "component": "paypal-payments",
+      "notes": "Installment became Pay Later in v6"
+    }
+  },
+  "v4_color_to_v6": {
+    "gold": {
+      "v4": "style: { color: 'gold' }",
+      "v4_description": "PayPal's signature gold color",
+      "v6": "Auto-determined by PayPal",
+      "migration": "Remove color option, accept PayPal's choice"
+    },
+    "blue": {
+      "v4": "style: { color: 'blue' }",
+      "v4_description": "PayPal brand blue",
+      "v6": "Auto-determined by PayPal",
+      "migration": "Remove color option, accept PayPal's choice"
+    },
+    "silver": {
+      "v4": "style: { color: 'silver' }",
+      "v4_description": "Silver/white alternative",
+      "v6": "Auto-determined by PayPal",
+      "migration": "Remove color option, accept PayPal's choice"
+    },
+    "white": {
+      "v4": "style: { color: 'white' }",
+      "v4_description": "White button alternative",
+      "v6": "Auto-determined by PayPal",
+      "migration": "Remove color option, accept PayPal's choice"
+    },
+    "black": {
+      "v4": "style: { color: 'black' }",
+      "v4_description": "Black monochromatic option",
+      "v6": "Auto-determined by PayPal",
+      "migration": "Remove color option, accept PayPal's choice"
+    }
+  },
+  "breaking_changes": [
+    {
+      "change": "All label options removed",
+      "impact": "Cannot customize button text",
+      "migration": "Session type determines appearance"
+    },
+    {
+      "change": "All color options removed",
+      "impact": "Cannot control button color",
+      "migration": "Accept PayPal-determined colors"
+    },
+    {
+      "change": "All shape options removed",
+      "impact": "Cannot control button corners",
+      "migration": "Accept PayPal-determined shape"
+    },
+    {
+      "change": "Fixed size options removed",
+      "impact": "Cannot use small/medium/large presets",
+      "migration": "Use container-based sizing (always responsive)"
+    },
+    {
+      "change": "Height customization removed",
+      "impact": "Cannot set custom pixel height",
+      "migration": "Accept auto-calculated height"
+    },
+    {
+      "change": "Tagline option removed",
+      "impact": "Cannot show/hide tagline",
+      "migration": "PayPal controls tagline display"
+    },
+    {
+      "change": "Funding icons option removed",
+      "impact": "Cannot show funding icons below button",
+      "migration": "Feature not available in v6"
+    },
+    {
+      "change": "funding.allowed array removed",
+      "impact": "Cannot configure multiple buttons in single render",
+      "migration": "Create separate sessions for each payment method"
+    },
+    {
+      "change": "Manual locale setting removed",
+      "impact": "Cannot force specific language",
+      "migration": "Locale auto-detected from browser/token"
+    }
+  ],
+  "v6_sizing_behavior": {
+    "default": "Container-based (responsive by default)",
+    "width": "Matches container element width",
+    "height": "Auto-calculated based on width",
+    "min_width": "100px (recommended)",
+    "max_width": "750px (recommended)",
+    "html_example": "<paypal-button style=\"width: 100%; max-width: 400px;\"></paypal-button>"
+  },
+  "v6_layout_strategy": {
+    "description": "Use separate container elements for layout control",
+    "vertical_layout": {
+      "html": "<div class=\"payment-buttons\">\n  <div id=\"paypal-button\"></div>\n  <div id=\"paylater-button\"></div>\n  <div id=\"venmo-button\"></div>\n</div>",
+      "css": ".payment-buttons > div { margin-bottom: 10px; }"
+    },
+    "horizontal_layout": {
+      "html": "<div class=\"payment-buttons\">\n  <div id=\"paypal-button\"></div>\n  <div id=\"card-button\"></div>\n</div>",
+      "css": ".payment-buttons { display: flex; gap: 10px; }"
+    }
+  },
+  "summary": {
+    "v4_customization": "Extensive (5 colors, 2 shapes, 6 labels, tagline, fundingicons, custom height, locale)",
+    "v6_customization": "Minimal (container sizing only, PayPal controls appearance)",
+    "rationale": "PayPal optimizes button appearance for best conversion rates",
+    "migration_impact": "High - most visual customization removed",
+    "benefit": "Consistent branding and optimized user experience"
+  }
+}
+
+

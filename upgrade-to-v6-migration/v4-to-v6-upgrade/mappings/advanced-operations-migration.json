@@ -1,0 +1,340 @@
+{
+  "operation": "V4 Advanced Payment Operations to V6",
+  "description": "Migration for authorize/capture, void, refund, and search operations",
+  "official_docs": {
+    "v4_server_integration": "https://developer.paypal.com/docs/archive/checkout/how-to/server-integration/",
+    "v4_payments_api": "https://developer.paypal.com/docs/api/payments/v1/",
+    "v6_orders_api": "https://developer.paypal.com/docs/api/orders/v2/",
+    "v6_payments_api": "https://developer.paypal.com/docs/api/payments/v2/"
+  },
+  "authorize_and_capture": {
+    "description": "Authorize payment now, capture funds later",
+    "v4": {
+      "create_authorization": {
+        "endpoint": "POST /v1/payments/payment",
+        "intent": "authorize",
+        "payload_example": {
+          "intent": "authorize",
+          "payer": { "payment_method": "paypal" },
+          "transactions": [{
+            "amount": { "total": "100.00", "currency": "USD" }
+          }],
+          "redirect_urls": {
+            "return_url": "https://example.com/return",
+            "cancel_url": "https://example.com/cancel"
+          }
+        },
+        "response_id": "PAY-XXXXX"
+      },
+      "capture_authorization": {
+        "endpoint": "POST /v1/payments/authorization/{authorization-id}/capture",
+        "authorization_id": "From payment.transactions[0].related_resources[0].authorization.id",
+        "payload_example": {
+          "amount": {
+            "currency": "USD",
+            "total": "100.00"
+          },
+          "is_final_capture": true
+        }
+      }
+    },
+    "v6": {
+      "create_authorization": {
+        "endpoint": "POST /v2/checkout/orders",
+        "intent": "AUTHORIZE",
+        "payload_example": {
+          "intent": "AUTHORIZE",
+          "purchase_units": [{
+            "amount": {
+              "currency_code": "USD",
+              "value": "100.00"
+            }
+          }]
+        },
+        "response_id": "Alphanumeric order ID"
+      },
+      "authorize_order": {
+        "endpoint": "POST /v2/checkout/orders/{order-id}/authorize",
+        "notes": "Called after buyer approves"
+      },
+      "capture_authorization": {
+        "endpoint": "POST /v2/payments/authorizations/{authorization-id}/capture",
+        "authorization_id": "From order.purchase_units[0].payments.authorizations[0].id",
+        "payload_example": {
+          "amount": {
+            "value": "100.00",
+            "currency_code": "USD"
+          },
+          "final_capture": true
+        }
+      }
+    },
+    "migration_notes": [
+      "V4: intent: 'authorize' → V6: intent: 'AUTHORIZE'",
+      "V4: Single step (create payment) → V6: Two steps (create order → authorize order)",
+      "Authorization ID location changed in response structure",
+      "Field names: is_final_capture → final_capture"
+    ]
+  },
+  "void_authorization": {
+    "description": "Cancel an authorization before capture",
+    "v4": {
+      "endpoint": "POST /v1/payments/authorization/{authorization-id}/void",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer <access_token>",
+        "Content-Type": "application/json"
+      },
+      "body": "Empty or optional reason"
+    },
+    "v6": {
+      "endpoint": "POST /v2/payments/authorizations/{authorization-id}/void",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer <access_token>",
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": "<idempotency-key>"
+      },
+      "body": "Empty"
+    },
+    "migration_notes": [
+      "Endpoint path same: /v2/payments/authorizations/{id}/void",
+      "Add PayPal-Request-Id header for idempotency",
+      "Response structure slightly different"
+    ]
+  },
+  "refund_capture": {
+    "description": "Issue full or partial refund on captured payment",
+    "v4": {
+      "endpoint": "POST /v1/payments/capture/{capture-id}/refund",
+      "method": "POST",
+      "full_refund": {
+        "body": "Empty body for full refund"
+      },
+      "partial_refund": {
+        "body": {
+          "amount": {
+            "total": "50.00",
+            "currency": "USD"
+          },
+          "description": "Partial refund for damaged item"
+        }
+      }
+    },
+    "v6": {
+      "endpoint": "POST /v2/payments/captures/{capture-id}/refund",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer <access_token>",
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": "<idempotency-key>"
+      },
+      "full_refund": {
+        "body": "Empty body for full refund"
+      },
+      "partial_refund": {
+        "body": {
+          "amount": {
+            "value": "50.00",
+            "currency_code": "USD"
+          },
+          "note_to_payer": "Partial refund for damaged item"
+        }
+      }
+    },
+    "migration_notes": [
+      "Endpoint path same: /v2/payments/captures/{id}/refund",
+      "Field name: amount.total → amount.value",
+      "Field name: amount.currency → amount.currency_code",
+      "Field name: description → note_to_payer",
+      "Add PayPal-Request-Id for idempotency"
+    ]
+  },
+  "get_payment_details": {
+    "description": "Retrieve payment/order details",
+    "v4": {
+      "endpoint": "GET /v1/payments/payment/{payment-id}",
+      "method": "GET",
+      "response_format": "v1 Payment object with transactions[]"
+    },
+    "v6": {
+      "endpoint": "GET /v2/checkout/orders/{order-id}",
+      "method": "GET",
+      "response_format": "v2 Order object with purchase_units[]"
+    },
+    "migration_notes": [
+      "V4 payment ID (PAY-XXXXX) → V6 order ID (alphanumeric)",
+      "Response structure completely different",
+      "transactions[] → purchase_units[]"
+    ]
+  },
+  "search_transactions": {
+    "description": "Search payment/transaction history",
+    "v4": {
+      "endpoint": "GET /v1/payments/payment",
+      "method": "GET",
+      "query_params": {
+        "count": "Number of results (1-100)",
+        "start_id": "Payment ID to start from",
+        "start_index": "Index to start from",
+        "start_time": "RFC3339 format",
+        "end_time": "RFC3339 format",
+        "sort_order": "asc or desc"
+      },
+      "example": "/v1/payments/payment?count=10&start_time=2023-01-01T00:00:00Z&end_time=2023-12-31T23:59:59Z"
+    },
+    "v6": {
+      "endpoint": "GET /v1/reporting/transactions",
+      "method": "GET",
+      "query_params": {
+        "start_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "end_date": "YYYY-MM-DDTHH:MM:SSZ",
+        "transaction_id": "Filter by transaction ID",
+        "transaction_type": "T0001, T0002, etc.",
+        "transaction_status": "S, D, P, V",
+        "fields": "all or specific fields",
+        "page_size": "1-500 (default 100)",
+        "page": "Page number"
+      },
+      "example": "/v1/reporting/transactions?start_date=2023-01-01T00:00:00Z&end_date=2023-12-31T23:59:59Z&page_size=100",
+      "notes": "Different API entirely - Reporting API instead of Payments API"
+    },
+    "migration_notes": [
+      "Complete API change: Payments API → Reporting API",
+      "Different query parameters",
+      "Different response structure",
+      "More comprehensive transaction data in v6"
+    ]
+  },
+  "billing_agreements": {
+    "description": "Recurring payments setup",
+    "v4": {
+      "endpoint": "POST /v1/payments/billing-agreements",
+      "method": "Create billing agreement with redirect flow",
+      "notes": "Separate from checkout.js integration"
+    },
+    "v6": {
+      "alternative_1": {
+        "name": "Subscriptions API",
+        "endpoint": "POST /v1/billing/subscriptions",
+        "use_case": "Regular recurring payments with fixed schedule"
+      },
+      "alternative_2": {
+        "name": "Vault API",
+        "endpoint": "POST /v3/vault/payment-tokens",
+        "use_case": "Save payment method for future on-demand charges"
+      }
+    },
+    "migration_notes": [
+      "V4 billing agreements → V6 Subscriptions or Vault",
+      "Choose based on use case: scheduled vs on-demand",
+      "Vault is new in v6 with full SDK integration"
+    ]
+  },
+  "webhooks": {
+    "description": "Payment event notifications",
+    "v4": {
+      "endpoint": "POST /v1/notifications/webhooks",
+      "common_events": [
+        "PAYMENT.SALE.COMPLETED",
+        "PAYMENT.SALE.REFUNDED",
+        "PAYMENT.AUTHORIZATION.CREATED",
+        "PAYMENT.AUTHORIZATION.VOIDED",
+        "PAYMENT.CAPTURE.COMPLETED"
+      ]
+    },
+    "v6": {
+      "endpoint": "POST /v1/notifications/webhooks",
+      "common_events": [
+        "CHECKOUT.ORDER.APPROVED",
+        "PAYMENT.CAPTURE.COMPLETED",
+        "PAYMENT.CAPTURE.REFUNDED",
+        "PAYMENT.AUTHORIZATION.CREATED",
+        "PAYMENT.AUTHORIZATION.VOIDED",
+        "VAULT.PAYMENT-TOKEN.CREATED"
+      ]
+    },
+    "migration_notes": [
+      "Webhook endpoint same",
+      "Event names changed for orders",
+      "New vault-related events in v6",
+      "Update webhook listener to handle new event names"
+    ]
+  },
+  "field_mapping_summary": {
+    "amount": [
+      {
+        "v4": "amount.total",
+        "v6": "amount.value"
+      },
+      {
+        "v4": "amount.currency",
+        "v6": "amount.currency_code"
+      }
+    ],
+    "intent": [
+      {
+        "v4": "intent: 'sale'",
+        "v6": "intent: 'CAPTURE'"
+      },
+      {
+        "v4": "intent: 'authorize'",
+        "v6": "intent: 'AUTHORIZE'"
+      }
+    ],
+    "capture_flags": [
+      {
+        "v4": "is_final_capture",
+        "v6": "final_capture"
+      }
+    ],
+    "refund_notes": [
+      {
+        "v4": "description",
+        "v6": "note_to_payer"
+      }
+    ]
+  },
+  "best_practices": [
+    "Always use idempotency keys (PayPal-Request-Id) for capture/void/refund",
+    "Store both order ID and authorization/capture IDs for reference",
+    "Implement webhooks for async event handling",
+    "Handle partial captures and refunds appropriately",
+    "Check authorization expiration (29 days for PayPal, varies by card)",
+    "Implement retry logic with exponential backoff",
+    "Log PayPal-Debug-Id from error responses",
+    "Use GET order details to verify authorization state before capture"
+  ],
+  "breaking_changes": [
+    {
+      "change": "Authorization flow requires two API calls in v6",
+      "impact": "Create order → Authorize order (was single call in v4)",
+      "migration": "Update authorization flow to call both endpoints"
+    },
+    {
+      "change": "Payment search moved to Reporting API",
+      "impact": "Different endpoint, query params, and response",
+      "migration": "Implement new Reporting API integration"
+    },
+    {
+      "change": "Billing Agreements API deprecated",
+      "impact": "Need to choose Subscriptions or Vault API",
+      "migration": "Evaluate use case and implement appropriate API"
+    },
+    {
+      "change": "Webhook event names changed",
+      "impact": "Existing webhook handlers will miss new events",
+      "migration": "Update event name mappings in webhook handler"
+    }
+  ],
+  "summary": {
+    "authorize_capture": "Two-step flow in v6 (create order → authorize → capture)",
+    "void": "Same endpoint path, add idempotency key",
+    "refund": "Same endpoint path, field names changed",
+    "search": "Moved to Reporting API with different structure",
+    "billing": "Use Subscriptions or Vault APIs instead",
+    "webhooks": "Event names updated for orders"
+  }
+}
+
+

@@ -1,0 +1,313 @@
+{
+  "operation": "PayLater (Credit) - v4 to v6",
+  "description": "Migration from PayPal checkout.js v4 Pay Later/Credit to v6 PayLater payment session",
+  "official_docs": {
+    "v4_archive": "https://developer.paypal.com/docs/archive/",
+    "v6_paylater": "https://docs.paypal.ai/payments/methods/pay-later/get-started",
+    "v6_checkout": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+  },
+  "v4_pattern": {
+    "script_loading": {
+      "pattern": "<script src=\"https://www.paypalobjects.com/api/checkout.js\"></script>",
+      "note": "Same script as regular PayPal"
+    },
+    "button_configuration": {
+      "method": "paypal.Button.render()",
+      "style": {
+        "label": "credit",
+        "color": "darkblue",
+        "note": "v4 used 'credit' label for Pay Later"
+      },
+      "funding_configuration": {
+        "allowed": "[paypal.FUNDING.CREDIT]",
+        "note": "Enabled PayPal Credit (now Pay Later)"
+      },
+      "example": {
+        "env": "sandbox",
+        "client": { "sandbox": "CLIENT_ID" },
+        "commit": true,
+        "style": {
+          "label": "credit",
+          "size": "medium",
+          "shape": "rect",
+          "color": "darkblue",
+          "layout": "horizontal"
+        },
+        "funding": {
+          "allowed": ["paypal.FUNDING.CREDIT"],
+          "disallowed": []
+        },
+        "payment": "function(data, actions) { return actions.payment.create({...}); }",
+        "onAuthorize": "function(data, actions) { return actions.payment.execute(); }"
+      }
+    },
+    "limitations": [
+      "No eligibility checking",
+      "Limited country support",
+      "No product code specification",
+      "Always rendered if in allowed funding",
+      "Limited control over Pay Later vs Credit"
+    ]
+  },
+  "v6_pattern": {
+    "script_loading": {
+      "sandbox": "https://www.sandbox.paypal.com/web-sdk/v6/core",
+      "production": "https://www.paypal.com/web-sdk/v6/core",
+      "note": "Same v6 core SDK"
+    },
+    "sdk_initialization": {
+      "components": ["paypal-payments"],
+      "note": "Pay Later uses paypal-payments component"
+    },
+    "eligibility_check": {
+      "method": "sdkInstance.findEligibleMethods()",
+      "required": true,
+      "config": {
+        "currencyCode": "USD"
+      },
+      "check": "eligibleMethods.isEligible('paylater')",
+      "get_details": "eligibleMethods.getDetails('paylater')",
+      "details_structure": {
+        "canBeVaulted": "boolean",
+        "countryCode": "AU | DE | ES | FR | GB | IT | US",
+        "productCode": "PAYLATER | PAY_LATER_SHORT_TERM"
+      }
+    },
+    "payment_sessions": {
+      "paylater": {
+        "method": "sdkInstance.createPayLaterOneTimePaymentSession()",
+        "web_component": "<paypal-pay-later-button>",
+        "required_attributes": {
+          "productCode": "From getDetails('paylater').productCode",
+          "countryCode": "From getDetails('paylater').countryCode"
+        }
+      },
+      "credit": {
+        "method": "sdkInstance.createPayPalCreditOneTimePaymentSession()",
+        "web_component": "<paypal-credit-button>",
+        "required_attributes": {
+          "countryCode": "From getDetails('credit').countryCode"
+        },
+        "supported_countries": ["US", "GB"],
+        "note": "Separate session for PayPal Credit"
+      }
+    },
+    "supported_countries": {
+      "paylater": ["AU", "DE", "ES", "FR", "GB", "IT", "US"],
+      "credit": ["US", "GB"]
+    },
+    "product_codes": {
+      "PAYLATER": "Standard Pay Later product",
+      "PAY_LATER_SHORT_TERM": "Short-term financing option"
+    }
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "action": "Remove v4 funding configuration",
+      "v4": "funding: { allowed: [paypal.FUNDING.CREDIT] }",
+      "v6": "Use eligibility check instead"
+    },
+    {
+      "step": 2,
+      "action": "Remove v4 style label configuration",
+      "v4": "style: { label: 'credit', color: 'darkblue' }",
+      "v6": "Use web components with CSS"
+    },
+    {
+      "step": 3,
+      "action": "Check Pay Later eligibility",
+      "v6": "const methods = await sdkInstance.findEligibleMethods({ currencyCode: 'USD' });"
+    },
+    {
+      "step": 4,
+      "action": "Get Pay Later details if eligible",
+      "v6": "const paylaterDetails = methods.getDetails('paylater');"
+    },
+    {
+      "step": 5,
+      "action": "Create Pay Later payment session",
+      "v4": "paypal.Button.render({ style: { label: 'credit' } })",
+      "v6": "sdkInstance.createPayLaterOneTimePaymentSession({ onApprove, onCancel, onError })"
+    },
+    {
+      "step": 6,
+      "action": "Configure web component with Pay Later details",
+      "v6": "button.productCode = paylaterDetails.productCode; button.countryCode = paylaterDetails.countryCode;"
+    },
+    {
+      "step": 7,
+      "action": "Always provide regular PayPal as fallback",
+      "note": "Pay Later may not always be eligible"
+    }
+  ],
+  "breaking_changes": [
+    {
+      "change": "Eligibility check now required",
+      "v4": "Automatically showed if in allowed funding",
+      "v6": "Must check eligibility with findEligibleMethods()",
+      "impact": "Cannot assume Pay Later is available"
+    },
+    {
+      "change": "Product code and country code required",
+      "v4": "No configuration needed",
+      "v6": "Must set productCode and countryCode from getDetails()",
+      "impact": "Additional configuration step required"
+    },
+    {
+      "change": "Separate Pay Later and Credit sessions",
+      "v4": "Single 'credit' label covered both",
+      "v6": "createPayLaterOneTimePaymentSession() vs createPayPalCreditOneTimePaymentSession()",
+      "impact": "Different session types for different financing options"
+    },
+    {
+      "change": "Web component instead of styled button",
+      "v4": "style: { label: 'credit', color: 'darkblue' }",
+      "v6": "<paypal-pay-later-button> with CSS",
+      "impact": "Different styling approach"
+    }
+  ],
+  "web_components": {
+    "paylater_button": {
+      "element": "<paypal-pay-later-button>",
+      "required_attributes": {
+        "id": "Unique identifier",
+        "productCode": "Must set from getDetails() - 'PAYLATER' or 'PAY_LATER_SHORT_TERM'",
+        "countryCode": "Must set from getDetails() - two-letter ISO code"
+      },
+      "optional_attributes": {
+        "hidden": "Hide until eligibility confirmed",
+        "class": "CSS classes for styling"
+      },
+      "example": "<paypal-pay-later-button id=\"paylater-button\" hidden></paypal-pay-later-button>"
+    },
+    "credit_button": {
+      "element": "<paypal-credit-button>",
+      "required_attributes": {
+        "id": "Unique identifier",
+        "countryCode": "Must set from getDetails() - 'US' or 'GB'"
+      },
+      "optional_attributes": {
+        "hidden": "Hide until eligibility confirmed",
+        "class": "CSS classes for styling"
+      },
+      "example": "<paypal-credit-button id=\"credit-button\" hidden></paypal-credit-button>"
+    }
+  },
+  "eligibility_requirements": {
+    "merchant": [
+      "Account must be enabled for Pay Later",
+      "Business must be in supported country",
+      "Account must pass risk assessment"
+    ],
+    "buyer": [
+      "Buyer must be in supported country",
+      "Transaction must meet minimum amount",
+      "Buyer must pass credit check",
+      "Currency must be supported"
+    ],
+    "technical": [
+      "ALWAYS check eligibility before showing button",
+      "Handle cases where eligibility changes",
+      "Provide fallback to regular PayPal"
+    ]
+  },
+  "callback_signatures": {
+    "paylater_session": {
+      "onApprove": {
+        "signature": "(data: OnApproveDataOneTimePayments) => Promise<void>",
+        "return_type": "MUST return Promise<void>",
+        "data_includes": ["orderId", "payerId (optional)", "billingToken (optional)"]
+      },
+      "onCancel": {
+        "signature": "() => void",
+        "parameters": "NO parameters"
+      },
+      "onError": {
+        "signature": "(error: Error) => void",
+        "parameter": "Error object only"
+      },
+      "onComplete": {
+        "signature": "(data: OnCompleteData) => void",
+        "optional": true
+      }
+    }
+  },
+  "error_handling": {
+    "common_errors": {
+      "PAYLATER_NOT_AVAILABLE": {
+        "description": "Pay Later not available for buyer",
+        "user_message": "Pay Later is not available. Please choose another payment method.",
+        "fallback": "Show regular PayPal button"
+      },
+      "BUYER_NOT_ELIGIBLE": {
+        "description": "Buyer doesn't qualify for financing",
+        "user_message": "You don't qualify for Pay Later at this time. Please choose another payment method.",
+        "fallback": "Allow other payment methods"
+      },
+      "AMOUNT_TOO_LOW": {
+        "description": "Purchase amount below minimum",
+        "user_message": "Pay Later requires a minimum purchase amount.",
+        "fallback": "Show minimum amount or regular PayPal"
+      },
+      "COUNTRY_NOT_SUPPORTED": {
+        "description": "Buyer's country doesn't support Pay Later",
+        "user_message": "Pay Later is not available in your country.",
+        "fallback": "Show regular PayPal for all countries"
+      }
+    }
+  },
+  "messaging_integration": {
+    "note": "Pay Later messaging can be integrated to inform buyers about financing options",
+    "v4_status": "Limited messaging in v4",
+    "v6_status": "Enhanced messaging components available in v6"
+  },
+  "best_practices": [
+    "ALWAYS check Pay Later eligibility before showing button",
+    "ALWAYS extract and set productCode from getDetails()",
+    "ALWAYS extract and set countryCode from getDetails()",
+    "Provide regular PayPal as fallback if Pay Later not eligible",
+    "Show clear messaging about Pay Later terms",
+    "Handle buyer credit decline gracefully",
+    "Test across different countries and amounts",
+    "Monitor Pay Later conversion rates",
+    "Ensure minimum purchase amounts are met",
+    "Provide clear financing information to buyers",
+    "Handle currency restrictions properly",
+    "Test on both desktop and mobile devices",
+    "Consider showing both PayPal and Pay Later options",
+    "Log eligibility check results for debugging"
+  ],
+  "testing_checklist": [
+    "Test eligibility in supported countries (AU, DE, ES, FR, GB, IT, US)",
+    "Test with various purchase amounts",
+    "Test buyer approval and decline scenarios",
+    "Verify productCode is set correctly",
+    "Verify countryCode is set correctly",
+    "Test fallback to regular PayPal",
+    "Test button visibility logic",
+    "Test error handling for ineligible buyers",
+    "Verify financing terms display correctly",
+    "Test across desktop and mobile",
+    "Test in multiple currencies",
+    "Verify Pay Later button hidden when not eligible"
+  ],
+  "migration_comparison": {
+    "v4_example": {
+      "style": {
+        "label": "credit",
+        "color": "darkblue"
+      },
+      "funding": {
+        "allowed": ["paypal.FUNDING.CREDIT"]
+      }
+    },
+    "v6_example": {
+      "eligibility_check": "await sdkInstance.findEligibleMethods({ currencyCode: 'USD' })",
+      "get_details": "const details = methods.getDetails('paylater')",
+      "session": "sdkInstance.createPayLaterOneTimePaymentSession({ onApprove, onCancel, onError })",
+      "button_config": "button.productCode = details.productCode; button.countryCode = details.countryCode;"
+    }
+  }
+}
+

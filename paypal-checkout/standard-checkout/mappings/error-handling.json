@@ -1,0 +1,151 @@
+{
+  "operation": "Error Handling",
+  "description": "Error codes, handling patterns, and troubleshooting for Standard Checkout",
+  "http_status_codes": {
+    "200": "Success",
+    "201": "Created (order created successfully)",
+    "400": "Bad Request — invalid parameters or payload",
+    "401": "Unauthorized — invalid or expired access token",
+    "403": "Forbidden — insufficient permissions",
+    "404": "Not Found — resource does not exist",
+    "422": "Unprocessable Entity — valid JSON but business logic error",
+    "429": "Too Many Requests — rate limited",
+    "500": "Internal Server Error — PayPal system error",
+    "503": "Service Unavailable — temporary outage"
+  },
+  "orders_api_errors": {
+    "INVALID_PARAMETER_VALUE": {
+      "http_status": 400,
+      "description": "A request parameter value is invalid",
+      "common_causes": ["Invalid currency code", "Malformed amount", "Invalid country code"],
+      "resolution": "Validate parameter values against API documentation"
+    },
+    "MISSING_REQUIRED_PARAMETER": {
+      "http_status": 400,
+      "description": "A required parameter is missing",
+      "common_causes": ["Missing amount", "Missing currency_code", "Missing intent"],
+      "resolution": "Include all required fields in the request payload"
+    },
+    "AMOUNT_MISMATCH": {
+      "http_status": 400,
+      "description": "Breakdown amounts do not sum to total amount",
+      "resolution": "Ensure item_total + shipping + handling + tax_total + insurance - shipping_discount - discount = total value"
+    },
+    "DUPLICATE_INVOICE_ID": {
+      "http_status": 422,
+      "description": "Invoice ID has already been used for a completed payment",
+      "resolution": "Use a unique invoice_id for each order"
+    },
+    "INSTRUMENT_DECLINED": {
+      "http_status": 422,
+      "description": "Buyer's payment instrument was declined",
+      "resolution": "Ask buyer to use a different payment method or contact their bank"
+    },
+    "ORDER_NOT_APPROVED": {
+      "http_status": 422,
+      "description": "Buyer has not yet approved the order",
+      "resolution": "Wait for buyer to complete approval in PayPal before capturing"
+    },
+    "ORDER_ALREADY_CAPTURED": {
+      "http_status": 422,
+      "description": "Order has already been captured",
+      "resolution": "Check order status before attempting capture. Use idempotency keys."
+    },
+    "PAYER_ACTION_REQUIRED": {
+      "http_status": 422,
+      "description": "Buyer must take additional action before payment can complete",
+      "resolution": "Redirect buyer back to PayPal to complete required action"
+    },
+    "PERMISSION_DENIED": {
+      "http_status": 403,
+      "description": "Application lacks required permissions",
+      "resolution": "Enable required features in PayPal Developer Dashboard"
+    },
+    "CURRENCY_NOT_SUPPORTED": {
+      "http_status": 400,
+      "description": "Currency is not supported for this merchant",
+      "resolution": "Use a supported currency code"
+    },
+    "MAX_NUMBER_OF_PAYMENT_ATTEMPTS_EXCEEDED": {
+      "http_status": 422,
+      "description": "Too many payment attempts for this order",
+      "resolution": "Create a new order and retry"
+    }
+  },
+  "auth_errors": {
+    "AUTHENTICATION_FAILURE": {
+      "http_status": 401,
+      "description": "Invalid client ID or secret",
+      "resolution": "Verify credentials in PayPal Developer Dashboard"
+    },
+    "INVALID_TOKEN": {
+      "http_status": 401,
+      "description": "Access token is invalid or expired",
+      "resolution": "Generate a new access token"
+    },
+    "RATE_LIMIT_REACHED": {
+      "http_status": 429,
+      "description": "Too many API requests",
+      "resolution": "Implement exponential backoff retry logic"
+    }
+  },
+  "client_side_errors": {
+    "v5_errors": {
+      "on_error_callback": "paypal.Buttons({ onError: function(err) { console.error(err); } })",
+      "common_issues": [
+        "Popup blocked by browser",
+        "Network connectivity issues",
+        "SDK failed to load",
+        "Invalid button configuration"
+      ]
+    },
+    "v6_errors": {
+      "on_error_callback": "(error) => { console.error('Payment error:', error); }",
+      "sdk_initialization_errors": [
+        "Invalid client token",
+        "Expired client token",
+        "Network failure during initialization",
+        "Invalid component name"
+      ],
+      "payment_session_errors": [
+        "Order creation failed",
+        "Payment cancelled by buyer",
+        "Capture failed after approval",
+        "Presentation mode not supported"
+      ]
+    }
+  },
+  "error_handling_patterns": {
+    "server_side": {
+      "extract_debug_id": "error.response.headers['paypal-debug-id']",
+      "log_pattern": "Always log: error message, HTTP status, debug_id, response body",
+      "user_message": "Return user-friendly message, never expose internal error details",
+      "retry_strategy": {
+        "retryable_codes": [429, 500, 503],
+        "non_retryable_codes": [400, 401, 403, 404, 422],
+        "backoff": "Exponential backoff starting at 1 second, max 3 retries",
+        "idempotency": "Use PayPal-Request-Id header for safe retries"
+      }
+    },
+    "client_side": {
+      "v6_pattern": {
+        "onApprove": "async (data) => { try { await capture(data.orderId); } catch (e) { showError('Payment failed'); } }",
+        "onCancel": "() => { showMessage('Payment cancelled'); }",
+        "onError": "(error) => { logError(error); showError('Something went wrong'); }"
+      }
+    }
+  },
+  "debugging": {
+    "paypal_debug_id": "Unique identifier for support requests — always log and include in error reports",
+    "sandbox_testing": "https://developer.paypal.com/tools/sandbox/",
+    "negative_testing": "https://developer.paypal.com/tools/sandbox/negative-testing/",
+    "api_status": "https://www.paypal-status.com/api/production/"
+  },
+  "troubleshooting_docs": {
+    "common_errors": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/overview",
+    "payment_failures": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/handling-payment-failures-with-paypal",
+    "not_authorized": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/not-authorized",
+    "validation_error": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/validation-error",
+    "unprocessable_entity": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/unprocessable-entity"
+  }
+}

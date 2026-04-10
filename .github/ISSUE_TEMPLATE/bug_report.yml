@@ -1,0 +1,62 @@
+name: Bug Report
+description: Report a bug or unexpected behavior
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill out the sections below.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug
+      placeholder: "Example: The ruleshub guidance didn't appear in my IDE when I expected it"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+      placeholder: |
+        1. Open project in [IDE]
+        2. Try to use ruleshub guidance for [migration type]
+        3. See error
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ai_ide
+    attributes:
+      label: Which AI IDE are you using?
+      description: Which tool are you using ruleshub with?
+      options:
+        - Claude Code
+        - Cursor
+        - Gemini CLI
+        - Other (please specify in additional context)
+        - Not applicable
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of ruleshub & IDE are you using?
+      placeholder: "e.g., ruleshub v1.2.0, Cursor v0.42.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Anything else we should know? (screenshots, error logs, environment details)
+      placeholder: "Paste error logs or add screenshots here"
+    validations:
+      required: false
+

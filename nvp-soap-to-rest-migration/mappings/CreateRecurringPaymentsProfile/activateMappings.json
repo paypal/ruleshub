@@ -1,0 +1,46 @@
+{
+  "operation": "CreateRecurringPaymentsProfile",
+  "_endpoint": "POST /v1/billing/subscriptions/{id}/activate",
+  "_note": "In NVP/SOAP, CreateRecurringPaymentsProfile created AND activated in one call. REST requires separate activation after buyer approval.",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "subscription_id": {
+          "rest_field": "Path parameter {id}",
+          "typically_found_in": "Create Subscription API response",
+          "notes": "The id returned from POST /v1/billing/subscriptions"
+        },
+        "reason": {
+          "rest_field": "reason",
+          "typically_found_in": "N/A - new REST field",
+          "notes": "Optional for initial activation. Required only for reactivating suspended/cancelled subscriptions."
+        }
+      },
+      "not_supported": []
+    },
+    "soap": {
+      "supported": {
+        "subscription_id": {
+          "rest_field": "Path parameter {id}",
+          "typically_found_in": "Create Subscription API response",
+          "notes": "The id returned from POST /v1/billing/subscriptions"
+        },
+        "reason": {
+          "rest_field": "reason",
+          "typically_found_in": "N/A - new REST field",
+          "notes": "Optional for initial activation. Required only for reactivating suspended/cancelled subscriptions."
+        }
+      },
+      "not_supported": []
+    }
+  },
+  "special_notes": {
+    "usage": "Call after customer approves subscription on PayPal",
+    "upgrade_tips": [
+      "This step has no direct NVP/SOAP equivalent - it was implicit",
+      "Must use user_action: CONTINUE in subscription creation to require this step",
+      "Subscription status changes: APPROVAL_PENDING → APPROVED → ACTIVE"
+    ]
+  }
+}
+

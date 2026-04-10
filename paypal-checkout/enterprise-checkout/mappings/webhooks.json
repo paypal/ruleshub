@@ -1,0 +1,75 @@
+{
+  "operation": "Webhooks — Enterprise Checkout",
+  "description": "Webhook handling for Braintree notifications and PayPal multiparty events",
+  "braintree_webhooks": {
+    "documentation": "https://developer.paypal.com/braintree/docs/guides/webhooks/",
+    "setup": "Braintree Control Panel → Settings → Webhooks → Add URL",
+    "verification": {
+      "method": "gateway.webhookNotification.parse(btSignature, btPayload)",
+      "parameters": {
+        "btSignature": "bt_signature from POST body",
+        "btPayload": "bt_payload from POST body"
+      }
+    },
+    "notification_types": {
+      "transaction": {
+        "TRANSACTION_SETTLED": "Transaction successfully settled",
+        "TRANSACTION_SETTLEMENT_DECLINED": "Settlement rejected by processor",
+        "TRANSACTION_DISBURSED": "Funds disbursed to merchant"
+      },
+      "subscription": {
+        "SUBSCRIPTION_CHARGED_SUCCESSFULLY": "Recurring charge succeeded",
+        "SUBSCRIPTION_CHARGED_UNSUCCESSFULLY": "Recurring charge failed",
+        "SUBSCRIPTION_CANCELED": "Subscription canceled",
+        "SUBSCRIPTION_EXPIRED": "Subscription expired",
+        "SUBSCRIPTION_WENT_PAST_DUE": "Subscription payment past due"
+      },
+      "dispute": {
+        "DISPUTE_OPENED": "Dispute opened against a transaction",
+        "DISPUTE_LOST": "Dispute resolved in buyer's favor",
+        "DISPUTE_WON": "Dispute resolved in merchant's favor",
+        "DISPUTE_ACCEPTED": "Merchant accepted the dispute",
+        "DISPUTE_AUTO_ACCEPTED": "Dispute auto-accepted (no response)",
+        "DISPUTE_EXPIRED": "Dispute window expired"
+      },
+      "payment_method": {
+        "PAYMENT_METHOD_REVOKED_BY_CUSTOMER": "Customer revoked a vaulted payment method"
+      }
+    },
+    "test_webhook": "gateway.webhookTesting.sampleNotification(kind, id) — for local testing"
+  },
+  "paypal_webhooks": {
+    "documentation": "https://developer.paypal.com/api/rest/webhooks/",
+    "setup": "PayPal Developer Dashboard → Your App → Webhooks",
+    "verification": {
+      "method": "POST /v1/notifications/verify-webhook-signature",
+      "payload": {
+        "auth_algo": "From webhook headers",
+        "cert_url": "From webhook headers",
+        "transmission_id": "From webhook headers",
+        "transmission_sig": "From webhook headers",
+        "transmission_time": "From webhook headers",
+        "webhook_id": "Your webhook ID from dashboard",
+        "webhook_event": "The full webhook event body"
+      }
+    },
+    "multiparty_events": {
+      "PAYMENT.CAPTURE.COMPLETED": "Payment captured for multiparty order",
+      "PAYMENT.CAPTURE.DENIED": "Payment capture denied",
+      "PAYMENT.CAPTURE.REFUNDED": "Capture refunded",
+      "CHECKOUT.ORDER.APPROVED": "Buyer approved the order",
+      "MERCHANT.ONBOARDING.COMPLETED": "Seller completed onboarding",
+      "MERCHANT.PARTNER-CONSENT.REVOKED": "Seller revoked partner consent",
+      "CUSTOMER.DISPUTE.CREATED": "Dispute opened",
+      "CUSTOMER.DISPUTE.RESOLVED": "Dispute resolved"
+    }
+  },
+  "best_practices": [
+    "Use Braintree webhooks for Braintree Direct transactions",
+    "Use PayPal webhooks for multiparty / Orders API transactions",
+    "Always verify webhook signatures before processing",
+    "Return HTTP 200 quickly — process asynchronously",
+    "Implement idempotent processing (track processed webhook IDs)",
+    "Subscribe to MERCHANT.ONBOARDING.COMPLETED for seller onboarding tracking"
+  ]
+}

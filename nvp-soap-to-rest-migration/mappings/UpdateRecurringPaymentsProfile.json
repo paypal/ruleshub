@@ -1,0 +1,109 @@
+{
+  "operation": "UpdateRecurringPaymentsProfile",
+  "_endpoint": "PATCH /v1/billing/subscriptions/{subscription_id}",
+  "_note": "Uses JSON Patch operations. Some fields cannot be modified after creation.",
+  "parameter_mappings": {
+    "nvp": {
+      "supported": {
+        "PROFILEID": {
+          "rest_field": "{subscription_id} (path parameter)",
+          "required": true
+        },
+        "AMT": {
+          "rest_field": "plan.billing_cycles[].pricing_scheme.fixed_price.value",
+          "notes": "Amount can only increase up to 20% every 180 days"
+        },
+        "SHIPPINGAMT": {
+          "rest_field": "shipping_amount.value"
+        },
+        "TAXAMT": {
+          "rest_field": "plan.taxes.percentage",
+          "transform": "CALCULATE: (TAXAMT / AMT) × 100",
+          "notes": "NVP uses amount, REST uses percentage"
+        },
+        "ADDITIONALBILLINGCYCLES": {
+          "rest_field": "plan.billing_cycles[].total_cycles"
+        },
+        "AUTOBILLOUTAMT": {
+          "rest_field": "plan.payment_preferences.auto_bill_outstanding",
+          "transform": "AddToNextBilling→true, NoAutoBill→false"
+        },
+        "MAXFAILEDPAYMENTS": {
+          "rest_field": "plan.payment_preferences.payment_failure_threshold"
+        },
+        "PROFILEREFERENCE": {
+          "rest_field": "custom_id"
+        }
+      },
+      "not_supported": {
+        "NOTE": {
+          "reason": "Use reason field in suspend/cancel instead",
+          "alternative": "ManageRecurringPaymentsProfileStatus"
+        },
+        "BILLINGFREQUENCY": {
+          "reason": "Cannot modify billing frequency after creation",
+          "alternative": "Create new plan and migrate subscriber"
+        },
+        "BILLINGPERIOD": {
+          "reason": "Cannot modify billing period after creation",
+          "alternative": "Create new plan and migrate subscriber"
+        }
+      }
+    },
+    "soap": {
+      "supported": {
+        "ProfileID": {
+          "rest_field": "{subscription_id} (path parameter)",
+          "required": true
+        },
+        "Amount": {
+          "rest_field": "plan.billing_cycles[].pricing_scheme.fixed_price.value",
+          "notes": "Amount can only increase up to 20% every 180 days"
+        },
+        "ShippingAmount": {
+          "rest_field": "shipping_amount.value"
+        },
+        "TaxAmount": {
+          "rest_field": "plan.taxes.percentage",
+          "transform": "CALCULATE: (TaxAmount / Amount) × 100"
+        },
+        "AdditionalBillingCycles": {
+          "rest_field": "plan.billing_cycles[].total_cycles"
+        },
+        "AutoBillOutstandingAmount": {
+          "rest_field": "plan.payment_preferences.auto_bill_outstanding",
+          "transform": "AddToNextBilling→true, NoAutoBill→false"
+        },
+        "MaxFailedPayments": {
+          "rest_field": "plan.payment_preferences.payment_failure_threshold"
+        },
+        "ProfileReference": {
+          "rest_field": "custom_id"
+        }
+      },
+      "not_supported": {
+        "Note": {
+          "reason": "Use reason field in suspend/cancel instead",
+          "alternative": "ManageRecurringPaymentsProfileStatus"
+        },
+        "BillingFrequency": {
+          "reason": "Cannot modify billing frequency after creation",
+          "alternative": "Create new plan and migrate subscriber"
+        },
+        "BillingPeriod": {
+          "reason": "Cannot modify billing period after creation",
+          "alternative": "Create new plan and migrate subscriber"
+        }
+      }
+    }
+  },
+  "special_notes": {
+    "usage": "Use to update subscription details after creation",
+    "upgrade_tips": [
+      "REST uses JSON Patch format with op, path, value",
+      "Billing frequency/period cannot be changed - need new plan",
+      "Amount increases limited to 20% per 180-day period"
+    ]
+  }
+}
+

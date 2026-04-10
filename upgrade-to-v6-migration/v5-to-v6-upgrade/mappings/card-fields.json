@@ -1,0 +1,225 @@
+{
+  "operation": "Card Fields - One-Time Payment",
+  "description": "v6 SDK card fields for accepting credit/debit cards with hosted, PCI-compliant input fields",
+  "breaking_changes": true,
+  "v5_pattern": {
+    "script_loading": "URL-based SDK loading with client-id and components=card-fields",
+    "initialization": "paypal.CardFields({ createOrder, onApprove, onError })",
+    "field_creation": "cardFields.NameField().render('#name')",
+    "field_types": ["NameField", "NumberField", "ExpiryField", "CVVField"],
+    "render_method": ".render('#selector')",
+    "submission": "Callbacks: onApprove, onError, onCancel",
+    "eligibility": "cardFields.isEligible()",
+    "authentication": "Client ID in script URL"
+  },
+  "v6_pattern": {
+    "script_loading": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>",
+    "initialization": "window.paypal.createInstance({ clientToken, components: ['card-fields'] })",
+    "field_creation": "session.createCardFieldsComponent({ type: 'number', placeholder: 'Card number' })",
+    "field_types": ["number", "expiry", "cvv"],
+    "render_method": "element.appendChild(component)",
+    "submission": "Promise-based: const { state, data } = await session.submit(orderId, options)",
+    "eligibility": "sdk.findEligibleMethods().isEligible('advanced_cards')",
+    "authentication": "Client token from backend endpoint"
+  },
+  "api_signature": {
+    "sdk_initialization": {
+      "method": "window.paypal.createInstance",
+      "parameters": {
+        "clientToken": {
+          "type": "string",
+          "required": true,
+          "description": "Browser-safe client token from backend"
+        },
+        "components": {
+          "type": "array",
+          "required": true,
+          "value": ["card-fields"],
+          "description": "Array of component names to load"
+        },
+        "pageType": {
+          "type": "string",
+          "required": false,
+          "values": ["checkout", "product-details"],
+          "default": "checkout"
+        }
+      }
+    },
+    "session_creation": {
+      "method": "sdk.createCardFieldsOneTimePaymentSession",
+      "parameters": {},
+      "returns": "CardFieldsOneTimePaymentSession"
+    },
+    "component_creation": {
+      "method": "session.createCardFieldsComponent",
+      "parameters": {
+        "type": {
+          "type": "string",
+          "required": true,
+          "values": ["number", "expiry", "cvv"],
+          "description": "Type of card field (NO name field in v6)"
+        },
+        "placeholder": {
+          "type": "string",
+          "required": false,
+          "description": "Placeholder text for the field"
+        },
+        "style": {
+          "type": "object",
+          "required": false,
+          "description": "CSS properties in camelCase"
+        }
+      }
+    },
+    "submission": {
+      "method": "session.submit",
+      "parameters": {
+        "orderId": {
+          "type": "string",
+          "required": true,
+          "description": "PayPal order ID (NOT an object)"
+        },
+        "options": {
+          "type": "object",
+          "required": false,
+          "properties": {
+            "billingAddress": {
+              "type": "object",
+              "properties": {
+                "postalCode": "string",
+                "countryCode": "string"
+              }
+            }
+          }
+        }
+      },
+      "returns": {
+        "type": "Promise<{ state, data }>",
+        "states": ["succeeded", "failed", "canceled"]
+      }
+    }
+  },
+  "migration_steps": [
+    {
+      "step": 1,
+      "title": "Create Client Token Endpoint",
+      "description": "Generate browser-safe client token from backend",
+      "endpoint": "/paypal-api/auth/browser-safe-client-token",
+      "required": true
+    },
+    {
+      "step": 2,
+      "title": "Update SDK Script Tag",
+      "description": "Replace v5 script with v6 core SDK",
+      "old": "<script src=\"https://www.paypal.com/sdk/js?client-id=CLIENT_ID&components=card-fields\"></script>",
+      "new": "<script async src=\"https://www.sandbox.paypal.com/web-sdk/v6/core\" onload=\"onPayPalWebSdkLoaded()\"></script>"
+    },
+    {
+      "step": 3,
+      "title": "Update HTML Container IDs",
+      "description": "Use v6 SDK standard container IDs",
+      "containers": [
+        "paypal-card-fields-number",
+        "paypal-card-fields-expiry",
+        "paypal-card-fields-cvv"
+      ]
+    },
+    {
+      "step": 4,
+      "title": "Initialize SDK with Client Token",
+      "description": "Fetch client token and initialize v6 SDK",
+      "pattern": "window.paypal.createInstance({ clientToken })"
+    },
+    {
+      "step": 5,
+      "title": "Check Eligibility",
+      "description": "Use SDK-level eligibility check",
+      "pattern": "sdk.findEligibleMethods().isEligible('advanced_cards')"
+    },
+    {
+      "step": 6,
+      "title": "Create Session",
+      "description": "Create card fields one-time payment session",
+      "pattern": "sdk.createCardFieldsOneTimePaymentSession()"
+    },
+    {
+      "step": 7,
+      "title": "Create and Mount Components",
+      "description": "Use createCardFieldsComponent() and appendChild()",
+      "pattern": "const field = session.createCardFieldsComponent({ type: 'number' }); container.appendChild(field);"
+    },
+    {
+      "step": 8,
+      "title": "Update Submit Flow",
+      "description": "Create order first, then submit with promise-based handling",
+      "pattern": "const { state, data } = await session.submit(orderId, { billingAddress })"
+    },
+    {
+      "step": 9,
+      "title": "Handle States with Switch",
+      "description": "Replace callbacks with switch statement",
+      "states": ["succeeded", "failed", "canceled"]
+    }
+  ],
+  "critical_notes": [
+    "NO NameField in v6 - only number, expiry, cvv",
+    "Methods like .NumberField(), .render() DO NOT EXIST in v6",
+    "session.isEligible() DOES NOT EXIST - use sdk.findEligibleMethods()",
+    "Must pass orderId as string, NOT object: submit(orderId, options)",
+    "Order must be created BEFORE calling submit()",
+    "Use appendChild() to mount, NOT .render()",
+    "Client token MUST be generated from backend",
+    "Include break; in each switch case",
+    "3DS is automatic when configured server-side",
+    "Check liabilityShift in submit response for 3DS results"
+  ],
+  "common_errors": [
+    {
+      "error": "session.NameField is not a function",
+      "cause": "Using v5 pattern - NameField doesn't exist in v6",
+      "fix": "Remove name field - v6 only supports number, expiry, cvv"
+    },
+    {
+      "error": "session.isEligible is not a function",
+      "cause": "Calling isEligible on session instead of SDK",
+      "fix": "Use sdk.findEligibleMethods().isEligible('advanced_cards')"
+    },
+    {
+      "error": "field.render is not a function",
+      "cause": "Using v5 .render() method",
+      "fix": "Use element.appendChild(component) instead"
+    },
+    {
+      "error": "Order not found",
+      "cause": "Not creating order before submit()",
+      "fix": "Create order first, then pass orderId to submit()"
+    }
+  ],
+  "backend_requirements": {
+    "client_token_endpoint": {
+      "path": "/paypal-api/auth/browser-safe-client-token",
+      "method": "GET",
+      "returns": "{ accessToken: string }",
+      "required": true
+    },
+    "order_creation_endpoint": {
+      "path": "/paypal-api/checkout/orders/create",
+      "method": "POST",
+      "payload": {
+        "amount": "string",
+        "currency": "string",
+        "saveCard": "boolean (optional for vaulting)"
+      },
+      "returns": "Order object with id",
+      "required": true
+    },
+    "order_capture_endpoint": {
+      "path": "/paypal-api/checkout/orders/:orderId/capture",
+      "method": "POST",
+      "returns": "Capture details with vault data (if vaulting)",
+      "required": true
+    }
+  },
+  "official_docs": "https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time"
+}
+

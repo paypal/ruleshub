@@ -1,0 +1,59 @@
+{
+  "operation": "Hosted Fields",
+  "description": "Braintree Hosted Fields — custom-styled card inputs in iframes for full design control, PCI compliant",
+  "documentation": "https://developer.paypal.com/braintree/docs/guides/hosted-fields/",
+  "client_sdk": {
+    "scripts": [
+      "https://js.braintreegateway.com/web/3.x.x/js/client.min.js",
+      "https://js.braintreegateway.com/web/3.x.x/js/hosted-fields.min.js"
+    ],
+    "note": "Replace 3.x.x with latest version from Braintree docs"
+  },
+  "initialization": {
+    "step_1": "Create Braintree client: braintree.client.create({ authorization: clientToken })",
+    "step_2": "Create Hosted Fields: braintree.hostedFields.create({ client, fields, styles })",
+    "fields": {
+      "number": { "container": "#card-number", "placeholder": "Card Number" },
+      "expirationDate": { "container": "#expiration-date", "placeholder": "MM/YY" },
+      "cvv": { "container": "#cvv", "placeholder": "CVV" },
+      "postalCode": { "container": "#postal-code", "placeholder": "ZIP" }
+    }
+  },
+  "styling": {
+    "description": "Style hosted fields using CSS-like properties passed to the styles object",
+    "properties": [
+      "color", "font-size", "font-family", "font-weight", "font-style",
+      "letter-spacing", "line-height", "padding", "text-align",
+      "text-decoration", "text-transform", "background-color",
+      "transition", "-moz-appearance", "-webkit-appearance"
+    ],
+    "pseudo_classes": [".valid", ".invalid", ":focus", "::placeholder"]
+  },
+  "events": {
+    "validityChange": "Fired when a field's validity changes",
+    "cardTypeChange": "Fired when card brand is detected (Visa, MC, etc.)",
+    "focus": "Fired when field gains focus",
+    "blur": "Fired when field loses focus",
+    "empty": "Fired when field becomes empty",
+    "notEmpty": "Fired when field becomes non-empty"
+  },
+  "tokenization": {
+    "method": "hostedFieldsInstance.tokenize()",
+    "returns": "Payment method nonce — send to server for Transaction.sale()",
+    "options": {
+      "cardholderName": "Optional — pass cardholder name if not in hosted field",
+      "billingAddress": "Optional — street, city, region, postalCode, countryCodeAlpha2"
+    }
+  },
+  "pci_compliance": {
+    "description": "Hosted Fields run in iframes on Braintree's domain — raw card data never touches your page",
+    "level": "SAQ A eligible — lowest PCI burden"
+  },
+  "best_practices": [
+    "Style fields to match your site design for trust",
+    "Listen to cardTypeChange to show card brand icon",
+    "Validate all fields before allowing tokenize",
+    "Use the validityChange event for real-time error messages",
+    "Always generate fresh client tokens per session"
+  ]
+}
