@@ -1,6 +1,6 @@
 # RulesHub (Beta)
 
-A comprehensive collection of AI-optimized rules and guidelines for integrating, upgrading, and migrating popular APIs and platforms. These rules are designed to work seamlessly with AI code assistants like Cursor IDE and Claude Code to provide intelligent, context-aware code suggestions for new integrations, upgrades, and migrations.
+A comprehensive collection of AI-optimized rules and guidelines for integrating, upgrading popular APIs and platforms. These rules are designed to work seamlessly with AI code assistants like Cursor IDE and Claude Code to provide intelligent, context-aware code suggestions for new integrations, upgrades, and migrations.
 
 ## Table of Contents
 
@@ -9,7 +9,7 @@ A comprehensive collection of AI-optimized rules and guidelines for integrating,
   - [PayPal Expanded Checkout](#paypal-expanded-checkout)
   - [PayPal Enterprise Checkout](#paypal-enterprise-checkout)
   - [PayPal BNPL US (Pay Later)](#paypal-bnpl-us-pay-later)
-  - [PayPal NVP/SOAP to REST API Migration](#paypal-nvpsoap-to-rest-api-migration)
+  - [PayPal NVP/SOAP to REST API Upgrade](#paypal-nvpsoap-to-rest-api-upgrade)
   - [PayPal v5 to v6 Web SDK Upgrade](#paypal-v5-to-v6-web-sdk-upgrade)
   - [PayPal v4 to v6 Web SDK Upgrade](#paypal-v4-to-v6-web-sdk-upgrade)
 - [How to Use](#how-to-use)
@@ -92,11 +92,11 @@ Add Buy Now Pay Later capabilities to new or existing PayPal integrations for US
 - Upstream messaging placement guidance
 - Eligibility and merchant configuration
 
-### PayPal NVP/SOAP to REST API Migration
+### PayPal NVP/SOAP to REST API Upgrade
 
-**Location**: `nvp-soap-to-rest-migration/`
+**Location**: `upgrade-nvp-soap-to-rest/`
 
-Migrate from PayPal legacy APIs (NVP/SOAP) to modern REST APIs, or start a new REST API integration from scratch.
+Upgrade from PayPal legacy APIs (NVP/SOAP) to modern REST APIs, or start a new REST API integration from scratch.
 
 **Features:**
 
@@ -110,7 +110,7 @@ Migrate from PayPal legacy APIs (NVP/SOAP) to modern REST APIs, or start a new R
 
 ### PayPal v5 to v6 Web SDK Upgrade
 
-**Location**: `upgrade-to-v6-migration/v5-to-v6-upgrade/`
+**Location**: `upgrade-to-v6/v5-to-v6-upgrade/`
 
 Upgrade from PayPal v5 Web SDK to v6, or start a new v6 Web SDK integration with the latest patterns and features.
 
@@ -127,7 +127,7 @@ Upgrade from PayPal v5 Web SDK to v6, or start a new v6 Web SDK integration with
 
 ### PayPal v4 to v6 Web SDK Upgrade
 
-**Location**: `upgrade-to-v6-migration/v4-to-v6-upgrade/`
+**Location**: `upgrade-to-v6/v4-to-v6-upgrade/`
 
 Upgrade from PayPal checkout.js v4 to v6 Web SDK, or start a new v6 Web SDK integration.
 
@@ -159,6 +159,10 @@ npm link
 # Then from any project folder:
 cd your-project
 ruleshub
+
+or 
+
+npm install git+https://github.com/paypal/ruleshub.git
 ```
 
 The CLI will prompt you to:
@@ -167,11 +171,14 @@ The CLI will prompt you to:
 
 Files are copied to the appropriate location automatically.
 
+![Terminal installation 1](cli-interactive.png)
+
 You can also use flags for non-interactive mode:
 
 ```bash
 ruleshub --pack 4 --target 1
 ```
+![Terminal Installation 2](cli-flags.png)
 
 ### Method 2: Direct Copy
 Copy the relevant rules file to your project:
