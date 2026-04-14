@@ -27,18 +27,18 @@ const PACKS = [
     slug: 'paypal-bnpl-us',
   },
   {
-    name: 'NVP/SOAP to REST Migration',
-    dir: 'nvp-soap-to-rest-migration',
-    slug: 'nvp-soap-to-rest-migration',
+    name: 'NVP/SOAP to REST Upgrade',
+    dir: 'upgrade-nvp-soap-to-rest',
+    slug: 'nvp-soap-to-rest-upgrade',
   },
   {
     name: 'v5 to v6 SDK Upgrade',
-    dir: 'upgrade-to-v6-migration/v5-to-v6-upgrade',
+    dir: 'upgrade-to-v6/v5-to-v6-upgrade',
     slug: 'v5-to-v6-upgrade',
   },
   {
     name: 'v4 to v6 SDK Upgrade',
-    dir: 'upgrade-to-v6-migration/v4-to-v6-upgrade',
+    dir: 'upgrade-to-v6/v4-to-v6-upgrade',
     slug: 'v4-to-v6-upgrade',
   },
 ];
@@ -254,7 +254,7 @@ When the user asks to add rules or mentions any of these rule packs, run the cor
 - "standard checkout" → \`ruleshub --pack paypal-standard-checkout --target claude\`
 - "expanded checkout" → \`ruleshub --pack paypal-expanded-checkout --target claude\`
 - "enterprise checkout" → \`ruleshub --pack paypal-enterprise-checkout --target claude\`
-- "soap to rest" / "nvp" → \`ruleshub --pack nvp-soap-to-rest-migration --target claude\`
+- "soap to rest" / "nvp" → \`ruleshub --pack nvp-soap-to-rest-upgrade --target claude\`
 - "v5 to v6" → \`ruleshub --pack v5-to-v6-upgrade --target claude\`
 - "v4 to v6" → \`ruleshub --pack v4-to-v6-upgrade --target claude\`
 

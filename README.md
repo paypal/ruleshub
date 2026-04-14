@@ -1,15 +1,15 @@
 # RulesHub (Beta)
 
-A comprehensive collection of AI-optimized upgrade rules and guidelines for popular APIs and platforms. These rules are designed to work seamlessly with AI code assistants like Cursor IDE and Claude Code to provide intelligent, context-aware code suggestions and upgrades.
+A comprehensive collection of AI-optimized rules and guidelines for integrating, upgrading popular APIs and platforms. These rules are designed to work seamlessly with AI code assistants like Cursor IDE and Claude Code to provide intelligent, context-aware code suggestions for new integrations, upgrades, and migrations.
 
 ## Table of Contents
 
-- [Available Upgrade Rules](#available-upgrade-rules)
+- [Available Rule Packs](#available-rule-packs)
   - [PayPal Standard Checkout](#paypal-standard-checkout)
   - [PayPal Expanded Checkout](#paypal-expanded-checkout)
   - [PayPal Enterprise Checkout](#paypal-enterprise-checkout)
   - [PayPal BNPL US (Pay Later)](#paypal-bnpl-us-pay-later)
-  - [PayPal NVP/SOAP to REST API Migration](#paypal-nvpsoap-to-rest-api-migration)
+  - [PayPal NVP/SOAP to REST API Upgrade](#paypal-nvpsoap-to-rest-api-upgrade)
   - [PayPal v5 to v6 Web SDK Upgrade](#paypal-v5-to-v6-web-sdk-upgrade)
   - [PayPal v4 to v6 Web SDK Upgrade](#paypal-v4-to-v6-web-sdk-upgrade)
 - [How to Use](#how-to-use)
@@ -21,7 +21,7 @@ A comprehensive collection of AI-optimized upgrade rules and guidelines for popu
   - [Intelligent Code Detection](#intelligent-code-detection)
   - [Comprehensive Coverage](#comprehensive-coverage)
   - [AI-Optimized Design](#ai-optimized-design)
-- [Upgrade Scenarios](#upgrade-scenarios)
+- [Scenarios](#scenarios)
   - [Scenario 1: Starting a New Integration](#scenario-1-starting-a-new-integration)
   - [Scenario 2: Legacy Code Upgrade](#scenario-2-legacy-code-upgrade)
   - [Scenario 3: Code Review and Security Audit](#scenario-3-code-review-and-security-audit)
@@ -35,13 +35,13 @@ A comprehensive collection of AI-optimized upgrade rules and guidelines for popu
 - [Resources](#resources)
 - [License](#license)
 
-## Available Upgrade Rules
+## Available Rule Packs
 
 ### PayPal Standard Checkout
 
 **Location**: `paypal-checkout/standard-checkout/`
 
-Standard PayPal checkout integration with Smart Payment Buttons.
+Build a new PayPal checkout integration with Smart Payment Buttons, or enhance an existing one.
 
 **Features:**
 
@@ -55,7 +55,7 @@ Standard PayPal checkout integration with Smart Payment Buttons.
 
 **Location**: `paypal-checkout/expanded-checkout/`
 
-Expanded checkout with advanced card fields and additional payment methods.
+Build or enhance an expanded checkout integration with advanced card fields and additional payment methods.
 
 **Features:**
 
@@ -69,7 +69,7 @@ Expanded checkout with advanced card fields and additional payment methods.
 
 **Location**: `paypal-checkout/enterprise-checkout/`
 
-Enterprise-level checkout integration for platforms and marketplaces.
+Build or enhance an enterprise-level checkout integration for platforms and marketplaces.
 
 **Features:**
 
@@ -83,7 +83,7 @@ Enterprise-level checkout integration for platforms and marketplaces.
 
 **Location**: `paypal-bnpl-us/`
 
-Buy Now Pay Later integration for US merchants.
+Add Buy Now Pay Later capabilities to new or existing PayPal integrations for US merchants.
 
 **Features:**
 
@@ -92,11 +92,11 @@ Buy Now Pay Later integration for US merchants.
 - Upstream messaging placement guidance
 - Eligibility and merchant configuration
 
-### PayPal NVP/SOAP to REST API Migration
+### PayPal NVP/SOAP to REST API Upgrade
 
-**Location**: `nvp-soap-to-rest-migration/`
+**Location**: `upgrade-nvp-soap-to-rest/`
 
-Complete upgrade guide for transitioning from PayPal legacy APIs (NVP/SOAP) to modern REST APIs.
+Upgrade from PayPal legacy APIs (NVP/SOAP) to modern REST APIs, or start a new REST API integration from scratch.
 
 **Features:**
 
@@ -110,9 +110,9 @@ Complete upgrade guide for transitioning from PayPal legacy APIs (NVP/SOAP) to m
 
 ### PayPal v5 to v6 Web SDK Upgrade
 
-**Location**: `upgrade-to-v6-migration/v5-to-v6-upgrade/`
+**Location**: `upgrade-to-v6/v5-to-v6-upgrade/`
 
-Upgrade guide for transitioning from PayPal v5 Web SDK to PayPal v6 Web SDK with updated patterns and features.
+Upgrade from PayPal v5 Web SDK to v6, or start a new v6 Web SDK integration with the latest patterns and features.
 
 **Features:**
 
@@ -127,9 +127,9 @@ Upgrade guide for transitioning from PayPal v5 Web SDK to PayPal v6 Web SDK with
 
 ### PayPal v4 to v6 Web SDK Upgrade
 
-**Location**: `upgrade-to-v6-migration/v4-to-v6-upgrade/`
+**Location**: `upgrade-to-v6/v4-to-v6-upgrade/`
 
-Upgrade guide for transitioning from PayPal checkout.js v4 to PayPal v6 Web SDK.
+Upgrade from PayPal checkout.js v4 to v6 Web SDK, or start a new v6 Web SDK integration.
 
 **Features:**
 
@@ -144,7 +144,7 @@ Upgrade guide for transitioning from PayPal checkout.js v4 to PayPal v6 Web SDK.
 
 ### Method 1: RulesHub CLI
 
-Interactive CLI that copies only the rule pack you need into your project.
+Interactive CLI that copies the rule pack you need into your project -- whether you're starting a new integration or upgrading an existing one.
 
 **Setup (one-time):**
 
@@ -159,6 +159,10 @@ npm link
 # Then from any project folder:
 cd your-project
 ruleshub
+
+or 
+
+npm install git+https://github.com/paypal/ruleshub.git
 ```
 
 The CLI will prompt you to:
@@ -167,19 +171,22 @@ The CLI will prompt you to:
 
 Files are copied to the appropriate location automatically.
 
+![Terminal installation 1](cli-interactive.png)
+
 You can also use flags for non-interactive mode:
 
 ```bash
 ruleshub --pack 4 --target 1
 ```
+![Terminal Installation 2](cli-flags.png)
 
 ### Method 2: Direct Copy
 Copy the relevant rules file to your project:
 
 ```bash
-# Choose the appropriate upgrade rules for your project
-cp [upgrade-folder]/rules.md your-project/.cursor/rules/CURSOR.mdc  # For Cursor IDE
-cp [upgrade-folder]/rules.md your-project/CLAUDE.md     # For Claude Code
+# Choose the appropriate rule pack for your project
+cp [rule-pack-folder]/rules.md your-project/.cursor/rules/CURSOR.mdc  # For Cursor IDE
+cp [rule-pack-folder]/rules.md your-project/CLAUDE.md     # For Claude Code
 ```
 
 ### Method 3: Git Submodule
@@ -194,23 +201,23 @@ git submodule add https://github.com/paypal/ruleshub.git rules
 Add references in your existing `CURSOR.mdc` or `CLAUDE.md`:
 
 ```markdown
-# Upgrade Rules
-Apply upgrade patterns from RulesHub/[upgrade-folder]/rules.md
+# PayPal Rules
+Apply patterns from RulesHub/[rule-pack-folder]/rules.md
 ```
 
 ## Key Benefits
 
 ### Intelligent Code Detection
 
-- **Pattern Recognition**: AI assistants detect legacy code patterns (NVP/SOAP calls, v5 SDK implementations)
-- **Context-Aware Suggestions**: Upgrade suggestions based on code context
+- **Pattern Recognition**: AI assistants detect legacy code patterns (NVP/SOAP calls, v5 SDK implementations) and guide new integrations
+- **Context-Aware Suggestions**: Integration and upgrade suggestions based on code context
 - **Security Scanning**: Detection of security vulnerabilities and practices
 - **Setup Analysis**: Detection of current PayPal integration patterns through code analysis
 
 ### Comprehensive Coverage
 
 - **Multi-Language Support**: Rules work across JavaScript, TypeScript, Python, PHP, Java, .NET, and more
-- **Upgrade Paths**: From authentication to webhooks, various aspects covered
+- **Integration & Upgrade Paths**: From new integrations to upgrades, authentication to webhooks, various aspects covered
 - **Payment Methods**: Support for save payments, Venmo, Pay Later, and credit messaging
 - **Best Practices**: Industry-standard security and performance practices included
 
@@ -219,20 +226,20 @@ Apply upgrade patterns from RulesHub/[upgrade-folder]/rules.md
 - **Cursor IDE Integration**: Integration with Cursor's AI capabilities
 - **Claude Code Compatible**: Works with Claude Code's context understanding
 - **Documentation**: Includes links to official API documentation and examples
-- **Upgrade Support**: Enables parallel testing and phased rollouts
+- **Integration & Upgrade Support**: Enables new integrations, parallel testing, and phased rollouts
 - **TypeScript Definitions**: Type safety and IntelliSense support
 
-## Upgrade Scenarios
+## Scenarios
 
 ### Scenario 1: Starting a New Integration
 
-When beginning a fresh integration, AI assistants will:
+When beginning a new PayPal integration (checkout, BNPL, payments), AI assistants will:
 
-- Suggest API patterns from the start (REST APIs, v6 SDK)
-- Provide configuration templates
-- Include error handling
-- Recommend current practices
-- Guide toward implementations
+- Guide you through the latest API patterns (REST APIs, v6 SDK)
+- Provide configuration templates and code examples
+- Include error handling and security best practices
+- Recommend current practices for checkout, Pay Later, and vaulting
+- Support multi-language implementations (Node.js, Python, PHP, Java, .NET, Ruby)
 
 ### Scenario 2: Legacy Code Upgrade
 
@@ -250,14 +257,14 @@ During development and review:
 
 - Flag potential security issues
 - Suggest performance optimizations
-- Recommend API version upgrades (v5 → v6 SDK)
+- Recommend latest API versions and patterns (v6 SDK, REST APIs)
 - Support compliance with platform guidelines
 - Validate error handling and debug patterns
 
 ## Customization
 
 ### Adding Your Own Rules
-Each upgrade folder can be extended with project-specific rules:
+Each rule pack folder can be extended with project-specific rules:
 
 ```markdown
 ## Custom Project Rules
@@ -288,7 +295,7 @@ Modify rules for different deployment environments:
 
 ## Security First
 
-All upgrade rules prioritize security:
+All rule packs prioritize security:
 
 - **Credential Management**: Environment variable recommendations
 - **HTTPS Enforcement**: Secure communication patterns only
@@ -336,6 +343,6 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-> **Note**: Start with sandbox/test environments when using upgrade rules. Validate all implementations against your specific business requirements before deploying to production.
+> **Note**: Start with sandbox/test environments when using these rule packs. Validate all implementations against your specific business requirements before deploying to production.
 > 
-> **v5 to v6 Upgrade**: If you're currently using PayPal v5 Web SDK, consider upgrading to v6 for updated features and TypeScript support. The v6 SDK provides TypeScript definitions, save payment capabilities, and support for payment methods like Venmo and Pay Later.
+> **New to PayPal?** Use the checkout and BNPL rule packs to build your integration from scratch with best practices built in. **Upgrading?** Use the migration and upgrade rule packs to move from legacy APIs or older SDKs to the latest versions.

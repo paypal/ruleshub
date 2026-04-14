@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+try { process.cwd(); } catch { process.chdir(require('os').homedir()); }
 
 const fs = require('fs');
 const path = require('path');
@@ -15,7 +16,7 @@ When the user asks to add rules or mentions any of these rule packs, run the cor
 - "standard checkout" → \`ruleshub --pack paypal-standard-checkout --target claude\`
 - "expanded checkout" → \`ruleshub --pack paypal-expanded-checkout --target claude\`
 - "enterprise checkout" → \`ruleshub --pack paypal-enterprise-checkout --target claude\`
-- "soap to rest" / "nvp" → \`ruleshub --pack nvp-soap-to-rest-migration --target claude\`
+- "soap to rest" / "nvp" → \`ruleshub --pack nvp-soap-to-rest-upgrade --target claude\`
 - "v5 to v6" → \`ruleshub --pack v5-to-v6-upgrade --target claude\`
 - "v4 to v6" → \`ruleshub --pack v4-to-v6-upgrade --target claude\`
 

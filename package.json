@@ -18,8 +18,8 @@
     "bin/",
     "paypal-checkout/",
     "paypal-bnpl-us/",
-    "nvp-soap-to-rest-migration/",
-    "upgrade-to-v6-migration/"
+    "upgrade-nvp-soap-to-rest/",
+    "upgrade-to-v6/"
   ],
   "keywords": [
     "paypal",
