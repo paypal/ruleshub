@@ -1,7 +1,7 @@
 /**
  * PayPal Standalone Payment Button Integration Guide (v6 SDK)
  * Card and debit card processing without PayPal account requirement
- * Based on: https://docs.paypal.ai/payments/methods/cards/standalone-payment-button
+ * Based on: https://developer.paypal.com/cards/standalone-payment-button.md
  */
 const CARDS_STANDALONE_GUIDE = `
 ## Standalone Payment Button (v6 JavaScript SDK)
@@ -627,8 +627,8 @@ Account doesn't have "Advanced Credit and Debit Card Payments" enabled.
 
 ## Resources
 
-- Official Documentation: https://docs.paypal.ai/payments/methods/cards/standalone-payment-button
-- v6 SDK Reference: https://docs.paypal.ai/payments
+- Official Documentation: https://developer.paypal.com/cards/standalone-payment-button.md
+- v6 SDK Reference: https://developer.paypal.com/payments.md
 - Orders API v2: https://developer.paypal.com/docs/api/orders/v2/
 - Developer Dashboard: https://developer.paypal.com/dashboard/
 

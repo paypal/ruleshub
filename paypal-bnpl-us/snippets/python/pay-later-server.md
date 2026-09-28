@@ -2,7 +2,7 @@
 
 Server-side order creation and capture for Pay Later. No special order payload is needed — standard Orders API v2 works for Pay Later.
 
-Source: https://docs.paypal.ai/reference/api/rest/orders/create-order
+Source: https://developer.paypal.com/api/orders/v2.md
 
 ## Flask Implementation
 
@@ -99,7 +99,7 @@ def capture_order(order_id):
 
 Only needed if using `clientToken` authentication instead of `clientId`.
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration#option-b-client-token
+Source: https://developer.paypal.com/sdk/js/set-up.md#option-b-client-token-for-fastlane-only
 
 ```python
 @app.route("/paypal-api/auth/browser-safe-client-token", methods=["GET"])

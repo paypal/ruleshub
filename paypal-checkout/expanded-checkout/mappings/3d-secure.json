@@ -2,7 +2,7 @@
   "operation": "3D Secure / SCA",
   "description": "3D Secure authentication for card payments — required for PSD2/SCA compliance in Europe",
   "documentation": {
-    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/cards/3ds",
+    "docs_paypal_ai": "https://developer.paypal.com/expanded/3d-secure.md",
     "developer_paypal": "https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/"
   },
   "verification_methods": {

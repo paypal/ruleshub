@@ -41,7 +41,7 @@ Parameter values (`googlepay`, `googlepay-buttons`, etc.) depend on SDK version 
 
 ## Documentation
 
-- [Google Pay (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/digital-wallets/google-pay)
+- [Google Pay (developer.paypal.com)](https://developer.paypal.com/platforms/checkout/apm/google-pay.md)
 - [Google Pay — developer.paypal.com](https://developer.paypal.com/docs/checkout/apm/google-pay/)
 
 ## Notes

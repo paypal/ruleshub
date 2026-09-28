@@ -321,6 +321,6 @@
       "fix": "Call fastlane.setLocale('en_us') after creating Fastlane"
     }
   ],
-  "official_docs": "https://docs.paypal.ai/payments/methods/cards/fastlane"
+  "official_docs": "https://developer.paypal.com/fastlane/enable.md"
 }
 

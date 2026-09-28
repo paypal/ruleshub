@@ -48,7 +48,7 @@ async function initApplePay(clientId, clientToken) {
 }
 ```
 
-Exact method names follow the current v6 Apple Pay API — align with [docs.paypal.ai Apple Pay](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay).
+Exact method names follow the current v6 Apple Pay API — align with [developer.paypal.com Apple Pay](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md).
 
 ## Server — create order with `payment_source.apple_pay`
 

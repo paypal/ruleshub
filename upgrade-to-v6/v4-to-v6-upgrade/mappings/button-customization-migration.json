@@ -3,7 +3,7 @@
   "description": "Complete migration from v4 button style options to v6 (most customization removed)",
   "official_docs": {
     "v4_customization": "https://developer.paypal.com/docs/archive/checkout/how-to/customize-button/",
-    "v6_docs": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+    "v6_docs": "https://developer.paypal.com/sdk/js/reference.md"
   },
   "v4_style_options": {
     "locale": {

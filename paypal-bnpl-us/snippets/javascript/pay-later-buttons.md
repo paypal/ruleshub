@@ -2,11 +2,11 @@
 
 Pay Later button availability depends on **buyer eligibility**, **currency (USD)**, and **order amount**. Always check eligibility before showing Pay Later UI.
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
+Source: https://developer.paypal.com/sdk/js/set-up.md
 
 ## JS SDK v6 — Full Pay Later Button Integration
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration#recommended-frontend-setup
+Source: https://developer.paypal.com/sdk/js/set-up.md#recommended-frontend-setup
 
 ### HTML
 

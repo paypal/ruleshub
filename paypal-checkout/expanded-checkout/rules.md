@@ -20,9 +20,9 @@ This rules file provides comprehensive guidance for AI assistants helping develo
 - Expanded Checkout: https://developer.paypal.com/docs/checkout/advanced/
 - Studio: https://developer.paypal.com/studio/checkout/advanced
 - Eligibility: https://developer.paypal.com/docs/checkout/advanced/eligibility/
-- Card Fields (v6): https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time
-- 3D Secure (v6): https://docs.paypal.ai/payments/methods/cards/3ds
-- Fastlane: https://docs.paypal.ai/payments/methods/cards/fastlane
+- Card Fields (v6): https://developer.paypal.com/expanded/card-fields.md
+- 3D Secure (v6): https://developer.paypal.com/expanded/3d-secure.md
+- Fastlane: https://developer.paypal.com/fastlane/enable.md
 - Orders API v2: https://developer.paypal.com/docs/api/orders/v2/
 - Sample app (v6): https://github.com/paypal-examples/v6-web-sdk-sample-integration
 
@@ -298,12 +298,12 @@ PAYPAL_WEBHOOK_ID=your_webhook_id  # for webhook verification
 
 ### Documentation Links
 - [Expanded Checkout](https://developer.paypal.com/docs/checkout/advanced/)
-- [Card Fields v6](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time)
-- [3D Secure](https://docs.paypal.ai/payments/methods/cards/3ds)
-- [Fastlane](https://docs.paypal.ai/payments/methods/cards/fastlane)
-- [Apple Pay](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay)
-- [Google Pay](https://docs.paypal.ai/payments/methods/digital-wallets/google-pay)
-- [Card Vaulting](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
+- [Card Fields v6](https://developer.paypal.com/expanded/card-fields.md)
+- [3D Secure](https://developer.paypal.com/expanded/3d-secure.md)
+- [Fastlane](https://developer.paypal.com/fastlane/enable.md)
+- [Apple Pay](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md)
+- [Google Pay](https://developer.paypal.com/platforms/checkout/apm/google-pay.md)
+- [Card Vaulting](https://developer.paypal.com/sdk/js/reference.md)
 - [Card Decline Errors](https://developer.paypal.com/docs/checkout/advanced/card-decline-errors/)
 - [Eligibility](https://developer.paypal.com/docs/checkout/advanced/eligibility/)
 - [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)

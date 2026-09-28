@@ -253,6 +253,6 @@
     "Store authentication results for compliance",
     "Handle all three states: succeeded, failed, canceled"
   ],
-  "official_docs": "https://docs.paypal.ai/payments/methods/cards/3ds"
+  "official_docs": "https://developer.paypal.com/expanded/3d-secure.md"
 }
 

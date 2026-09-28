@@ -48,7 +48,7 @@ After **POST** `/v2/checkout/orders/{id}/capture`, inspect the order JSON for **
 
 - Use PayPal **negative testing** and **sandbox card** numbers documented for 3DS scenarios.
 - [3D Secure (developer.paypal.com)](https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/)
-- [3DS with JS SDK v6 (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/cards/3ds)
+- [3DS with JS SDK v6 (developer.paypal.com)](https://developer.paypal.com/expanded/3d-secure.md)
 
 ## Common issues
 

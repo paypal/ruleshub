@@ -220,6 +220,6 @@
       "required": true
     }
   },
-  "official_docs": "https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time"
+  "official_docs": "https://developer.paypal.com/expanded/card-fields.md"
 }
 

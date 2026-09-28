@@ -72,5 +72,5 @@ When the order includes the **PayPal wallet** path, configure **`payment_source.
 
 ## References
 
-- [Apple Pay with JS SDK v6](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay)
+- [Apple Pay with JS SDK v6](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md)
 - [Apple Pay (developer.paypal.com)](https://developer.paypal.com/docs/checkout/apm/apple-pay/)

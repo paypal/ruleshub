@@ -192,4 +192,4 @@ public function authorizeOrder(string $orderId)
 }
 ```
 
-Respect PayPal’s authorization validity window; capture or reauthorize before expiry per [delayed capture](https://docs.paypal.ai/payments/methods/paypal/delayed-capture) documentation.
+Respect PayPal’s authorization validity window; capture or reauthorize before expiry per [delayed capture](https://developer.paypal.com/checkout/delay-capture.md) documentation.

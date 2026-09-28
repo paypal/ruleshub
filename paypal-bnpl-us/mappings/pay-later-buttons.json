@@ -3,8 +3,8 @@
   "description": "PayPal Pay Later button integration for US — allows buyers to pay in installments (Pay in 4 or Pay Monthly)",
   "official_docs": {
     "overview": "https://developer.paypal.com/docs/checkout/pay-later/us/",
-    "ai_docs": "https://docs.paypal.ai/payments/methods/pay-later/overview",
-    "v6_setup": "https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration",
+    "ai_docs": "https://developer.paypal.com/pay-later/overview.md",
+    "v6_setup": "https://developer.paypal.com/sdk/js/set-up.md",
     "v5_config": "https://developer.paypal.com/sdk/js/configuration/"
   },
   "us_products": {

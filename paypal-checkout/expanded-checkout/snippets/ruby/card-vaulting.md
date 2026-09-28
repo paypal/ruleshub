@@ -77,7 +77,7 @@ def create_payment_token_from_setup(setup_token_id)
 end
 ```
 
-Exact JSON shape follows [Vault API integration](https://docs.paypal.ai/payments/save/api/vault-api-integration).
+Exact JSON shape follows [Vault API integration](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md).
 
 ---
 
@@ -106,8 +106,8 @@ end
 
 ## JS SDK (vault with purchase / without purchase)
 
-- With purchase: [Save cards with purchase (v6)](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
-- Without purchase: [Vault without purchase](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault-no-purchase)
+- With purchase: [Save cards with purchase (v6)](https://developer.paypal.com/sdk/js/reference.md)
+- Without purchase: [Vault without purchase](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md)
 
 Your Ruby app only needs secure endpoints and OAuth — the SDK collects card data.
 

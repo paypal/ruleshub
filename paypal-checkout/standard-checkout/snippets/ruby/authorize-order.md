@@ -9,7 +9,7 @@ Use **authorize** when you will capture **after** shipment or verification (inst
 3. **Authorize** the order: **POST** `{api_base}/v2/checkout/orders/{order_id}/authorize`
 4. Later, **capture** the authorization: **POST** `{api_base}/v2/payments/authorizations/{authorization_id}/capture`
 
-See also: PayPal docs on [delayed capture](https://docs.paypal.ai/payments/methods/paypal/delayed-capture).
+See also: PayPal docs on [delayed capture](https://developer.paypal.com/checkout/delay-capture.md).
 
 ---
 

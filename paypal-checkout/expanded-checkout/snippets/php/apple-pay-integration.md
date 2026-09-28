@@ -38,7 +38,7 @@ const eligible = await sdk.findEligibleMethods({ currencyCode: 'USD' });
 
 ## Domain registration
 
-- [Apple Pay (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay)
+- [Apple Pay (developer.paypal.com)](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md)
 - [Apple Pay — developer.paypal.com](https://developer.paypal.com/docs/checkout/apm/apple-pay/)
 
 ## Notes

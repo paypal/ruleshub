@@ -2,7 +2,7 @@
   "operation": "Google Pay",
   "description": "Google Pay integration via PayPal JS SDK for Expanded Checkout",
   "documentation": {
-    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/digital-wallets/google-pay",
+    "docs_paypal_ai": "https://developer.paypal.com/platforms/checkout/apm/google-pay.md",
     "developer_paypal": "https://developer.paypal.com/docs/checkout/apm/google-pay/"
   },
   "requirements": {

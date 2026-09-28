@@ -39,7 +39,7 @@ async function initApplePay() {
 }
 ```
 
-Follow [Apple Pay with JS SDK v6](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay) for domain registration, `merchantSession`, and button rendering.
+Follow [Apple Pay with JS SDK v6](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md) for domain registration, `merchantSession`, and button rendering.
 
 ---
 

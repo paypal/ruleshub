@@ -1,6 +1,6 @@
 # Save Payment Button Implementation
 
-**Official Documentation**: https://docs.paypal.ai/payments/save/sdk/paypal/js-sdk-v6-vault
+**Official Documentation**: https://developer.paypal.com/sdk/js/reference.md
 
 ## Overview
 

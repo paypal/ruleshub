@@ -68,7 +68,7 @@ Venmo often appears on **mobile Safari/Chrome**; desktop may show PayPal only. T
 
 ## JS SDK v6
 
-Include Venmo in `components` when supported by your SDK build, then mount the Venmo-specific element (naming follows [v6 docs](https://docs.paypal.ai/)):
+Include Venmo in `components` when supported by your SDK build, then mount the Venmo-specific element (naming follows [v6 docs](https://developer.paypal.com)):
 
 ```javascript
 const sdk = await window.paypal.createInstance({

@@ -1,7 +1,7 @@
 /**
  * PayPal Card Vaulting Integration Guide for v6 SDK
  * Save cards for future payments
- * Based on: https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault
+ * Based on: https://developer.paypal.com/sdk/js/reference.md
  */
 
 const CARD_VAULTING_GUIDE = `
@@ -753,10 +753,10 @@ app.delete('/api/paypal/vault/payment-tokens/:tokenId', async (req, res) => {
 
 ## Resources
 
-- [Card Vaulting Documentation](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
-- [Vault API Reference](https://docs.paypal.ai/payments/save/api/vault-api-integration)
+- [Card Vaulting Documentation](https://developer.paypal.com/sdk/js/reference.md)
+- [Vault API Reference](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md)
 - [Payment Tokens API](https://developer.paypal.com/docs/api/payment-tokens/v3/)
-- [v6 SDK Documentation](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time)
+- [v6 SDK Documentation](https://developer.paypal.com/expanded/card-fields.md)
 
 ---
 

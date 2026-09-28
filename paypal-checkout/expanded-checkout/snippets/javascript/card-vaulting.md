@@ -63,7 +63,7 @@ async function createSetupToken(accessToken) {
 }
 ```
 
-> **Note:** The exact JSON body depends on whether the client completes Card Fields and passes a setup token id — follow [Vault API integration](https://docs.paypal.ai/payments/save/api/vault-api-integration) for the current request/response contract.
+> **Note:** The exact JSON body depends on whether the client completes Card Fields and passes a setup token id — follow [Vault API integration](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md) for the current request/response contract.
 
 ### Create payment token from setup token
 

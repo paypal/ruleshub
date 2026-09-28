@@ -2,11 +2,11 @@
 
 Display financing banners (e.g., "Pay as low as $25.00/mo") on product, cart, and checkout pages.
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started
+Source: https://developer.paypal.com/pay-later/integrate.md
 
 ## JS SDK v6 — HTML Configuration (simplest)
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-configuration-examples (HTML tab)
+Source: https://developer.paypal.com/pay-later/integrate.md#message-configuration-examples (HTML tab)
 
 ```html
 <head>
@@ -44,7 +44,7 @@ Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-co
 
 ## JS SDK v6 — JavaScript Configuration
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-configuration-examples (JavaScript tab)
+Source: https://developer.paypal.com/pay-later/integrate.md#message-configuration-examples (JavaScript tab)
 
 ```html
 <head>
@@ -95,7 +95,7 @@ Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-co
 
 ## JS SDK v6 — Hybrid Configuration
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-configuration-examples (Hybrid tab)
+Source: https://developer.paypal.com/pay-later/integrate.md#message-configuration-examples (Hybrid tab)
 
 ```html
 <head>
@@ -132,7 +132,7 @@ Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-co
 
 ## JS SDK v6 — Styling with CSS
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-styling
+Source: https://developer.paypal.com/pay-later/reference.md#message-styling
 
 ```html
 <head>
@@ -163,7 +163,7 @@ Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#message-st
 
 ## JS SDK v6 — Learn More with Event Listener
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started#learn-more-configuration-patterns
+Source: https://developer.paypal.com/pay-later/reference.md#learn-more-options
 
 ```html
 <head>
@@ -254,7 +254,7 @@ paypal.Messages({
 
 ## v5 to v6 Upgrade Summary
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/upgrade
+Source: https://developer.paypal.com/pay-later/upgrade.md
 
 | Concept | v5 | v6 |
 |---------|----|----|

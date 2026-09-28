@@ -1,6 +1,6 @@
 # PayLater and PayPal Credit Integration
 
-**Official Documentation**: https://docs.paypal.ai/payments/methods/pay-later/get-started
+**Official Documentation**: https://developer.paypal.com/pay-later/integrate.md
 
 ## Overview
 
@@ -673,7 +673,7 @@ if (methods.isEligible("paylater")) {
 
 ## Official Documentation References
 
-- **Pay Later Guide**: https://docs.paypal.ai/payments/methods/pay-later/get-started
-- **PayPal Checkout**: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- **Pay Later Guide**: https://developer.paypal.com/pay-later/integrate.md
+- **PayPal Checkout**: https://developer.paypal.com/sdk/js/reference.md
 - **TypeScript Types**: https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6
 

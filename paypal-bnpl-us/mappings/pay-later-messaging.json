@@ -2,10 +2,10 @@
   "operation": "Pay Later Messaging (US)",
   "description": "PayPal Pay Later promotional messaging SDK — displays financing banners on product, cart, and checkout pages",
   "official_docs": {
-    "get_started_v6": "https://docs.paypal.ai/payments/methods/pay-later/get-started",
-    "upgrade_v5_to_v6": "https://docs.paypal.ai/payments/methods/pay-later/upgrade",
-    "overview": "https://docs.paypal.ai/payments/methods/pay-later/overview",
-    "analytics": "https://docs.paypal.ai/payments/methods/pay-later/analytics",
+    "get_started_v6": "https://developer.paypal.com/pay-later/integrate.md",
+    "upgrade_v5_to_v6": "https://developer.paypal.com/pay-later/upgrade.md",
+    "overview": "https://developer.paypal.com/pay-later/overview.md",
+    "analytics": "https://developer.paypal.com/pay-later/reference.md",
     "v5_config": "https://developer.paypal.com/sdk/js/configuration/"
   },
   "v5_pattern": {

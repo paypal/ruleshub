@@ -35,7 +35,7 @@ Also verify **`window.ApplePaySession`** exists when required by the integration
 
 Apple Pay on the web requires **domain verification** with Apple (associated domain / verification file). PayPal’s docs describe how to complete merchant setup in the PayPal dashboard and Apple:
 
-- [Apple Pay with JS SDK v6](https://docs.paypal.ai/payments/methods/digital-wallets/apple-pay)
+- [Apple Pay with JS SDK v6](https://developer.paypal.com/platforms/checkout/apm/apple-pay.md)
 - [Apple Pay on developer.paypal.com](https://developer.paypal.com/docs/checkout/apm/apple-pay/)
 
 Host the verification file at **`/.well-known/apple-developer-merchantid-domain-association`** on your domain.

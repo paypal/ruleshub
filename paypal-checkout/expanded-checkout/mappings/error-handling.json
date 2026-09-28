@@ -82,7 +82,7 @@
   },
   "troubleshooting_docs": {
     "card_decline_errors": "https://developer.paypal.com/docs/checkout/advanced/card-decline-errors/",
-    "common_errors": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/overview",
-    "payment_failures": "https://docs.paypal.ai/developer/how-to/api/troubleshooting/handling-payment-failures-with-paypal"
+    "common_errors": "https://developer.paypal.com/api/errors/overview.md",
+    "payment_failures": "https://developer.paypal.com/api/handle-payment-failures.md"
   }
 }

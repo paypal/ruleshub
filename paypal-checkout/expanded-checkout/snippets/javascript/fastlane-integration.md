@@ -34,7 +34,7 @@ async function createFastlane(sdk) {
 }
 ```
 
-Exact factory names follow the current v6 reference (`createFastlane` vs namespace) — verify against [Fastlane docs](https://docs.paypal.ai/payments/methods/cards/fastlane).
+Exact factory names follow the current v6 reference (`createFastlane` vs namespace) — verify against [Fastlane docs](https://developer.paypal.com/fastlane/enable.md).
 
 ## `identity.lookupCustomerByEmail(email)`
 

@@ -3,8 +3,8 @@
   "description": "Migration from PayPal checkout.js v4 Venmo to v6 Venmo payment session",
   "official_docs": {
     "v4_archive": "https://developer.paypal.com/docs/archive/",
-    "v6_venmo": "https://docs.paypal.ai/payments/methods/venmo/",
-    "v6_checkout": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+    "v6_venmo": "https://developer.paypal.com/venmo.md",
+    "v6_checkout": "https://developer.paypal.com/sdk/js/reference.md"
   },
   "v4_pattern": {
     "script_loading": {

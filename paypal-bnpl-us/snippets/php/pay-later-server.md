@@ -2,7 +2,7 @@
 
 Server-side order creation and capture for Pay Later. No special order payload is needed.
 
-Source: https://docs.paypal.ai/reference/api/rest/orders/create-order
+Source: https://developer.paypal.com/api/orders/v2.md
 
 ## PHP Implementation
 

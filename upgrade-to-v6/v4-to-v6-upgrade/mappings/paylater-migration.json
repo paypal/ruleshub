@@ -3,8 +3,8 @@
   "description": "Migration from PayPal checkout.js v4 Pay Later/Credit to v6 PayLater payment session",
   "official_docs": {
     "v4_archive": "https://developer.paypal.com/docs/archive/",
-    "v6_paylater": "https://docs.paypal.ai/payments/methods/pay-later/get-started",
-    "v6_checkout": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+    "v6_paylater": "https://developer.paypal.com/pay-later/integrate.md",
+    "v6_checkout": "https://developer.paypal.com/sdk/js/reference.md"
   },
   "v4_pattern": {
     "script_loading": {

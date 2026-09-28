@@ -1,6 +1,6 @@
 # Agentic commerce / Store Sync — Cart API (cURL + Laravel)
 
-**Store Sync** exposes product catalogs for AI agents; the **Cart API** models carts server-side. Typical flow: **create cart** → buyer approves payment → **complete checkout** (or map the cart to **Orders v2** / **Braintree** per [integration docs](https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/orders-v2-integration)).
+**Store Sync** exposes product catalogs for AI agents; the **Cart API** models carts server-side. Typical flow: **create cart** → buyer approves payment → **complete checkout** (or map the cart to **Orders v2** / **Braintree** per [integration docs](https://developer.paypal.com/store-sync/integrate.md)).
 
 REST bases:
 
@@ -122,7 +122,7 @@ function patch_cart(string $accessToken, string $cartId, array $patchBody, strin
 ## Checkout paths
 
 1. **Orders v2** — map cart totals to **`POST /v2/checkout/orders`** (`multiparty-create-order.md` for platform fees and **`payment_source.paypal.experience_context`**).
-2. **Complete checkout** — call **Complete Checkout** after buyer approval per the current [Complete checkout](https://docs.paypal.ai/reference/api/rest/checkout/complete-checkout) contract.
+2. **Complete checkout** — call **Complete Checkout** after buyer approval per the current [Complete checkout](https://developer.paypal.com/store-sync/integrate.md) contract.
 3. **Braintree** — client token + **`transaction()->sale`** (`braintree-transaction.md`); vault if needed (`braintree-vault.md`).
 
 Keep **one source of truth** for amounts so cart lines match Orders or Braintree payloads.
@@ -163,9 +163,9 @@ class CartApiService
 
 ## References
 
-- [Agentic commerce overview](https://docs.paypal.ai/growth/agentic-commerce/overview)
-- [Store Sync overview](https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview)
-- [Create cart](https://docs.paypal.ai/reference/api/rest/cart-operations/create-cart)
+- [Agentic commerce overview](https://developer.paypal.com/agentic-commerce-services/about.md)
+- [Store Sync overview](https://developer.paypal.com/store-sync/overview.md)
+- [Create cart](https://developer.paypal.com/store-sync/integrate.md)
 
 ## Related snippets
 

@@ -117,7 +117,7 @@ When creating an order, reference the vaulted token per current Orders/Vault doc
 
 ## With purchase / without purchase
 
-- **With purchase:** Card Fields vaulting during checkout — follow [Save cards with purchase (v6)](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault).
-- **Without purchase:** [Save cards without purchase](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault-no-purchase).
+- **With purchase:** Card Fields vaulting during checkout — follow [Save cards with purchase (v6)](https://developer.paypal.com/sdk/js/reference.md).
+- **Without purchase:** [Save cards without purchase](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md).
 
 Server-side, you still use **`HttpClient`** against **`ApiBaseUrl`** and OAuth **Bearer** tokens.

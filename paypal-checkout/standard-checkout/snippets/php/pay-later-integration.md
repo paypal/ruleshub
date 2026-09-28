@@ -72,7 +72,7 @@ Load v6 core (sandbox vs live per environment), then include the Pay Later compo
 </script>
 ```
 
-Exact component names and session APIs follow the [JS SDK v6 Pay Later](https://docs.paypal.ai/) documentation for your SDK version.
+Exact component names and session APIs follow the [JS SDK v6 Pay Later](https://developer.paypal.com) documentation for your SDK version.
 
 ## Server-side
 

@@ -434,7 +434,7 @@ async function setupPayPalButton(
 
 ## Official Documentation
 
-- **PayPal v6 SDK Guide**: [docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
-- **Client Token Generation**: [docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- **PayPal v6 SDK Guide**: [developer.paypal.com](https://developer.paypal.com/sdk/js/reference.md)
+- **Client Token Generation**: [developer.paypal.com](https://developer.paypal.com/sdk/js/reference.md)
 - **SDK Components**: [GitHub - v6 Components Types](https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6/components)  
 

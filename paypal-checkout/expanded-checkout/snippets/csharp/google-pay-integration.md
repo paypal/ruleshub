@@ -74,5 +74,5 @@ Production: `https://www.paypal.com/web-sdk/v6/core`
 
 ## References
 
-- [Google Pay with JS SDK v6](https://docs.paypal.ai/payments/methods/digital-wallets/google-pay)
+- [Google Pay with JS SDK v6](https://developer.paypal.com/platforms/checkout/apm/google-pay.md)
 - [Google Pay (developer.paypal.com)](https://developer.paypal.com/docs/checkout/apm/google-pay/)

@@ -2,16 +2,16 @@
   "operation": "Agentic Commerce / Store Sync",
   "description": "AI agent-driven product discovery, cart creation, and checkout via Store Sync and Cart Operations API",
   "documentation": {
-    "overview": "https://docs.paypal.ai/growth/agentic-commerce/overview",
-    "agent_ready": "https://docs.paypal.ai/growth/agentic-commerce/agent-ready",
-    "store_sync_overview": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview",
-    "product_catalog": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/create-a-product-catalog",
-    "api_overview": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/api-overview",
-    "integration_use_cases": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/integration-use-cases",
-    "orders_v2_setup": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/orders-v2-integration",
-    "braintree_setup": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/braintree-integration",
-    "response_handling": "https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/response-handling",
-    "paypal_ai_site": "https://www.paypal.ai/"
+    "overview": "https://developer.paypal.com/agentic-commerce-services/about.md",
+    "agent_ready": "https://developer.paypal.com/agent-ready/overview.md",
+    "store_sync_overview": "https://developer.paypal.com/store-sync/overview.md",
+    "product_catalog": "https://developer.paypal.com/store-sync/create-catalog.md",
+    "api_overview": "https://developer.paypal.com/store-sync/integrate.md",
+    "integration_use_cases": "https://developer.paypal.com/api/store-sync/use-cases.md",
+    "orders_v2_setup": "https://developer.paypal.com/store-sync/integrate.md",
+    "braintree_setup": "https://developer.paypal.com/store-sync/integrate.md",
+    "response_handling": "https://developer.paypal.com/store-sync/integrate.md#error-handling",
+    "paypal_ai_site": "https://developer.paypal.com/agentic-commerce-services/about.md"
   },
   "store_sync": {
     "description": "Sync your product catalog so AI agents can discover and recommend products",

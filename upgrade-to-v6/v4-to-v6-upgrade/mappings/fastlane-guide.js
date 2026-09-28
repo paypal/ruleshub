@@ -1,7 +1,7 @@
 /**
  * PayPal Fastlane Integration Guide (v6 SDK)
  * Accelerated guest checkout for returning customers
- * Based on: https://docs.paypal.ai/payments/methods/cards/fastlane
+ * Based on: https://developer.paypal.com/fastlane/enable.md
  * 
  * IMPORTANT: Fastlane in v6 SDK uses createInstance() with CLIENT TOKEN
  * This is different from v4 which uses script tag and Client ID in frontend
@@ -1174,8 +1174,8 @@ Order created: ORDER_ID
 
 ## Additional Resources
 
-- [Official v6 Fastlane Documentation](https://docs.paypal.ai/payments/methods/cards/fastlane)
-- [v6 SDK Documentation](https://docs.paypal.ai/payments)
+- [Official v6 Fastlane Documentation](https://developer.paypal.com/fastlane/enable.md)
+- [v6 SDK Documentation](https://developer.paypal.com/payments.md)
 - [PayPal Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 - [Sandbox Card Testing](https://developer.paypal.com/tools/sandbox/card-testing/)
 - [v4 Archive Documentation](https://developer.paypal.com/docs/archive/checkout/how-to/customize-button/)

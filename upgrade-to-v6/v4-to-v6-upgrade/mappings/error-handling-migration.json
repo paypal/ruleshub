@@ -3,7 +3,7 @@
   "description": "Migration from v4 error handling patterns to v6 enhanced error handling",
   "official_docs": {
     "v4_archive": "https://developer.paypal.com/docs/archive/",
-    "v6_docs": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+    "v6_docs": "https://developer.paypal.com/sdk/js/reference.md"
   },
   "v4_error_handling": {
     "callback": {

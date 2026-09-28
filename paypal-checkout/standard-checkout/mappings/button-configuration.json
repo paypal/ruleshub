@@ -110,6 +110,6 @@
   },
   "customization_docs": {
     "v5": "https://developer.paypal.com/docs/checkout/standard/customize/",
-    "v6": "https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout"
+    "v6": "https://developer.paypal.com/sdk/js/reference.md"
   }
 }

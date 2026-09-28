@@ -37,7 +37,7 @@ If you use v5, load the SDK with **`components=buttons,card-fields,fastlane`** (
 
 ## Documentation
 
-- [Fastlane (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/cards/fastlane)
+- [Fastlane (developer.paypal.com)](https://developer.paypal.com/fastlane/enable.md)
 - [Fastlane Studio](https://developer.paypal.com/studio/checkout/fastlane)
 
 ## Notes

@@ -26,7 +26,7 @@ def create_cart(access_token:, payload:)
 end
 ```
 
-Shape **`payload`** per the current [Cart API](https://developer.paypal.com/docs/api/cart/) / [create cart](https://docs.paypal.ai/reference/api/rest/cart-operations/create-cart) reference (items, payee, experience context, etc.).
+Shape **`payload`** per the current [Cart API](https://developer.paypal.com/docs/api/cart/) / [create cart](https://developer.paypal.com/store-sync/integrate.md) reference (items, payee, experience context, etc.).
 
 ## `GET /v2/cart/{cart_id}` — details
 
@@ -62,7 +62,7 @@ end
 ## Checkout completion
 
 1. **Orders v2** — map cart totals to **`POST /v2/checkout/orders`** (`multiparty-create-order.md` for platform fees and **`payment_source.paypal.experience_context`**).
-2. **Complete Checkout** — call the [Complete checkout](https://docs.paypal.ai/reference/api/rest/checkout/complete-checkout) endpoint per your approved flow after buyer consent.
+2. **Complete Checkout** — call the [Complete checkout](https://developer.paypal.com/store-sync/integrate.md) endpoint per your approved flow after buyer consent.
 3. **Braintree** — if checkout is card/Drop-in: tokenize client-side, then **`gateway.transaction.sale`** (`braintree-transaction.md`).
 
 Keep **one source of truth** for line items and amounts across cart, order, and capture.

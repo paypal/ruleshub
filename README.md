@@ -330,8 +330,8 @@ Help improve RulesHub by:
 
 - **API Documentation**: Links to official platform documentation
   - [PayPal REST APIs](https://developer.paypal.com/api/rest/)
-  - [PayPal v6 Web SDK](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
-  - [PayPal Vault/Save Payments](https://docs.paypal.ai/payments/save/sdk/paypal/js-sdk-v6-vault)
+  - [PayPal v6 Web SDK](https://developer.paypal.com/sdk/js/reference.md)
+  - [PayPal Vault/Save Payments](https://developer.paypal.com/sdk/js/reference.md)
 - **Upgrade Guides**: Platform-specific upgrade resources
 - **Community Support**: Developer community forums and support
 - **Best Practices**: Industry-standard implementation patterns

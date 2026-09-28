@@ -3,8 +3,8 @@
   "description": "Migration from PayPal checkout.js v4 vault to v6 save payment session",
   "official_docs": {
     "v4_archive": "https://developer.paypal.com/docs/archive/",
-    "v6_vault": "https://docs.paypal.ai/payments/save/sdk/paypal/js-sdk-v6-vault",
-    "v6_vault_api": "https://docs.paypal.ai/api/payment-tokens/v3/"
+    "v6_vault": "https://developer.paypal.com/sdk/js/reference.md",
+    "v6_vault_api": "https://developer.paypal.com/api/payment-tokens/v3.md"
   },
   "v4_pattern": {
     "button_configuration": {

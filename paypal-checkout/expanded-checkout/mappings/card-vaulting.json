@@ -2,9 +2,9 @@
   "operation": "Card Vaulting (Save Cards)",
   "description": "Save cards for future payments using Vault API v3 — with or without an initial purchase",
   "documentation": {
-    "with_purchase": "https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault",
-    "without_purchase": "https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault-no-purchase",
-    "vault_api": "https://docs.paypal.ai/payments/save/api/vault-api-integration"
+    "with_purchase": "https://developer.paypal.com/sdk/js/reference.md",
+    "without_purchase": "https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md",
+    "vault_api": "https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md"
   },
   "with_purchase": {
     "description": "Save a card while processing a payment — buyer pays and card is vaulted simultaneously",

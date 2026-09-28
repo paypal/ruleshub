@@ -83,7 +83,7 @@ def patch_cart(access_token: str, cart_id: str, patch_body: dict) -> dict:
 ## Store Sync + checkout paths
 
 1. **Orders v2** — map cart totals to **`POST /v2/checkout/orders`** (`multiparty-create-order.md` for platform fees and **`payment_source.paypal.experience_context`**).
-2. **Complete checkout** — call **Complete Checkout** after buyer approval per [Complete checkout](https://docs.paypal.ai/reference/api/rest/checkout/complete-checkout) and the current API contract.
+2. **Complete checkout** — call **Complete Checkout** after buyer approval per [Complete checkout](https://developer.paypal.com/store-sync/integrate.md) and the current API contract.
 3. **Braintree** — client tokenize, then **`gateway.transaction.sale`** (`braintree-transaction.md`); vault if needed (`braintree-vault.md`).
 
 Keep **one source of truth** for amounts so cart lines match Orders or Braintree payloads.
@@ -94,5 +94,5 @@ Agents use **Store Sync** catalog surfaces and merchant-configured agentic flows
 
 ## References
 
-- [Agentic commerce overview](https://docs.paypal.ai/growth/agentic-commerce/overview)
-- [Store Sync overview](https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview)
+- [Agentic commerce overview](https://developer.paypal.com/agentic-commerce-services/about.md)
+- [Store Sync overview](https://developer.paypal.com/store-sync/overview.md)

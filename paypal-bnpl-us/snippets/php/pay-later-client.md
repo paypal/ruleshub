@@ -15,7 +15,7 @@ $paypalEnv = getenv('PAYPAL_ENVIRONMENT') ?: 'sandbox';
 
 ## v6 — Pay Later buttons (checkout_paylater.php)
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
+Source: https://developer.paypal.com/sdk/js/set-up.md
 
 ```php
 <!doctype html>
@@ -97,7 +97,7 @@ Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
 
 ## v6 — Pay Later messaging (product_paylater.php)
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started
+Source: https://developer.paypal.com/pay-later/integrate.md
 
 ```php
 <!doctype html>

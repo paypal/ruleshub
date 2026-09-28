@@ -19,7 +19,7 @@ After `createInstance` with `card-fields`:
 ```javascript
 /**
  * Pseudocode — align field/method names with current JS SDK v6 Card Fields docs:
- * https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time
+ * https://developer.paypal.com/expanded/card-fields.md
  */
 async function mountCardFields(sdkInstance, selectors) {
   const card = await sdkInstance.CardFields({

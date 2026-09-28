@@ -105,5 +105,5 @@ if ($response->failed()) {
 
 ## Related docs
 
-- [Handling payment failures](https://docs.paypal.ai/developer/how-to/api/troubleshooting/handling-payment-failures-with-paypal)
-- [Common errors overview](https://docs.paypal.ai/developer/how-to/api/troubleshooting/common-errors/overview)
+- [Handling payment failures](https://developer.paypal.com/api/handle-payment-failures.md)
+- [Common errors overview](https://developer.paypal.com/api/errors/overview.md)

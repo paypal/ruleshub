@@ -117,5 +117,5 @@ Map **`vault_id`** from your user’s stored PayPal payment token (never from un
 
 ## References
 
-- [Save cards with purchase (v6)](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
-- [Vault API](https://docs.paypal.ai/payments/save/api/vault-api-integration)
+- [Save cards with purchase (v6)](https://developer.paypal.com/sdk/js/reference.md)
+- [Vault API](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md)

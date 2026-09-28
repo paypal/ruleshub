@@ -59,7 +59,7 @@ async function mountCardFields(sdk, { currencyCode }) {
 }
 ```
 
-> **Note:** Exact v6 method names (`CardFields`, `render` field names) follow [JS SDK v6 Card Fields](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time). Adjust to your SDK version.
+> **Note:** Exact v6 method names (`CardFields`, `render` field names) follow [JS SDK v6 Card Fields](https://developer.paypal.com/expanded/card-fields.md). Adjust to your SDK version.
 
 ---
 

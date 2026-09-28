@@ -32,7 +32,7 @@ payment_source: {
 
 ## v6 SDK
 
-Card Fields integration triggers 3DS **automatically** when required — avoid building custom redirects unless you use APIs that explicitly require them. Follow the current [3DS with JS SDK v6](https://docs.paypal.ai/payments/methods/cards/3ds) documentation.
+Card Fields integration triggers 3DS **automatically** when required — avoid building custom redirects unless you use APIs that explicitly require them. Follow the current [3DS with JS SDK v6](https://developer.paypal.com/expanded/3d-secure.md) documentation.
 
 ## Capture response — `authentication_result`
 

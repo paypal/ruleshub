@@ -38,7 +38,7 @@ async function initGooglePay() {
 }
 ```
 
-See [Google Pay with JS SDK v6](https://docs.paypal.ai/payments/methods/digital-wallets/google-pay) for `googlePayConfig`, environment (`TEST`/`PRODUCTION`), and button rendering.
+See [Google Pay with JS SDK v6](https://developer.paypal.com/platforms/checkout/apm/google-pay.md) for `googlePayConfig`, environment (`TEST`/`PRODUCTION`), and button rendering.
 
 ---
 

@@ -1,7 +1,7 @@
 /**
  * PayPal Card Fields Integration Guide (v6 SDK)
  * Card payments with hosted, PCI-compliant input fields
- * Based on: https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time
+ * Based on: https://developer.paypal.com/expanded/card-fields.md
  */
 
 const CARD_FIELDS_GUIDE = `
@@ -1039,9 +1039,9 @@ v4 checkout.js did NOT have Card Fields. This is entirely new in v6.
 
 ## Resources
 
-- [Official v6 Card Fields Documentation](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time)
-- [v6 Card Vaulting Guide](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
-- [3D Secure Documentation](https://docs.paypal.ai/payments/methods/cards/3ds)
+- [Official v6 Card Fields Documentation](https://developer.paypal.com/expanded/card-fields.md)
+- [v6 Card Vaulting Guide](https://developer.paypal.com/sdk/js/reference.md)
+- [3D Secure Documentation](https://developer.paypal.com/expanded/3d-secure.md)
 - [PayPal Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 - [Sandbox Card Testing](https://developer.paypal.com/tools/sandbox/card-testing/)
 

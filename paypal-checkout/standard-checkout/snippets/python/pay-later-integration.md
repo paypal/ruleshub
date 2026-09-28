@@ -29,7 +29,7 @@ if (eligible.isEligible("paylater")) {
 }
 ```
 
-Exact method names depend on the SDK minor version — verify against [PayPal v6 Pay Later docs](https://docs.paypal.ai/) for your release.
+Exact method names depend on the SDK minor version — verify against [PayPal v6 Pay Later docs](https://developer.paypal.com) for your release.
 
 ## v5 pattern
 

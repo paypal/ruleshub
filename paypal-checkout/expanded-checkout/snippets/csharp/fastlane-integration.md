@@ -43,5 +43,5 @@
 
 ## References
 
-- [Fastlane (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/cards/fastlane)
+- [Fastlane (developer.paypal.com)](https://developer.paypal.com/fastlane/enable.md)
 - [Fastlane studio](https://developer.paypal.com/studio/checkout/fastlane)

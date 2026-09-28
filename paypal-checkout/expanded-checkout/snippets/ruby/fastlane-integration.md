@@ -40,7 +40,7 @@ async function initFastlane() {
 }
 ```
 
-> **Note:** Replace the placeholder with the exact API from [Fastlane integration](https://docs.paypal.ai/payments/methods/cards/fastlane) / [Studio Fastlane](https://developer.paypal.com/studio/checkout/fastlane) for your SDK version.
+> **Note:** Replace the placeholder with the exact API from [Fastlane integration](https://developer.paypal.com/fastlane/enable.md) / [Studio Fastlane](https://developer.paypal.com/studio/checkout/fastlane) for your SDK version.
 
 ---
 

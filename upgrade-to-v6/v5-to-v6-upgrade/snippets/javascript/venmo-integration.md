@@ -695,7 +695,7 @@ Remember: Venmo is essentially a PayPal payment method with additional eligibili
 
 ## Official Documentation
 
-- **Venmo Integration Guide**: [docs.paypal.ai/payments/methods/venmo/integrate](https://docs.paypal.ai/payments/methods/venmo/integrate)
-- **PayPal v6 SDK Documentation**: [docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- **Venmo Integration Guide**: [developer.paypal.com](https://developer.paypal.com/venmo.md)
+- **PayPal v6 SDK Documentation**: [developer.paypal.com](https://developer.paypal.com/sdk/js/reference.md)
 - **Eligibility Methods**: [GitHub - find-eligible-methods.d.ts](https://github.com/paypal/paypal-js/blob/main/packages/paypal-js/types/v6/components/find-eligible-methods.d.ts)
 ````

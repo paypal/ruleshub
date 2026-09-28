@@ -74,6 +74,6 @@
   ],
   "documentation": {
     "overview": "https://developer.paypal.com/docs/checkout/pay-with-venmo/",
-    "ai_docs": "https://docs.paypal.ai/payments/methods/venmo/integrate"
+    "ai_docs": "https://developer.paypal.com/venmo.md"
   }
 }

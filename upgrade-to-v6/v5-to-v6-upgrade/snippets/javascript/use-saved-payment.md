@@ -1,6 +1,6 @@
 # Using Saved Payment Methods with PayPal v6
 
-**Official Documentation**: https://docs.paypal.ai/payments/methods/paypal/api/one-time/orders-api-integration
+**Official Documentation**: https://developer.paypal.com/checkout/integrate.md
 
 ## Overview
 

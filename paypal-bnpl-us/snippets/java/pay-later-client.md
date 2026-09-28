@@ -36,7 +36,7 @@ public class CheckoutController {
 
 ## v6 — Pay Later buttons (templates/checkout_paylater.html)
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
+Source: https://developer.paypal.com/sdk/js/set-up.md
 
 ```html
 <!doctype html>
@@ -117,7 +117,7 @@ Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
 
 ## v6 — Pay Later messaging (templates/product_paylater.html)
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started
+Source: https://developer.paypal.com/pay-later/integrate.md
 
 ```html
 <!doctype html>

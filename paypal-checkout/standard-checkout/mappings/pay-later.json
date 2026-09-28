@@ -80,7 +80,7 @@
   ],
   "documentation": {
     "overview": "https://developer.paypal.com/docs/checkout/pay-later/us/",
-    "ai_docs": "https://docs.paypal.ai/payments/methods/pay-later/overview",
-    "get_started": "https://docs.paypal.ai/payments/methods/pay-later/get-started"
+    "ai_docs": "https://developer.paypal.com/pay-later/overview.md",
+    "get_started": "https://developer.paypal.com/pay-later/integrate.md"
   }
 }

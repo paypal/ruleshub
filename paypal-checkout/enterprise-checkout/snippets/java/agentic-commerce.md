@@ -59,7 +59,7 @@ public class PayPalCartClient {
   }
 ```
 
-Shape **`cartPayload`** per the current Cart API schema (intent, items, payee, experience context, etc.) in the [developer reference](https://docs.paypal.ai/reference/api/rest/cart-operations/create-cart).
+Shape **`cartPayload`** per the current Cart API schema (intent, items, payee, experience context, etc.) in the [developer reference](https://developer.paypal.com/store-sync/integrate.md).
 
 ## `GET /v2/cart/{cart_id}` — details
 
@@ -116,7 +116,7 @@ Shape **`cartPayload`** per the current Cart API schema (intent, items, payee, e
 ## Convert cart to order / complete checkout
 
 1. **Orders v2 path** — map cart totals to **`POST /v2/checkout/orders`** (`multiparty-create-order.md` for platform fees and **`experience_context`**).
-2. **Complete Checkout** — call **Complete Checkout** after buyer approval per the current API contract ([reference](https://docs.paypal.ai/reference/api/rest/checkout/complete-checkout)).
+2. **Complete Checkout** — call **Complete Checkout** after buyer approval per the current API contract ([reference](https://developer.paypal.com/store-sync/integrate.md)).
 3. **Braintree path** — tokenize on client, then **`gateway.transaction().sale`** (`braintree-transaction.md`); vault if needed (`braintree-vault.md`).
 
 Keep **one source of truth** for amounts across cart, Orders, and Braintree to avoid reconciliation errors.

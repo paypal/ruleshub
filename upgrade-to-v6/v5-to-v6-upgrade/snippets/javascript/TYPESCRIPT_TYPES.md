@@ -504,6 +504,6 @@ function validateSetupTokenCreation(result: any): asserts result is { setupToken
 ## References
 
 - **Official Types**: https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6
-- **PayPal Documentation**: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- **PayPal Documentation**: https://developer.paypal.com/sdk/js/reference.md
 - **npm Package**: https://www.npmjs.com/package/@paypal/paypal-js
 

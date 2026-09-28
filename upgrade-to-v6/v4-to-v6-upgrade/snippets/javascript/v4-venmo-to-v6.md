@@ -2,8 +2,8 @@
 
 **Official Documentation**:  
 - v4 Archive: https://developer.paypal.com/docs/archive/  
-- v6 Venmo: https://docs.paypal.ai/payments/methods/venmo/  
-- v6 Checkout: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- v6 Venmo: https://developer.paypal.com/venmo.md  
+- v6 Checkout: https://developer.paypal.com/sdk/js/reference.md
 
 ## Overview
 
@@ -473,7 +473,7 @@ if (eligibleMethods.isEligible("paypal")) {
 ## References
 
 - **v4 Archive**: https://developer.paypal.com/docs/archive/
-- **v6 Venmo Docs**: https://docs.paypal.ai/payments/methods/venmo/
-- **v6 Checkout**: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- **v6 Venmo Docs**: https://developer.paypal.com/venmo.md
+- **v6 Checkout**: https://developer.paypal.com/sdk/js/reference.md
 - **TypeScript Types**: https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6
 

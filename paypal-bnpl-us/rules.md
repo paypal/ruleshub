@@ -9,10 +9,10 @@ This rules file provides comprehensive guidance for AI assistants helping develo
 
 **Official Documentation**:
 - Pay Later Overview: https://developer.paypal.com/docs/checkout/pay-later/us/
-- AI-optimized docs: https://docs.paypal.ai/payments/methods/pay-later/overview
-- Pay Later Messaging (v6): https://docs.paypal.ai/payments/methods/pay-later/get-started
-- Pay Later Messaging Upgrade (v5 to v6): https://docs.paypal.ai/payments/methods/pay-later/upgrade
-- JS SDK v6 Setup: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- AI-optimized docs: https://developer.paypal.com/pay-later/overview.md
+- Pay Later Messaging (v6): https://developer.paypal.com/pay-later/integrate.md
+- Pay Later Messaging Upgrade (v5 to v6): https://developer.paypal.com/pay-later/upgrade.md
+- JS SDK v6 Setup: https://developer.paypal.com/sdk/js/reference.md
 - JS SDK v5 Configuration: https://developer.paypal.com/sdk/js/configuration/
 - Orders API v2: https://developer.paypal.com/docs/api/orders/v2/
 
@@ -295,11 +295,11 @@ PAYPAL_ENVIRONMENT=sandbox  # or 'production'
 
 ### Documentation Links
 - [Pay Later Overview](https://developer.paypal.com/docs/checkout/pay-later/us/)
-- [AI-optimized Pay Later Docs](https://docs.paypal.ai/payments/methods/pay-later/overview)
-- [Pay Later Messaging (v6)](https://docs.paypal.ai/payments/methods/pay-later/get-started)
-- [Pay Later Messaging Upgrade](https://docs.paypal.ai/payments/methods/pay-later/upgrade)
-- [Pay Later Analytics](https://docs.paypal.ai/payments/methods/pay-later/analytics)
-- [JS SDK v6 Setup](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- [AI-optimized Pay Later Docs](https://developer.paypal.com/pay-later/overview.md)
+- [Pay Later Messaging (v6)](https://developer.paypal.com/pay-later/integrate.md)
+- [Pay Later Messaging Upgrade](https://developer.paypal.com/pay-later/upgrade.md)
+- [Pay Later Analytics](https://developer.paypal.com/pay-later/reference.md)
+- [JS SDK v6 Setup](https://developer.paypal.com/sdk/js/reference.md)
 - [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 
 ## AI Assistant Behavior

@@ -38,7 +38,7 @@ async function loadExpandedCheckoutV6() {
 }
 ```
 
-You may also pass **`clientId`** alongside **`clientToken`** if your integration requires it — see [JS SDK v6 configuration](https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration).
+You may also pass **`clientId`** alongside **`clientToken`** if your integration requires it — see [JS SDK v6 configuration](https://developer.paypal.com/sdk/js/set-up.md).
 
 ## v5 — Script tag with `card-fields`
 

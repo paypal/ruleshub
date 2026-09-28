@@ -2,7 +2,7 @@
   "operation": "Fastlane",
   "description": "Fastlane accelerated guest checkout — recognizes returning buyers for one-click card payments",
   "documentation": {
-    "docs_paypal_ai": "https://docs.paypal.ai/payments/methods/cards/fastlane",
+    "docs_paypal_ai": "https://developer.paypal.com/fastlane/enable.md",
     "developer_paypal": "https://developer.paypal.com/studio/checkout/fastlane"
   },
   "v6_pattern": {

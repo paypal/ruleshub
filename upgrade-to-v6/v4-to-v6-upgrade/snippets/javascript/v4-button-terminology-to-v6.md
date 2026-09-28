@@ -827,6 +827,6 @@ onApprove: async (data) => {
 6. **No label customization in v6** - PayPal controls button appearance
 
 **Official Documentation:**
-- [PayPal v6 SDK Documentation](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- [PayPal v6 SDK Documentation](https://developer.paypal.com/sdk/js/reference.md)
 - [PayPal v4 to v6 Migration Guide](https://developer.paypal.com/docs/checkout/standard/upgrade-integration/)
 

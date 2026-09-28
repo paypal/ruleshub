@@ -74,7 +74,7 @@ $isSandbox = ($_ENV['PAYPAL_ENVIRONMENT'] ?? getenv('PAYPAL_ENVIRONMENT')) !== '
 </html>
 ```
 
-If you use **browser-safe client tokens** for v6, fetch `/paypal-api/auth/browser-safe-client-token` first and pass the token into `createInstance` per current [JS SDK v6 configuration](https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration).
+If you use **browser-safe client tokens** for v6, fetch `/paypal-api/auth/browser-safe-client-token` first and pass the token into `createInstance` per current [JS SDK v6 configuration](https://developer.paypal.com/sdk/js/set-up.md).
 
 ## JS SDK v5 — `paypal.Buttons`
 

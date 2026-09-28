@@ -16,8 +16,8 @@ Plus: **Agentic Commerce / Store Sync** — AI agent-driven product discovery, c
 - Enterprise (Braintree): https://developer.paypal.com/braintree/docs/
 - Braintree GraphQL API: https://graphql.braintreepayments.com/
 - Multiparty: https://developer.paypal.com/docs/multiparty/
-- Agentic Commerce: https://docs.paypal.ai/growth/agentic-commerce/overview
-- Store Sync: https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview
+- Agentic Commerce: https://developer.paypal.com/agentic-commerce-services/about.md
+- Store Sync: https://developer.paypal.com/store-sync/overview.md
 - Orders API v2: https://developer.paypal.com/docs/api/orders/v2/
 
 ## AI Assistant Capabilities
@@ -164,8 +164,8 @@ Rules:
 
 ### Store Sync
 - Sync product catalog for AI agent discovery
-- Orders v2 integration: https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/orders-v2-integration
-- Braintree integration: https://docs.paypal.ai/growth/agentic-commerce/store-sync/your-api/set-up-your-api/braintree-integration
+- Orders v2 integration: https://developer.paypal.com/store-sync/integrate.md
+- Braintree integration: https://developer.paypal.com/store-sync/integrate.md
 
 ## Operational Mapping Rules
 
@@ -300,8 +300,8 @@ PAYPAL_WEBHOOK_ID=your_webhook_id
 - [Braintree Fraud Tools](https://developer.paypal.com/braintree/docs/guides/premium-fraud-management-tools/)
 - [Multiparty](https://developer.paypal.com/docs/multiparty/)
 - [Seller Onboarding](https://developer.paypal.com/docs/multiparty/seller-onboarding/)
-- [Agentic Commerce](https://docs.paypal.ai/growth/agentic-commerce/overview)
-- [Store Sync](https://docs.paypal.ai/growth/agentic-commerce/store-sync/overview)
+- [Agentic Commerce](https://developer.paypal.com/agentic-commerce-services/about.md)
+- [Store Sync](https://developer.paypal.com/store-sync/overview.md)
 - [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 
 ## Testing

@@ -23,7 +23,7 @@ end
 
 ## v6 — Pay Later buttons (views/checkout_paylater.erb)
 
-Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
+Source: https://developer.paypal.com/sdk/js/set-up.md
 
 ```erb
 <!doctype html>
@@ -105,7 +105,7 @@ Source: https://docs.paypal.ai/developer/how-to/sdk/js/v6/configuration
 
 ## v6 — Pay Later messaging (views/product_paylater.erb)
 
-Source: https://docs.paypal.ai/payments/methods/pay-later/get-started
+Source: https://developer.paypal.com/pay-later/integrate.md
 
 ```erb
 <!doctype html>

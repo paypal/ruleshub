@@ -1,7 +1,7 @@
 {
   "operation": "PayLater and PayPal Credit Integration",
   "description": "Migration from v5 PayLater/Credit to v6 dedicated payment sessions",
-  "official_docs": "https://docs.paypal.ai/payments/methods/pay-later/get-started",
+  "official_docs": "https://developer.paypal.com/pay-later/integrate.md",
   "v5_pattern": {
     "initialization": "paypal.Buttons({ fundingSource: paypal.FUNDING.PAYLATER })",
     "funding_detection": "paypal.FUNDING.PAYLATER, paypal.FUNDING.CREDIT",

@@ -9,14 +9,14 @@ This rules file provides comprehensive guidance for AI assistants helping develo
 
 **Official TypeScript Definitions**: https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6  
 **Official Documentation**: 
-- PayPal Checkout: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
-- Card Fields: https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time
-- Card Vaulting: https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault
-- 3D Secure (3DS): https://docs.paypal.ai/payments/methods/cards/3ds
-- Fastlane: https://docs.paypal.ai/payments/methods/cards/fastlane
-- Pay Later: https://docs.paypal.ai/payments/methods/pay-later/get-started
-- Save Payments/Vault: https://docs.paypal.ai/payments/save/sdk/paypal/js-sdk-v6-vault
-- Venmo Payments: https://docs.paypal.ai/payments/methods/venmo/
+- PayPal Checkout: https://developer.paypal.com/sdk/js/reference.md
+- Card Fields: https://developer.paypal.com/expanded/card-fields.md
+- Card Vaulting: https://developer.paypal.com/sdk/js/reference.md
+- 3D Secure (3DS): https://developer.paypal.com/expanded/3d-secure.md
+- Fastlane: https://developer.paypal.com/fastlane/enable.md
+- Pay Later: https://developer.paypal.com/pay-later/integrate.md
+- Save Payments/Vault: https://developer.paypal.com/sdk/js/reference.md
+- Venmo Payments: https://developer.paypal.com/venmo.md
 
 ## AI Assistant Capabilities
 
@@ -602,12 +602,12 @@ Automatically suggest upgrade when detecting:
 
 ### Documentation Links
 
-- [PayPal v6 Web SDK Documentation](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- [PayPal v6 Web SDK Documentation](https://developer.paypal.com/sdk/js/reference.md)
 - [PayPal v6 TypeScript Definitions](https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6)
 - [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/)
-- [PayPal Orders API v2](https://docs.paypal.ai/payments/methods/paypal/api/one-time/orders-api-integration)
-- [PayPal Vault API v3](https://docs.paypal.ai/api/payment-tokens/v3/)
-- [PayPal REST API Reference](https://docs.paypal.ai/payments/methods/paypal/)
+- [PayPal Orders API v2](https://developer.paypal.com/checkout/integrate.md)
+- [PayPal Vault API v3](https://developer.paypal.com/api/payment-tokens/v3.md)
+- [PayPal REST API Reference](https://developer.paypal.com/checkout.md)
 
 ## Framework and Integration Support Status
 

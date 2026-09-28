@@ -1,7 +1,7 @@
 /**
  * PayPal 3D Secure (3DS) Integration Guide for v6 SDK
  * Strong Customer Authentication (SCA) for card payments
- * Based on: https://docs.paypal.ai/payments/methods/cards/3ds
+ * Based on: https://developer.paypal.com/expanded/3d-secure.md
  */
 
 const THREE_DS_GUIDE = `
@@ -1037,10 +1037,10 @@ payment_source: {
 
 ## Additional Resources
 
-- [Official 3DS Documentation](https://docs.paypal.ai/payments/methods/cards/3ds)
+- [Official 3DS Documentation](https://developer.paypal.com/expanded/3d-secure.md)
 - [PSD2 and SCA Compliance Guide](https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/sca/)
 - [3DS Test Cards](https://developer.paypal.com/tools/sandbox/card-testing/)
-- [v6 Card Fields Integration](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time)
+- [v6 Card Fields Integration](https://developer.paypal.com/expanded/card-fields.md)
 - [PayPal Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 - [PayPal Vault API v3](https://developer.paypal.com/docs/api/vault/v3/)
 

@@ -4,7 +4,7 @@ Pay Later (Pay in 4 / messaging) availability depends on **buyer eligibility**, 
 
 ## JS SDK v6 — `createPayLaterOneTimePaymentSession()`
 
-After `createInstance`, use the Pay Later session API (names may align with your SDK version; consult current [docs.paypal.ai](https://docs.paypal.ai/) Pay Later integration for exact method names).
+After `createInstance`, use the Pay Later session API (names may align with your SDK version; consult current [developer.paypal.com](https://developer.paypal.com) Pay Later integration for exact method names).
 
 ```javascript
 async function setupPayLater(sdkInstance, { currencyCode, orderId }) {

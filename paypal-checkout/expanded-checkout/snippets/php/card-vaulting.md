@@ -160,7 +160,7 @@ class PayPalVaultController extends Controller
 
 ## References
 
-- [Vault API integration (docs.paypal.ai)](https://docs.paypal.ai/payments/save/api/vault-api-integration)
-- [Save cards with purchase (JS SDK v6)](https://docs.paypal.ai/payments/save/sdk/cards/js-sdk-v6-vault)
+- [Vault API integration (developer.paypal.com)](https://developer.paypal.com/api/save-with-purchase/save-payment-methods.md)
+- [Save cards with purchase (JS SDK v6)](https://developer.paypal.com/sdk/js/reference.md)
 
 Payload fields (`store_in_vault`, `usage_type`, etc.) must match **current** Vault v3 schemas for your product and region.

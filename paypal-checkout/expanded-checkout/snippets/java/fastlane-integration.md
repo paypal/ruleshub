@@ -73,4 +73,4 @@ Replace with the exact property name PayPal documents for your SDK version.
 ## References
 
 - [Fastlane — developer.paypal.com](https://developer.paypal.com/studio/checkout/fastlane)
-- [Fastlane — docs.paypal.ai](https://docs.paypal.ai/payments/methods/cards/fastlane)
+- [Fastlane — developer.paypal.com](https://developer.paypal.com/fastlane/enable.md)

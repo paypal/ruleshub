@@ -13,7 +13,7 @@ Server endpoints stay the same: create order → buyer approves / 3DS as needed 
 
 ## v6 — Card payment session and render into containers
 
-Patterns follow [JS SDK v6 Card Fields](https://docs.paypal.ai/payments/methods/cards/js-sdk-v6-card-fields-one-time). Exact method names may match the current `card-fields` component API — align with the latest reference when you wire production code.
+Patterns follow [JS SDK v6 Card Fields](https://developer.paypal.com/expanded/card-fields.md). Exact method names may match the current `card-fields` component API — align with the latest reference when you wire production code.
 
 ```javascript
 /**

@@ -1,7 +1,7 @@
 # PayPal checkout.js v4 to v6 - Basic Migration
 
 **Official v4 Archive**: https://developer.paypal.com/docs/archive/  
-**Official v6 Documentation**: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+**Official v6 Documentation**: https://developer.paypal.com/sdk/js/reference.md
 
 ## Migration Overview
 
@@ -685,7 +685,7 @@ After basic migration:
 ## References
 
 - **v4 Archive**: https://developer.paypal.com/docs/archive/
-- **v6 Documentation**: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- **v6 Documentation**: https://developer.paypal.com/sdk/js/reference.md
 - **TypeScript Types**: https://github.com/paypal/paypal-js/tree/main/packages/paypal-js/types/v6
-- **Orders API**: https://docs.paypal.ai/payments/methods/paypal/api/one-time/orders-api-integration
+- **Orders API**: https://developer.paypal.com/checkout/integrate.md
 

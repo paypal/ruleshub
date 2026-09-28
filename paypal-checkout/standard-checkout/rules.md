@@ -10,8 +10,8 @@ This rules file provides comprehensive guidance for AI assistants helping develo
 **Official Documentation**:
 - Standard Checkout: https://developer.paypal.com/docs/checkout/standard/
 - Studio: https://developer.paypal.com/studio/checkout/standard
-- AI-optimized docs: https://docs.paypal.ai/payments/methods/paypal/overview
-- JS SDK v6 setup: https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout
+- AI-optimized docs: https://developer.paypal.com/checkout.md
+- JS SDK v6 setup: https://developer.paypal.com/sdk/js/reference.md
 - Orders API v2: https://developer.paypal.com/docs/api/orders/v2/
 - Sample app (v6): https://github.com/paypal-examples/v6-web-sdk-sample-integration
 
@@ -325,8 +325,8 @@ PAYPAL_ENVIRONMENT=sandbox  # or 'live'
 ### Documentation Links
 - [Standard Checkout](https://developer.paypal.com/docs/checkout/standard/)
 - [Studio — Standard Checkout](https://developer.paypal.com/studio/checkout/standard)
-- [AI-optimized docs](https://docs.paypal.ai/payments/methods/paypal/overview)
-- [JS SDK v6 setup](https://docs.paypal.ai/payments/methods/paypal/sdk/js/v6/paypal-checkout)
+- [AI-optimized docs](https://developer.paypal.com/checkout.md)
+- [JS SDK v6 setup](https://developer.paypal.com/sdk/js/reference.md)
 - [Orders API v2](https://developer.paypal.com/docs/api/orders/v2/)
 - [Payments API v2](https://developer.paypal.com/docs/api/payments/v2/)
 - [GitHub sample (v6)](https://github.com/paypal-examples/v6-web-sdk-sample-integration)

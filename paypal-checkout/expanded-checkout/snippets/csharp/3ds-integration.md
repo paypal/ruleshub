@@ -45,4 +45,4 @@
 ## Docs
 
 - [3D Secure (developer.paypal.com)](https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/)
-- [3DS with JS SDK v6 (docs.paypal.ai)](https://docs.paypal.ai/payments/methods/cards/3ds)
+- [3DS with JS SDK v6 (developer.paypal.com)](https://developer.paypal.com/expanded/3d-secure.md)
