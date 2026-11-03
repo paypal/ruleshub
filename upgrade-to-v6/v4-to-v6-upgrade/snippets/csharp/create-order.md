@@ -13,12 +13,12 @@ public class PayPalOrderController : ControllerBase
 {
     private readonly string _paypalBase = Environment.GetEnvironmentVariable("PAYPAL_BASE") ?? "https://api-m.sandbox.paypal.com";
     private readonly HttpClient _httpClient;
-    private readonly PayPalTokenController _tokenController;
+    private readonly IPayPalTokenService _tokenService;
 
-    public PayPalOrderController(IHttpClientFactory httpClientFactory, PayPalTokenController tokenController)
+    public PayPalOrderController(IHttpClientFactory httpClientFactory, IPayPalTokenService tokenService)
     {
         _httpClient = httpClientFactory.CreateClient();
-        _tokenController = tokenController;
+        _tokenService = tokenService;
     }
 
     [HttpPost("create")]
@@ -26,7 +26,7 @@ public class PayPalOrderController : ControllerBase
     {
         try
         {
-            var accessToken = await _tokenController.GetAccessToken();
+            var accessToken = await _tokenService.GetAccessTokenAsync();
             
             var orderPayload = new
             {
@@ -75,7 +75,7 @@ public async Task<IActionResult> CreateOrderWithDetails([FromBody] JsonElement r
 {
     try
     {
-        var accessToken = await _tokenController.GetAccessToken();
+        var accessToken = await _tokenService.GetAccessTokenAsync();
         
         var items = new List<object>();
         if (requestBody.TryGetProperty("items", out var itemsArray))
