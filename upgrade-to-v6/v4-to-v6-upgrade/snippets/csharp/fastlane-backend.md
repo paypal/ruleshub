@@ -13,12 +13,12 @@ public class FastlaneOrderController : ControllerBase
 {
     private readonly string _paypalBase = Environment.GetEnvironmentVariable("PAYPAL_BASE") ?? "https://api-m.sandbox.paypal.com";
     private readonly HttpClient _httpClient;
-    private readonly PayPalTokenController _tokenController;
+    private readonly IPayPalTokenService _tokenService;
 
-    public FastlaneOrderController(IHttpClientFactory httpClientFactory, PayPalTokenController tokenController)
+    public FastlaneOrderController(IHttpClientFactory httpClientFactory, IPayPalTokenService tokenService)
     {
         _httpClient = httpClientFactory.CreateClient();
-        _tokenController = tokenController;
+        _tokenService = tokenService;
     }
 
     [HttpPost("create")]
@@ -26,7 +26,7 @@ public class FastlaneOrderController : ControllerBase
     {
         try
         {
-            var accessToken = await _tokenController.GetAccessToken();
+            var accessToken = await _tokenService.GetAccessTokenAsync();
             var paypalRequestId = Request.Headers.ContainsKey("PayPal-Request-Id")
                 ? Request.Headers["PayPal-Request-Id"].ToString()
                 : Guid.NewGuid().ToString();
